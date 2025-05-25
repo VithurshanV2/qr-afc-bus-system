@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail } from '../models/userModel';
 
-// Register a new user
+// User registration
 export const register = async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -43,7 +43,7 @@ export const register = async (req, res) => {
     }
 }
 
-// Login user
+// User login
 export const login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -87,6 +87,25 @@ export const login = async (req, res) => {
         return res.status(200).json({
             success: true, message: 'Login successful',
             user: { id: user.id, name: user.name, email: user.email }
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+// User logout
+export const logout = async (req, res) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        });
+
+        return res.status(200).json({
+            success: true, message: 'Logged Out'
         });
 
     } catch (error) {
