@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { createUser, getUserByEmail } from '../models/userModel.js';
+import { createUser, getUserByEmail, getUserById, updateVerifyOtp } from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
 
 // User registration
@@ -15,7 +15,7 @@ export const register = async (req, res) => {
         const existingUser = await getUserByEmail(email);
 
         if (existingUser) {
-            return res.status(409).json({ success: false, message: "User already exists" });
+            return res.status(409).json({ success: false, message: 'User already exists' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -142,6 +142,68 @@ export const logout = async (req, res) => {
         return res.status(200).json({
             success: true, message: 'Logged Out'
         });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+// Send verification OTP to the user's email
+export const sendVerifyOtp = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const user = await getUserById(id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (user.isAccountVerified) {
+            return res.status(400).json({ success: false, message: 'Account already verified' });
+        }
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+        const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 1 day later
+
+        await updateVerifyOtp(user.id, otp, expiry);
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'SmartFare - Account Verification OTP',
+            text: `Hello ${user.name}, 
+
+            Your verification OTP is: ${otp} 
+            
+            Please use this OTP to verify your SmartFare account within the next 24 hours.
+
+            If you did not request this email, please ignore it.
+            
+            Safe travels,
+            The SmartFare Team`,
+            html: `
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>SmartFare - Account Verification OTP</title>
+                </head>
+                <body style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+                    <p>Hello ${user.name},</p>
+                    <p>Your verification One-Time Password (OTP) is:</p>
+                    <h2>${otp}</h2>
+                    <p>Please use this OTP to verify your SmartFare account within the next 24 hours.</p>
+                    <p>If you did not request this email, please ignore it.</p>
+                    <p>Safe travels,<br><strong>The SmartFare Team</strong></p>
+                </body>
+            </html>`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({ success: true, message: 'Verification OTP sent to email' });
 
     } catch (error) {
         console.error(error);

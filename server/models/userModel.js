@@ -22,3 +22,21 @@ export const createUser = async ({ name, email, password }) => {
         }
     });
 };
+
+// Fetch a user by ID from the database
+export const getUserById = async (id) => {
+    return await prisma.user.findUnique({
+        where: { id }
+    });
+};
+
+// Update OTP fields
+export const updateVerifyOtp = async (id, otp, expiry) => {
+    return await prisma.user.update({
+        where: { id },
+        data: {
+            verifyOtp: otp,
+            verifyOtpExpireAt: expiry
+        }
+    });
+};
