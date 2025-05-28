@@ -40,3 +40,15 @@ export const updateVerifyOtp = async (id, otp, expiry) => {
         }
     });
 };
+
+// Verify user account via OTP
+export const verifyUserAccount = async (id) => {
+    return await prisma.user.update({
+        where: { id },
+        data: {
+            isAccountVerified: true,
+            verifyOtp: null,
+            verifyOtpExpireAt: null
+        }
+    });
+};

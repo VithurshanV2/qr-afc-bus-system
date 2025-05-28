@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { createUser, getUserByEmail, getUserById, updateVerifyOtp } from '../models/userModel.js';
+import { createUser, getUserByEmail, getUserById, updateVerifyOtp, verifyUserAccount } from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
 
 // User registration
@@ -204,6 +204,39 @@ export const sendVerifyOtp = async (req, res) => {
         await transporter.sendMail(mailOptions);
 
         return res.status(200).json({ success: true, message: 'Verification OTP sent to email' });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+// Verify email
+export const verifyEmail = async (req, res) => {
+    const { id, otp } = req.body;
+
+    if (!id || !otp) {
+        return res.status(400).json({ success: false, message: 'Missing details' });
+    }
+
+    try {
+        const user = await getUserById(id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (user.verifyOtp === '' || user.verifyOtp !== otp) {
+            return res.status(401).json({ success: false, message: 'Invalid OTP' });
+        }
+
+        if (user.verifyOtpExpireAt < new Date()) {
+            return res.status(403).json({ success: false, message: 'OTP expired' });
+        }
+
+        await verifyUserAccount(id);
+
+        return res.status(200).json({ success: true, message: 'Email verified successfully' });
 
     } catch (error) {
         console.error(error);
