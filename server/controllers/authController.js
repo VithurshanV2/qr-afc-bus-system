@@ -152,7 +152,7 @@ export const logout = async (req, res) => {
 // Send verification OTP to the user's email
 export const sendVerifyOtp = async (req, res) => {
     try {
-        const { id } = req.body;
+        const id = req.userId;
 
         const user = await getUserById(id);
 
@@ -213,7 +213,8 @@ export const sendVerifyOtp = async (req, res) => {
 
 // Verify email
 export const verifyEmail = async (req, res) => {
-    const { id, otp } = req.body;
+    const id = req.userId;
+    const { otp } = req.body;
 
     if (!id || !otp) {
         return res.status(400).json({ success: false, message: 'Missing details' });
