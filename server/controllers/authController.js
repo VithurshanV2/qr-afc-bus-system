@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { createUser, getUserByEmail, getUserById, updateResetOtp, updateVerifyOtp, verifyUserAccount } from '../models/userModel.js';
+import { createUser, getUserByEmail, getUserById, resetPasswordUserAccount, updateResetOtp, updateVerifyOtp, verifyUserAccount } from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
 
 // User registration
@@ -304,7 +304,41 @@ export const sendResetOtp = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        return res.status(200).json({ success: true, message: 'Reset password OTP sent to email' });
+        return res.status(200).json({ success: true, message: 'OTP sent to your email' });
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+// Reset user password
+export const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    try {
+        const user = await getUserByEmail(email);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        if (user.resetOtp === '' || user.resetOtp !== otp) {
+            return res.status(401).json({ success: false, message: 'Invalid OTP' });
+        }
+
+        if (user.resetOtpExpireAt < new Date()) {
+            return res.status(403).json({ success: false, message: 'OTP expired' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await resetPasswordUserAccount(email, hashedPassword);
+
+        return res.status(200).json({ success: true, message: 'Your password has been reset successfully' });
 
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Internal server error' });
