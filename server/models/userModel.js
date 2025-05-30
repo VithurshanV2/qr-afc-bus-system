@@ -30,7 +30,7 @@ export const getUserById = async (id) => {
     });
 };
 
-// Update OTP fields
+// Update OTP fields for account verification
 export const updateVerifyOtp = async (id, otp, expiry) => {
     return await prisma.user.update({
         where: { id },
@@ -49,6 +49,17 @@ export const verifyUserAccount = async (id) => {
             isAccountVerified: true,
             verifyOtp: null,
             verifyOtpExpireAt: null
+        }
+    });
+};
+
+// Update OTP fields for reset password
+export const updateResetOtp = async (email, otp, expiry) => {
+    return await prisma.user.update({
+        where: { email },
+        data: {
+            resetOtp: otp,
+            resetOtpExpireAt: expiry
         }
     });
 };
