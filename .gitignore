@@ -138,3 +138,9 @@ dist
 # Prisma
 server/generated/prisma
 server/prisma/.env
+
+# Vite (client)
+client/dist/
+client/.vite/
+client/.env
+client/.env.local
