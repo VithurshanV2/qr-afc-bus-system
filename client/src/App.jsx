@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import EmailVerify from './pages/EmailVerify';
 import ResetPassword from './pages/ResetPassword';
 
-function App() {
+const App = () => {
   return (
     <div>
       <Routes>
@@ -16,6 +16,6 @@ function App() {
       </Routes>
     </div>
   );
-}
+};
 
 export default App;

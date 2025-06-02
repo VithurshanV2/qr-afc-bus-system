@@ -1,11 +1,11 @@
 import React from 'react';
 
-function EmailVerify() {
+const EmailVerify = () => {
     return (
         <div>
             <h1>Account Verification Page</h1>
         </div>
     );
-}
+};
 
 export default EmailVerify;
