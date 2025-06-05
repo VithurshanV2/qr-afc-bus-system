@@ -13,6 +13,7 @@ const Login = () => {
     return (
         <div className='flex items-center justify-center min-h-screen px-6 sm:px-0
         bg-gradient-to-br from-yellow-200 to-orange-400'>
+            <img onClick={() => navigate('/')} src={assets.logo} alt="logo" className='absolute left-5 sm:left-20 top-5 w-32 sm:w-48 cursor-pointer' />
             <div className='bg-[#1f1f1f] p-10 rounded-lg shadow-lg w-full sm:w-96 text-yellow-300 text-sm'>
                 <h2 className='text-3xl text-white text-center font-semibold mb-3'>{state === 'Sign Up' ? 'Create Account' : 'Login'}</h2>
                 <p className='text-sm text-center mb-6'>{state === 'Sign Up' ? 'Create your account' : 'Login to your account!'}</p>
