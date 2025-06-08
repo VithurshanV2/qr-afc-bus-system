@@ -4,7 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,html,yml,yaml,scss,sass,less,graphql,gql,mdx,vue,svelte}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,html,yml,yaml,scss,sass,less,graphql,gql,mdx,vue,svelte}\"",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md,html}": [
+      "prettier --write"
+    ]
   },
   "repository": {
     "type": "git",
@@ -22,6 +32,8 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0",
     "prettier": "3.5.3"
   }
 }
