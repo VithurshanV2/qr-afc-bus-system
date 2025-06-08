@@ -1,20 +1,30 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
+import { AppContext } from '../context/AppContext';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { backendUrl, userData, setUserData, setIsLoggedIn } =
+    useContext(AppContext);
 
-    const navigate = useNavigate();
+  return (
+    <div className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0">
+      <img src={assets.logo} alt="logo" className="w-32 sm:w-48" />
 
-    return (
-        <div className='w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0'>
-            <img src={assets.logo} alt="logo" className='w-32 sm:w-48' />
-
-            <button onClick={() => navigate('/login')}
-                className='flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 
-            text-gray-800 hover:bg-gray-100 transition-all'>Login</button>
-        </div>
-    );
+      {userData ? (
+        <div>{userData.name[0].toUpperCase()}</div>
+      ) : (
+        <button
+          onClick={() => navigate('/login')}
+          className="flex items-center gap-2 border border-gray-500 rounded-full px-6 py-2 
+                    text-gray-800 hover:bg-gray-100 transition-all"
+        >
+          Login
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default Navbar;

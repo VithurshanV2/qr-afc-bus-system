@@ -4,8 +4,8 @@ import user_icon from './user_icon.svg';
 import mail_icon from './mail_icon.svg';
 
 export const assets = {
-    logo,
-    lock_icon,
-    user_icon,
-    mail_icon
+  logo,
+  lock_icon,
+  user_icon,
+  mail_icon,
 };

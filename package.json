@@ -1,0 +1,22 @@
+{
+  "name": "qr-afc-bus-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,html,yml,yaml,scss,sass,less,graphql,gql,mdx,vue,svelte}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VithurshanV2/qr-afc-bus-system.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VithurshanV2/qr-afc-bus-system/issues"
+  },
+  "homepage": "https://github.com/VithurshanV2/qr-afc-bus-system#readme",
+  "devDependencies": {
+    "prettier": "3.5.3"
+  }
+}
