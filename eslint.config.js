@@ -24,6 +24,16 @@ export default [
       ...reactPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
     },
+    ignores: [
+      'node_modules/',
+      'build/',
+      'dist/',
+      '.env',
+      '.env.*',
+      '.DS_Store',
+      'package-lock.json',
+      'yarn.lock',
+    ],
   },
   {
     name: 'Prettier',
