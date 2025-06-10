@@ -1,10 +1,14 @@
+import React from 'react';
 import axios from 'axios';
 import { createContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
+  axios.defaults.withCredentials = true;
+
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(false);
@@ -17,8 +21,10 @@ export const AppContextProvider = (props) => {
         getUserData();
       }
     } catch (error) {
-      const message = error.response?.data?.message || 'Something went wrong';
-      toast.error(message);
+      if (error.response?.status !== 401) {
+        const message = error.response?.data?.message || 'Something went wrong';
+        toast.error(message);
+      }
     }
   };
 
@@ -48,4 +54,8 @@ export const AppContextProvider = (props) => {
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
   );
+};
+
+AppContextProvider.propTypes = {
+  children: PropTypes.node,
 };
