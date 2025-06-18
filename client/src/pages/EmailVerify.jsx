@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { assets } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const EmailVerify = () => {
   const navigate = useNavigate();
+
+  const { backendUrl, getUserData } = useContext(AppContext);
+
+  axios.defaults.withCredentials = true;
 
   // Store refs for OTP input fields
   const inputRefs = React.useRef([]);
@@ -33,6 +40,30 @@ const EmailVerify = () => {
     });
   };
 
+  const onSubmitHandler = async (e) => {
+    try {
+      e.preventDefault();
+      const otpArray = inputRefs.current.map((e) => e.value);
+      const otp = otpArray.join('');
+
+      const { data } = await axios.post(
+        backendUrl + '/api/auth/verify-account',
+        { otp },
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getUserData();
+        navigate('/');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    }
+  };
+
   return (
     <div
       className="flex items-center justify-center min-h-screen
@@ -45,7 +76,10 @@ const EmailVerify = () => {
         className="absolute left-5 sm:left-20 top-5 w-32 sm:w-48 cursor-pointer"
       />
 
-      <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+      <form
+        onSubmit={onSubmitHandler}
+        className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+      >
         <h1 className="text-white text-2xl font-semibold text-center mb-4">
           Email Verify OTP
         </h1>
