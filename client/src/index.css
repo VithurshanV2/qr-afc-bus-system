@@ -4,3 +4,8 @@
 * {
   font-family: 'Outfit', sans-serif;
 }
+
+@theme {
+  --color-dark-bg: #1f1f1f;
+  --color-input-bg: #3a3a3a;
+}
