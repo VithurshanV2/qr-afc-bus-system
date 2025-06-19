@@ -66,7 +66,7 @@ const Login = () => {
         alt="logo"
         className="absolute left-5 sm:left-20 top-5 w-32 sm:w-48 cursor-pointer"
       />
-      <div className="bg-[#1f1f1f] p-10 rounded-lg shadow-lg w-full sm:w-96 text-yellow-300 text-sm">
+      <div className="bg-dark-bg p-10 rounded-lg shadow-lg w-full sm:w-96 text-yellow-300 text-sm">
         <h2 className="text-3xl text-white text-center font-semibold mb-3">
           {state === 'Sign Up' ? 'Create Account' : 'Login'}
         </h2>
@@ -78,7 +78,7 @@ const Login = () => {
 
         <form onSubmit={onSubmitHandler}>
           {state === 'Sign Up' && (
-            <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#3a3a3a]">
+            <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
               <img src={assets.user_icon} alt="user icon" />
               <input
                 onChange={(e) => setName(e.target.value)}
@@ -90,7 +90,7 @@ const Login = () => {
               />
             </div>
           )}
-          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#3a3a3a]">
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
             <img src={assets.mail_icon} alt="mail icon" />
             <input
               onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +101,7 @@ const Login = () => {
               required
             />
           </div>
-          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#3a3a3a]">
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
             <img src={assets.lock_icon} alt="lock icon" />
             <input
               onChange={(e) => setPassword(e.target.value)}
@@ -138,7 +138,7 @@ const Login = () => {
           </p>
         ) : (
           <p className="text-gray-400 text-center text-xs mt-4">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <span
               onClick={() => setState('Sign Up')}
               className="text-orange-300 cursor-pointer underline"
