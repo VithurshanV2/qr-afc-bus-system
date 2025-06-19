@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { assets } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-200 to-orange-400">
       <img
@@ -27,8 +30,14 @@ const ResetPassword = () => {
             type="email"
             placeholder="Email ID"
             className="bg-transparent outline-none text-yellow-300"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
+        <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+          Submit
+        </button>
       </form>
     </div>
   );
