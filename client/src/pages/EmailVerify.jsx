@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { assets } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
@@ -8,7 +8,8 @@ import { toast } from 'react-toastify';
 const EmailVerify = () => {
   const navigate = useNavigate();
 
-  const { backendUrl, getUserData } = useContext(AppContext);
+  const { backendUrl, getUserData, isLoggedIn, userData } =
+    useContext(AppContext);
 
   axios.defaults.withCredentials = true;
 
@@ -63,6 +64,12 @@ const EmailVerify = () => {
       toast.error(message);
     }
   };
+
+  useEffect(() => {
+    if (isLoggedIn && userData && userData.isAccountVerified) {
+      navigate('/');
+    }
+  }, [isLoggedIn, userData, navigate]);
 
   return (
     <div
