@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 331.4 381.1">
+  <!-- Generator: Adobe Illustrator 29.0.0, SVG Export Plug-In . SVG Version: 2.1.0 Build 186)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #fff;
+        stroke: #666;
+        stroke-width: 20px;
+      }
+
+      .st0, .st1 {
+        stroke-miterlimit: 10;
+      }
+
+      .st2 {
+        fill: #666;
+      }
+
+      .st3 {
+        fill: #3a4352;
+      }
+
+      .st1 {
+        fill: #5c677d;
+        stroke: #5c677d;
+      }
+    </style>
+  </defs>
+  <g>
+    <polygon class="st0" points="320.1 281.2 164.4 369.6 10 279 11.3 99.9 167 11.5 321.4 102.2 320.1 281.2"/>
+    <g>
+      <rect class="st3" x="111.5" y="235.2" width="196.4" height="70.7" rx="3.9" ry="3.9" transform="translate(-106.2 138.9) rotate(-29.6)"/>
+      <circle class="st1" cx="175.3" cy="317" r="23.7"/>
+      <circle class="st1" cx="265.9" cy="264.9" r="23.7"/>
+      <rect class="st1" x="254.6" y="208.7" width="27.5" height="11.8" rx=".5" ry=".5" transform="translate(-71 160.5) rotate(-29.6)"/>
+      <rect class="st1" x="221.5" y="232" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(-87.8 143.3) rotate(-29.6)"/>
+      <rect class="st1" x="190.8" y="249.5" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(-100.5 130.4) rotate(-29.6)"/>
+      <rect class="st1" x="129.3" y="284.4" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(-125.7 104.6) rotate(-29.6)"/>
+      <rect class="st1" x="160" y="266.9" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(-113.1 117.5) rotate(-29.6)"/>
+    </g>
+    <g>
+      <rect class="st3" x="112.4" y="77.7" width="196.4" height="70.7" rx="3.9" ry="3.9" transform="translate(335.1 317.2) rotate(-149.6)"/>
+      <circle class="st1" cx="268.1" cy="119.6" r="23.7"/>
+      <circle class="st1" cx="177.7" cy="67.2" r="23.7"/>
+      <rect class="st1" x="119.2" y="84.3" width="27.5" height="11.8" rx=".5" ry=".5" transform="translate(201.9 235.3) rotate(-149.6)"/>
+      <rect class="st1" x="167.7" y="108.2" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(265.6 300.3) rotate(-149.6)"/>
+      <rect class="st1" x="198.2" y="126.1" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(313.3 349.1) rotate(-149.6)"/>
+      <rect class="st1" x="259.2" y="161.9" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(408.8 446.7) rotate(-149.6)"/>
+      <rect class="st1" x="228.7" y="144" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(361 397.9) rotate(-149.6)"/>
+    </g>
+    <g>
+      <rect class="st3" x="-24.6" y="155.4" width="196.4" height="70.7" rx="3.9" ry="3.9" transform="translate(264.9 118.6) rotate(90.4)"/>
+      <circle class="st1" cx="50.5" cy="137.7" r="23.7"/>
+      <circle class="st1" cx="50.4" cy="242.2" r="23.7"/>
+      <rect class="st1" x="78.9" y="263.6" width="27.5" height="11.8" rx=".5" ry=".5" transform="translate(362.8 178.8) rotate(90.4)"/>
+      <rect class="st1" x="87.1" y="216.5" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(316 131) rotate(90.4)"/>
+      <rect class="st1" x="87.4" y="181.1" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(280.9 95.1) rotate(90.4)"/>
+      <rect class="st1" x="87.9" y="110.4" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(210.7 23.4) rotate(90.4)"/>
+      <rect class="st1" x="87.6" y="145.8" width="11.8" height="11.8" rx=".5" ry=".5" transform="translate(245.8 59.2) rotate(90.4)"/>
+    </g>
+  </g>
+  <g>
+    <path class="st2" d="M142,216.9c-4.3,0-8-.8-11-2.4-3.1-1.6-5.7-3.9-8-6.8l4-4c1.9,2.6,4,4.5,6.5,5.8,2.5,1.3,5.4,1.9,8.8,1.9s6.3-.8,8.5-2.4c2.1-1.6,3.2-3.8,3.2-6.6s-.5-4-1.5-5.4c-1-1.4-2.3-2.5-3.9-3.4-1.6-.9-3.4-1.7-5.4-2.3-1.9-.7-3.9-1.4-5.8-2.2-2-.8-3.7-1.7-5.4-2.9-1.6-1.1-2.9-2.6-3.9-4.4-1-1.8-1.5-4.1-1.5-6.9s.7-5.5,2.1-7.6c1.4-2.1,3.4-3.7,5.9-4.9,2.5-1.1,5.4-1.7,8.5-1.7s6.7.7,9.5,2.1c2.8,1.4,5.1,3.2,6.9,5.6l-4,4c-1.7-2.1-3.5-3.6-5.6-4.6-2-1-4.3-1.5-7-1.5s-5.7.7-7.6,2.2c-1.9,1.5-2.9,3.5-2.9,6.2s.5,3.7,1.5,4.9c1,1.3,2.3,2.3,3.9,3.2,1.6.8,3.4,1.6,5.4,2.3,1.9.7,3.9,1.4,5.8,2.2,2,.8,3.7,1.8,5.4,3,1.6,1.2,2.9,2.8,3.9,4.6,1,1.9,1.5,4.3,1.5,7.2,0,4.7-1.6,8.4-4.8,11-3.2,2.6-7.6,3.9-13.1,3.9Z"/>
+    <path class="st2" d="M170.8,216.1v-54.6h5.9v54.6h-5.9ZM174.7,166.8v-5.3h30.6v5.3h-30.6ZM174.7,191.5v-5.4h29.3v5.4h-29.3Z"/>
+  </g>
+</svg>
