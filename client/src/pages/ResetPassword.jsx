@@ -8,6 +8,8 @@ const ResetPassword = () => {
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isEmailSent] = useState('');
+  const [isOtpSubmitted] = useState(false);
 
   // Store refs for OTP input fields
   const inputRefs = React.useRef([]);
@@ -47,92 +49,98 @@ const ResetPassword = () => {
       />
 
       {/* Enter email id */}
-      <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
-        <h1 className="text-white text-2xl font-semibold text-center mb-4">
-          Reset Password
-        </h1>
-        <p className="text-yellow-200 text-center mb-6">
-          Enter your registered email address
-        </p>
-        <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
-          <img src={assets.mail_icon} alt="mail icon" />
-          <input
-            type="email"
-            placeholder="Email ID"
-            className="bg-transparent outline-none text-yellow-300"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
-          Submit
-        </button>
-      </form>
+      {!isEmailSent && (
+        <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+          <h1 className="text-white text-2xl font-semibold text-center mb-4">
+            Reset Password
+          </h1>
+          <p className="text-yellow-200 text-center mb-6">
+            Enter your registered email address
+          </p>
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
+            <img src={assets.mail_icon} alt="mail icon" />
+            <input
+              type="email"
+              placeholder="Email ID"
+              className="bg-transparent outline-none text-yellow-300"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+            Submit
+          </button>
+        </form>
+      )}
 
       {/* OTP input form */}
-      <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
-        <h1 className="text-white text-2xl font-semibold text-center mb-4">
-          Reset Password OTP
-        </h1>
-        <p className="text-yellow-200 text-center mb-6">
-          Enter the 6-digit code sent to your Email ID
-        </p>
-        <div className="flex justify-between mb-8" onPaste={handlePaste}>
-          {Array(6)
-            .fill(0)
-            .map((_, index) => (
-              <input
-                type="text"
-                maxLength="1"
-                key={index}
-                required
-                className="w-12 h-12 bg-input-bg text-white text-center text-xl rounded-md"
-                ref={(e) => (inputRefs.current[index] = e)}
-                onInput={(e) => handleInput(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-              />
-            ))}
-        </div>
-        <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
-          Submit
-        </button>
-      </form>
+      {!isOtpSubmitted && isEmailSent && (
+        <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+          <h1 className="text-white text-2xl font-semibold text-center mb-4">
+            Reset Password OTP
+          </h1>
+          <p className="text-yellow-200 text-center mb-6">
+            Enter the 6-digit code sent to your Email ID
+          </p>
+          <div className="flex justify-between mb-8" onPaste={handlePaste}>
+            {Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <input
+                  type="text"
+                  maxLength="1"
+                  key={index}
+                  required
+                  className="w-12 h-12 bg-input-bg text-white text-center text-xl rounded-md"
+                  ref={(e) => (inputRefs.current[index] = e)}
+                  onInput={(e) => handleInput(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                />
+              ))}
+          </div>
+          <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+            Submit
+          </button>
+        </form>
+      )}
 
       {/* Enter new password */}
-      <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
-        <h1 className="text-white text-2xl font-semibold text-center mb-4">
-          New Password
-        </h1>
-        <p className="text-yellow-200 text-center mb-6">
-          Enter the new password below
-        </p>
-        <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
-          <img src={assets.lock_icon} alt="lock icon" />
-          <input
-            type="password"
-            placeholder="Password"
-            className="bg-transparent outline-none text-yellow-300"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
-          <img src={assets.lock_icon} alt="lock icon" />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            className="bg-transparent outline-none text-yellow-300"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
-          Submit
-        </button>
-      </form>
+      {isOtpSubmitted && isEmailSent && (
+        <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+          <h1 className="text-white text-2xl font-semibold text-center mb-4">
+            New Password
+          </h1>
+          <p className="text-yellow-200 text-center mb-6">
+            Enter the new password below
+          </p>
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
+            <img src={assets.lock_icon} alt="lock icon" />
+            <input
+              type="password"
+              placeholder="Password"
+              className="bg-transparent outline-none text-yellow-300"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
+            <img src={assets.lock_icon} alt="lock icon" />
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              className="bg-transparent outline-none text-yellow-300"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+            Submit
+          </button>
+        </form>
+      )}
     </div>
   );
 };
