@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
 
+  const { backendUrl } = useContext(AppContext);
+
+  axios.defaults.withCredentials = true;
+
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isEmailSent] = useState('');
+  const [isEmailSent, setIsEmailSet] = useState('');
   const [isOtpSubmitted] = useState(false);
 
   // Store refs for OTP input fields
@@ -39,6 +46,25 @@ const ResetPassword = () => {
     });
   };
 
+  const onSubmitEmail = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        backendUrl + '/api/auth/send-reset-otp',
+        { email },
+      );
+      if (data.success) {
+        setIsEmailSet(true);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-200 to-orange-400">
       <img
@@ -50,7 +76,10 @@ const ResetPassword = () => {
 
       {/* Enter email id */}
       {!isEmailSent && (
-        <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+        <form
+          onSubmit={onSubmitEmail}
+          className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+        >
           <h1 className="text-white text-2xl font-semibold text-center mb-4">
             Reset Password
           </h1>
