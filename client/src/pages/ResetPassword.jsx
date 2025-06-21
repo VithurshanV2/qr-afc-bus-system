@@ -16,7 +16,8 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isEmailSent, setIsEmailSet] = useState('');
-  const [isOtpSubmitted] = useState(false);
+  const [isOtpSubmitted, setIsOtpSubmitted] = useState(false);
+  const { setOtp } = useState(0);
 
   // Store refs for OTP input fields
   const inputRefs = React.useRef([]);
@@ -65,6 +66,13 @@ const ResetPassword = () => {
     }
   };
 
+  const onSubmitOtp = async (e) => {
+    e.preventDefault();
+    const otpArray = inputRefs.current.map((e) => e.value);
+    setOtp(otpArray.join(''));
+    setIsOtpSubmitted(true);
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-200 to-orange-400">
       <img
@@ -105,7 +113,10 @@ const ResetPassword = () => {
 
       {/* OTP input form */}
       {!isOtpSubmitted && isEmailSent && (
-        <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+        <form
+          onSubmit={onSubmitOtp}
+          className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+        >
           <h1 className="text-white text-2xl font-semibold text-center mb-4">
             Reset Password OTP
           </h1>
