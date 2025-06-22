@@ -10,6 +10,7 @@ import {
   verifyUserAccount,
 } from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
+import { sendWelcomeEmail } from '../emails/index.js';
 
 // User registration
 export const register = async (req, res) => {
@@ -48,38 +49,7 @@ export const register = async (req, res) => {
     });
 
     // Sending welcome email
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: 'Welcome to SmartFare',
-      text: `Hello ${name}, 
-            Welcome to SmartFare, your digital companion for convenient and secure bus travel across Sri Lanka. 
-
-            Your account has been successfully created using the email: ${email} 
-            
-            Thank you for joining us. We hope you enjoy a smoother and smarter commuting experience.
-            
-            Safe travels,
-            The SmartFare Team`,
-
-      html: `
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Welcome to SmartFare</title>
-                </head>
-                <body style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-                    <p>Hello ${name},</p>
-                    <p>Welcome to <strong>SmartFare</strong>, your digital companion for convenient and secure bus travel across Sri Lanka.</p>
-                    <p>Your account has been successfully created using the email: <strong>${email}</strong></p>
-                    <p>Thank you for joining us. We hope you enjoy a smoother and smarter commuting experience.</p>
-                    <p>Safe travels,<br><strong>The SmartFare Team</strong></p>
-                </body>
-            </html>`,
-    };
-
-    await transporter.sendMail(mailOptions);
+    await sendWelcomeEmail({ to: email, name, email });
 
     return res.status(201).json({
       success: true,
