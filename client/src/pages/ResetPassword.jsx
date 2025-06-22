@@ -17,7 +17,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isEmailSent, setIsEmailSet] = useState('');
   const [isOtpSubmitted, setIsOtpSubmitted] = useState(false);
-  const { setOtp } = useState(0);
+  const [otp, setOtp] = useState(0);
 
   // Store refs for OTP input fields
   const inputRefs = React.useRef([]);
@@ -71,6 +71,29 @@ const ResetPassword = () => {
     const otpArray = inputRefs.current.map((e) => e.value);
     setOtp(otpArray.join(''));
     setIsOtpSubmitted(true);
+  };
+
+  const onSubmitNewPassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    try {
+      const { data } = await axios.post(
+        backendUrl + '/api/auth/reset-password',
+        { email, otp, newPassword },
+      );
+      if (data.success) {
+        toast.success(data.message);
+        navigate('/login');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    }
   };
 
   return (
@@ -147,7 +170,10 @@ const ResetPassword = () => {
 
       {/* Enter new password */}
       {isOtpSubmitted && isEmailSent && (
-        <form className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm">
+        <form
+          onSubmit={onSubmitNewPassword}
+          className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+        >
           <h1 className="text-white text-2xl font-semibold text-center mb-4">
             New Password
           </h1>
