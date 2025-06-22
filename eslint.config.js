@@ -49,6 +49,7 @@ export default [
         __dirname: true,
         module: true,
         require: true,
+        console: true,
       },
     },
     rules: {
