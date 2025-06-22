@@ -346,6 +346,7 @@ export const sendResetOtp = async (req, res) => {
       .status(200)
       .json({ success: true, message: 'OTP sent to your email' });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ success: false, message: 'Internal server error' });
@@ -383,13 +384,12 @@ export const resetPassword = async (req, res) => {
 
     await resetPasswordUserAccount(email, hashedPassword);
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: 'Your password has been reset successfully',
-      });
+    return res.status(200).json({
+      success: true,
+      message: 'Your password has been reset successfully',
+    });
   } catch (error) {
+    console.error(error);
     return res
       .status(500)
       .json({ success: false, message: 'Internal server error' });
