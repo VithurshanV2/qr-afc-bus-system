@@ -3,7 +3,11 @@ import welcomeTemplate from './templates/welcome.js';
 import verifyOtpTemplate from './templates/verifyOtp.js';
 import resetPasswordOtpTemplate from './templates/resetPasswordOtp.js';
 
+const logoUrl = process.env.EMAIL_LOGO_URL;
+
 export async function sendWelcomeEmail({ to, name, email }) {
+  const html = welcomeTemplate({ name, email, logoUrl });
+
   return transporter.sendMail({
     from: process.env.SENDER_EMAIL,
     to,
@@ -18,7 +22,7 @@ export async function sendWelcomeEmail({ to, name, email }) {
             Safe travels,
             The SmartFare Team`,
 
-    html: welcomeTemplate({ name, email }),
+    html,
   });
 }
 
