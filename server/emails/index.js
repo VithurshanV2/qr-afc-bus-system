@@ -49,6 +49,8 @@ export async function sendVerificationOtp({ to, name, otp }) {
 }
 
 export async function sendPasswordResetOtp({ to, name, otp }) {
+  const html = resetPasswordOtpTemplate({ name, otp, logoUrl });
+
   return transporter.sendMail({
     from: process.env.SENDER_EMAIL,
     to,
@@ -63,6 +65,6 @@ export async function sendPasswordResetOtp({ to, name, otp }) {
             
             Safe travels,
             The SmartFare Team`,
-    html: resetPasswordOtpTemplate({ name, otp }),
+    html,
   });
 }
