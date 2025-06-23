@@ -27,6 +27,8 @@ export async function sendWelcomeEmail({ to, name, email }) {
 }
 
 export async function sendVerificationOtp({ to, name, otp }) {
+  const html = verifyOtpTemplate({ name, otp, logoUrl });
+
   return transporter.sendMail({
     from: process.env.SENDER_EMAIL,
     to,
@@ -42,7 +44,7 @@ export async function sendVerificationOtp({ to, name, otp }) {
             Safe travels,
             The SmartFare Team`,
 
-    html: verifyOtpTemplate({ name, otp }),
+    html,
   });
 }
 
