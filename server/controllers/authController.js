@@ -10,7 +10,7 @@ import {
   verifyUserAccount,
 } from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
-import { sendWelcomeEmail } from '../emails/index.js';
+import { sendVerificationOtp, sendWelcomeEmail } from '../emails/index.js';
 
 // User registration
 export const register = async (req, res) => {
@@ -165,39 +165,11 @@ export const sendVerifyOtp = async (req, res) => {
 
     await updateVerifyOtp(user.id, otp, expiry);
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
+    await sendVerificationOtp({
       to: user.email,
-      subject: 'SmartFare - Account Verification OTP',
-      text: `Hello ${user.name}, 
-
-            Your verification One-Time Password (OTP) is: ${otp} 
-            
-            Please use this OTP to verify your SmartFare account within the next 24 hours.
-
-            If you did not request this email, please ignore it.
-            
-            Safe travels,
-            The SmartFare Team`,
-      html: `
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>SmartFare - Account Verification OTP</title>
-                </head>
-                <body style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-                    <p>Hello ${user.name},</p>
-                    <p>Your verification One-Time Password (OTP) is:</p>
-                    <h2>${otp}</h2>
-                    <p>Please use this OTP to verify your SmartFare account within the next 24 hours.</p>
-                    <p>If you did not request this email, please ignore it.</p>
-                    <p>Safe travels,<br><strong>The SmartFare Team</strong></p>
-                </body>
-            </html>`,
-    };
-
-    await transporter.sendMail(mailOptions);
+      name: user.name,
+      otp,
+    });
 
     return res
       .status(200)

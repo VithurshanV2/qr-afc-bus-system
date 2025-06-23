@@ -1,5 +1,6 @@
 import transporter from '../config/nodemailer.js';
 import welcomeTemplate from './templates/welcome.js';
+import verifyOtpTemplate from './templates/verifyOtp.js';
 
 export async function sendWelcomeEmail({ to, name, email }) {
   return transporter.sendMail({
@@ -17,5 +18,25 @@ export async function sendWelcomeEmail({ to, name, email }) {
             The SmartFare Team`,
 
     html: welcomeTemplate({ name, email }),
+  });
+}
+
+export async function sendVerificationOtp({ to, name, otp }) {
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Account Verification OTP',
+    text: `Hello ${name}, 
+
+            Your verification One-Time Password (OTP) is: ${otp} 
+            
+            Please use this OTP to verify your SmartFare account within the next 24 hours.
+
+            If you did not request this email, please ignore it.
+            
+            Safe travels,
+            The SmartFare Team`,
+
+    html: verifyOtpTemplate({ name, otp }),
   });
 }
