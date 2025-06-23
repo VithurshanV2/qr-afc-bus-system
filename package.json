@@ -13,6 +13,10 @@
       "eslint --fix",
       "prettier --write"
     ],
+    "server/**/*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
     "*.{json,css,md,html}": [
       "prettier --write"
     ]

@@ -9,8 +9,11 @@ import {
   updateVerifyOtp,
   verifyUserAccount,
 } from '../models/userModel.js';
-import transporter from '../config/nodemailer.js';
-import { sendVerificationOtp, sendWelcomeEmail } from '../emails/index.js';
+import {
+  sendPasswordResetOtp,
+  sendVerificationOtp,
+  sendWelcomeEmail,
+} from '../emails/index.js';
 
 // User registration
 export const register = async (req, res) => {
@@ -250,39 +253,11 @@ export const sendResetOtp = async (req, res) => {
 
     await updateResetOtp(email, otp, expiry);
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
+    await sendPasswordResetOtp({
       to: user.email,
-      subject: 'SmartFare - Reset Password OTP',
-      text: `Hello ${user.name}, 
-
-            Your SmartFare password reset OTP is: ${otp} 
-            
-            Please use this OTP within 15 minutes to reset account password.
-
-            If you didn't request this, you can ignore this message.
-            
-            Safe travels,
-            The SmartFare Team`,
-      html: `
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>SmartFare - Reset Password OTP</title>
-                </head>
-                <body style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-                    <p>Hello ${user.name},</p>
-                    <p>Your SmartFare password reset OTP is:</p>
-                    <h2>${otp}</h2>
-                    <p>Please use this OTP within 15 minutes to reset account password.</p>
-                    <p>If you didn't request this, you can ignore this message.</p>
-                    <p>Safe travels,<br><strong>The SmartFare Team</strong></p>
-                </body>
-            </html>`,
-    };
-
-    await transporter.sendMail(mailOptions);
+      name: user.name,
+      otp,
+    });
 
     return res
       .status(200)

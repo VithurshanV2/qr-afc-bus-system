@@ -1,6 +1,7 @@
 import transporter from '../config/nodemailer.js';
 import welcomeTemplate from './templates/welcome.js';
 import verifyOtpTemplate from './templates/verifyOtp.js';
+import resetPasswordOtpTemplate from './templates/resetPasswordOtp.js';
 
 export async function sendWelcomeEmail({ to, name, email }) {
   return transporter.sendMail({
@@ -38,5 +39,24 @@ export async function sendVerificationOtp({ to, name, otp }) {
             The SmartFare Team`,
 
     html: verifyOtpTemplate({ name, otp }),
+  });
+}
+
+export async function sendPasswordResetOtp({ to, name, otp }) {
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Reset Password OTP',
+    text: `Hello ${name}, 
+
+            Your SmartFare password reset OTP is: ${otp} 
+            
+            Please use this OTP within 15 minutes to reset account password.
+
+            If you didn't request this, you can ignore this message.
+            
+            Safe travels,
+            The SmartFare Team`,
+    html: resetPasswordOtpTemplate({ name, otp }),
   });
 }
