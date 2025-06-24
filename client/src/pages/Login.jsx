@@ -123,12 +123,15 @@ const Login = () => {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-          <p
-            onClick={() => navigate('/reset-password')}
-            className="mb-4 text-yellow-400 cursor-pointer"
-          >
-            Forgot password?
-          </p>
+
+          {state === 'Login' && (
+            <p
+              onClick={() => navigate('/reset-password')}
+              className="mb-4 text-yellow-400 cursor-pointer"
+            >
+              Forgot password?
+            </p>
+          )}
 
           <button
             className="w-full py-2.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 
