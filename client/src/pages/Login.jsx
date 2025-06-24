@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Login = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmitHandler = async (e) => {
     try {
@@ -101,16 +103,25 @@ const Login = () => {
               required
             />
           </div>
-          <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
+          <div className="mb-4 relative flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
             <img src={assets.lock_icon} alt="lock icon" />
             <input
               onChange={(e) => setPassword(e.target.value)}
               value={password}
-              className="bg-transparent outline-none"
-              type="password"
+              className="bg-transparent outline-none flex-1 pr-10"
+              type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               required
+              autoComplete="current-password"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-4 text-xs text-yellow-400 hover:text-yellow-200 transition"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
           <p
             onClick={() => navigate('/reset-password')}
