@@ -57,6 +57,12 @@ const Login = () => {
     }
   };
 
+  const clearFields = () => {
+    setName('');
+    setEmail('');
+    setPassword('');
+  };
+
   return (
     <div
       className="flex items-center justify-center min-h-screen px-6 sm:px-0
@@ -144,7 +150,10 @@ const Login = () => {
           <p className="text-gray-400 text-center text-xs mt-4">
             Already have an account?{' '}
             <span
-              onClick={() => setState('Login')}
+              onClick={() => {
+                setState('Login');
+                clearFields();
+              }}
               className="text-orange-300 cursor-pointer underline"
             >
               Login here
@@ -154,7 +163,10 @@ const Login = () => {
           <p className="text-gray-400 text-center text-xs mt-4">
             Don&apos;t have an account?{' '}
             <span
-              onClick={() => setState('Sign Up')}
+              onClick={() => {
+                setState('Sign Up');
+                clearFields();
+              }}
               className="text-orange-300 cursor-pointer underline"
             >
               Sign up
