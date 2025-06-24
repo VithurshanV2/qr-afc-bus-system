@@ -61,6 +61,7 @@ const Login = () => {
     setName('');
     setEmail('');
     setPassword('');
+    setShowPassword(false);
   };
 
   return (
