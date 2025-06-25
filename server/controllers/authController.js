@@ -15,6 +15,12 @@ import {
   sendWelcomeEmail,
 } from '../emails/index.js';
 
+// Password policy
+const isPasswordValid = (password) => {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  return regex.test(password);
+};
+
 // User registration
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -23,6 +29,14 @@ export const register = async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: 'Missing required fields' });
+  }
+
+  if (!isPasswordValid(password)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        'Password must be at least 8 characters and include uppercase, lowercase, and a number',
+    });
   }
 
   try {
@@ -278,6 +292,14 @@ export const resetPassword = async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: 'All fields are required' });
+  }
+
+  if (!isPasswordValid(newPassword)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        'Password must be at least 8 characters and include uppercase, lowercase, and a number',
+    });
   }
 
   try {
