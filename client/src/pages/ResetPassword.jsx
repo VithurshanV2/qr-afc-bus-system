@@ -73,8 +73,21 @@ const ResetPassword = () => {
     setIsOtpSubmitted(true);
   };
 
+  const isPasswordValid = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return regex.test(password);
+  };
+
   const onSubmitNewPassword = async (e) => {
     e.preventDefault();
+
+    if (!isPasswordValid(newPassword)) {
+      toast.error(
+        'Password must be at least 8 characters and include uppercase, lowercase, and a number',
+      );
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
