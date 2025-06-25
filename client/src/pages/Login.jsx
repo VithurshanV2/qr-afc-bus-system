@@ -17,6 +17,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  const isPasswordValid = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return regex.test(password);
+  };
+
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
@@ -24,6 +29,13 @@ const Login = () => {
       axios.defaults.withCredentials = true;
 
       if (state === 'Sign Up') {
+        if (!isPasswordValid(password)) {
+          toast.error(
+            'Password must be at least 8 characters and include uppercase, lowercase, and a number',
+          );
+          return;
+        }
+
         const { data } = await axios.post(backendUrl + '/api/auth/register', {
           name,
           email,
