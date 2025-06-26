@@ -9,7 +9,13 @@ import { Eye, EyeOff } from 'lucide-react';
 const Login = () => {
   const navigate = useNavigate();
 
-  const { backendUrl, setIsLoggedIn, getUserData } = useContext(AppContext);
+  const {
+    backendUrl,
+    setIsLoggedIn,
+    getUserData,
+    globalLoading,
+    setGlobalLoading,
+  } = useContext(AppContext);
 
   const [state, setState] = useState('Login');
   const [name, setName] = useState('');
@@ -24,6 +30,8 @@ const Login = () => {
 
   const onSubmitHandler = async (e) => {
     try {
+      setGlobalLoading(true);
+
       e.preventDefault();
 
       axios.defaults.withCredentials = true;
@@ -66,6 +74,8 @@ const Login = () => {
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       toast.error(message);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
@@ -153,8 +163,13 @@ const Login = () => {
           )}
 
           <button
-            className="w-full py-2.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 
-                    text-white font-medium"
+            type="submit"
+            disabled={globalLoading}
+            className={`w-full py-2.5 rounded-full font-medium ${
+              globalLoading
+                ? 'bg-gray-400 cursor-not-allowed text-white'
+                : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
+            }`}
           >
             {state}
           </button>

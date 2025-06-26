@@ -12,9 +12,11 @@ export const AppContextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(false);
+  const [globalLoading, setGlobalLoading] = useState(false);
 
   const getAuthState = async () => {
     try {
+      setGlobalLoading(true);
       const { data } = await axios.get(backendUrl + '/api/auth/is-auth');
       if (data.success) {
         setIsLoggedIn(true);
@@ -25,16 +27,21 @@ export const AppContextProvider = (props) => {
         const message = error.response?.data?.message || 'Something went wrong';
         toast.error(message);
       }
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
   const getUserData = async () => {
     try {
+      setGlobalLoading(true);
       const { data } = await axios.get(backendUrl + '/api/user/data');
       data.success ? setUserData(data.userData) : toast.error(data.message);
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       toast.error(message);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
@@ -49,6 +56,8 @@ export const AppContextProvider = (props) => {
     userData,
     setUserData,
     getUserData,
+    globalLoading,
+    setGlobalLoading,
   };
 
   return (
