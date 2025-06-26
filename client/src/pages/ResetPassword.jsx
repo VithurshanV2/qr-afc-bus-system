@@ -8,14 +8,14 @@ import { toast } from 'react-toastify';
 const ResetPassword = () => {
   const navigate = useNavigate();
 
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, setGlobalLoading } = useContext(AppContext);
 
   axios.defaults.withCredentials = true;
 
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isEmailSent, setIsEmailSet] = useState('');
+  const [isEmailSent, setIsEmailSent] = useState('');
   const [isOtpSubmitted, setIsOtpSubmitted] = useState(false);
   const [otp, setOtp] = useState(0);
 
@@ -50,12 +50,14 @@ const ResetPassword = () => {
   const onSubmitEmail = async (e) => {
     e.preventDefault();
     try {
+      setGlobalLoading(true);
+
       const { data } = await axios.post(
         backendUrl + '/api/auth/send-reset-otp',
         { email },
       );
       if (data.success) {
-        setIsEmailSet(true);
+        setIsEmailSent(true);
         toast.success(data.message);
       } else {
         toast.error(data.message);
@@ -63,6 +65,8 @@ const ResetPassword = () => {
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       toast.error(message);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
@@ -93,6 +97,8 @@ const ResetPassword = () => {
       return;
     }
     try {
+      setGlobalLoading(true);
+
       const { data } = await axios.post(
         backendUrl + '/api/auth/reset-password',
         { email, otp, newPassword },
@@ -106,6 +112,8 @@ const ResetPassword = () => {
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       toast.error(message);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
@@ -165,6 +173,8 @@ const ResetPassword = () => {
               .map((_, index) => (
                 <input
                   type="text"
+                  inputMode="numeric"
+                  pattern="\d"
                   maxLength="1"
                   key={index}
                   required

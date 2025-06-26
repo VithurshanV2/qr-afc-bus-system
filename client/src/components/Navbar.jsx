@@ -7,11 +7,13 @@ import axios from 'axios';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { backendUrl, userData, setUserData, setIsLoggedIn } =
+  const { backendUrl, userData, setUserData, setIsLoggedIn, setGlobalLoading } =
     useContext(AppContext);
 
   const sendVerificationOtp = async () => {
     try {
+      setGlobalLoading(true);
+
       axios.defaults.withCredentials = true;
 
       const { data } = await axios.post(
@@ -26,11 +28,15 @@ const Navbar = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
   const logout = async () => {
     try {
+      setGlobalLoading(true);
+
       axios.defaults.withCredentials = true;
       const { data } = await axios.post(backendUrl + '/api/auth/logout');
 
@@ -42,6 +48,8 @@ const Navbar = () => {
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       toast.error(message);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 

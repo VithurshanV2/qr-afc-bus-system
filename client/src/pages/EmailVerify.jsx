@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 const EmailVerify = () => {
   const navigate = useNavigate();
 
-  const { backendUrl, getUserData, isLoggedIn, userData } =
+  const { backendUrl, getUserData, isLoggedIn, userData, setGlobalLoading } =
     useContext(AppContext);
 
   axios.defaults.withCredentials = true;
@@ -43,6 +43,8 @@ const EmailVerify = () => {
 
   const onSubmitHandler = async (e) => {
     try {
+      setGlobalLoading(true);
+
       e.preventDefault();
       const otpArray = inputRefs.current.map((e) => e.value);
       const otp = otpArray.join('');
@@ -62,6 +64,8 @@ const EmailVerify = () => {
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       toast.error(message);
+    } finally {
+      setGlobalLoading(false);
     }
   };
 
@@ -99,6 +103,8 @@ const EmailVerify = () => {
             .map((_, index) => (
               <input
                 type="text"
+                inputMode="numeric"
+                pattern="\d"
                 maxLength="1"
                 key={index}
                 required
