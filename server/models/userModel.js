@@ -102,3 +102,32 @@ export const resetPasswordUserAccount = async (email, newPassword) => {
     },
   });
 };
+
+// Find or create a user using Google OAuth profile
+export const findOrCreateUserByGoogleId = async (profile) => {
+  const { id: googleId, displayName, emails } = profile;
+  const email = emails?.[0].value;
+
+  if (!email) {
+    throw new Error('No email found in Google profile');
+  }
+
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [{ googleId }, { email }],
+    },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        name: displayName,
+        email,
+        googleId,
+        isAccountVerified: true,
+        role: 'user',
+      },
+    });
+  }
+  return user;
+};
