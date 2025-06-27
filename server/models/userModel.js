@@ -12,6 +12,11 @@ export const getUserByEmail = async (email) => {
       email: true,
       password: true,
       role: true,
+      verifyOtp: true,
+      verifyOtpExpireAt: true,
+      resetOtp: true,
+      resetOtpExpireAt: true,
+      isAccountVerified: true,
     },
   });
 };
@@ -43,6 +48,11 @@ export const getUserById = async (id) => {
       email: true,
       password: true,
       role: true,
+      verifyOtp: true,
+      verifyOtpExpireAt: true,
+      resetOtp: true,
+      resetOtpExpireAt: true,
+      isAccountVerified: true,
     },
   });
 };
