@@ -71,7 +71,12 @@ export const register = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'User registered',
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
@@ -127,7 +132,12 @@ export const login = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Login successful',
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
