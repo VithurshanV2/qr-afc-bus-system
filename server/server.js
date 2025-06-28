@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './config/postgres.js';
+import './config/passport.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import oauthRouter from './routes/oauthRoutes.js';

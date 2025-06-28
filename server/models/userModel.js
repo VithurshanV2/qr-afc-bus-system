@@ -125,7 +125,7 @@ export const findOrCreateUserByGoogleId = async (profile) => {
         email,
         googleId,
         isAccountVerified: true,
-        role: 'user',
+        role: 'COMMUTER',
       },
     });
   }
