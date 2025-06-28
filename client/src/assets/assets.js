@@ -4,6 +4,7 @@ import user_icon from './user_icon.svg';
 import mail_icon from './mail_icon.svg';
 import right_arrow_icon from './right_arrow_icon.svg';
 import submark_logo from './submark_logo.svg';
+import google_icon from './google_icon.svg';
 
 export const assets = {
   logo,
@@ -12,4 +13,5 @@ export const assets = {
   mail_icon,
   right_arrow_icon,
   submark_logo,
+  google_icon,
 };

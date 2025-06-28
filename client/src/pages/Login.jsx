@@ -86,6 +86,18 @@ const Login = () => {
     setShowPassword(false);
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      setGlobalLoading(true);
+      window.open(backendUrl + '/api/auth/google', '_self');
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
   return (
     <div
       className="flex items-center justify-center min-h-screen px-6 sm:px-0
@@ -172,6 +184,31 @@ const Login = () => {
             }`}
           >
             {state}
+          </button>
+
+          {/* Separator */}
+          <div className="flex items-center my-4">
+            <hr className="flex-grow border-yellow-300" />
+            <span className="mx-3 text-yellow-300 text-sm">OR</span>
+            <hr className="flex-grow border-yellow-300" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={globalLoading}
+            className={`mt-4 w-full py-2.5 rounded-full font-medium flex items-center justify-center gap-2 ${
+              globalLoading
+                ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
+                : 'bg-white text-dark-bg shadow-md hover:shadow-lg transition'
+            }`}
+          >
+            <img
+              src={assets.google_icon}
+              alt="google icon"
+              className="w-5 h-5"
+            />
+            Continue with Google
           </button>
         </form>
         {state === 'Sign Up' ? (
