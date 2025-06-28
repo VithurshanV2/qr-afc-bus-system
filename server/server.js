@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { connectDB } from './config/postgres.js';
 import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
+import oauthRouter from './routes/oauthRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -21,5 +22,6 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.get('/', (req, res) => res.send('API Working'));
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/auth', oauthRouter);
 
 app.listen(port, () => console.log(`Server started on PORT: ${port}`));
