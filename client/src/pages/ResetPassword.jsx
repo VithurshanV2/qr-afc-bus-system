@@ -73,8 +73,32 @@ const ResetPassword = () => {
   const onSubmitOtp = async (e) => {
     e.preventDefault();
     const otpArray = inputRefs.current.map((e) => e.value);
-    setOtp(otpArray.join(''));
-    setIsOtpSubmitted(true);
+    const enteredOtp = otpArray.join('');
+
+    try {
+      setGlobalLoading(true);
+
+      const { data } = await axios.post(
+        backendUrl + '/api/auth/verify-reset-otp',
+        {
+          email,
+          otp: enteredOtp,
+        },
+      );
+
+      if (data.success) {
+        setOtp(enteredOtp);
+        setIsOtpSubmitted(true);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setGlobalLoading(false);
+    }
   };
 
   const isPasswordValid = (password) => {
