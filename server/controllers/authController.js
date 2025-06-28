@@ -294,6 +294,43 @@ export const sendResetOtp = async (req, res) => {
   }
 };
 
+// Verify OTP for reset password
+export const verifyResetOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing details',
+    });
+  }
+
+  try {
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not found' });
+    }
+
+    if (user.resetOtp === '' || user.resetOtp !== otp) {
+      return res.status(401).json({ success: false, message: 'Invalid OTP' });
+    }
+
+    if (user.resetOtpExpireAt < new Date()) {
+      return res.status(403).json({ success: false, message: 'OTP expired' });
+    }
+
+    return res.status(200).json({ success: true, message: 'OTP verified' });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
 // Reset user password
 export const resetPassword = async (req, res) => {
   const { email, otp, newPassword } = req.body;
