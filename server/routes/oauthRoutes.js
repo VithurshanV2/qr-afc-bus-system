@@ -1,5 +1,6 @@
 import express from 'express';
 import passport from 'passport';
+import { googleAuthCallback } from '../controllers/oauthRoutes';
 
 const oauthRouter = express.Router();
 
@@ -14,9 +15,7 @@ oauthRouter.get(
     failureRedirect: '/login',
     session: false,
   }),
-  (req, res) => {
-    res.send('Google login successful');
-  },
+  googleAuthCallback,
 );
 
 export default oauthRouter;
