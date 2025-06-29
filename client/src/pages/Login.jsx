@@ -22,6 +22,10 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState({
+    login: false,
+    signup: false,
+  });
 
   const isPasswordValid = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
@@ -101,19 +105,27 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left image panel - only on desktop */}
-      <div className="hidden lg:flex w-1/2 h-screen overflow-hidden relative">
+      <div className="hidden lg:flex w-1/2 h-screen overflow-hidden relative bg-gray-200">
         <div
-          className={`w-full h-full flex transition-transform duration-700 ease-in-out ${state === 'Sign Up' ? '-translate-x-full' : 'translate-x-0'}`}
+          className={`w-full h-full flex transition-transform duration-700 ease-in-out will-change-transform ${state === 'Sign Up' ? '-translate-x-full' : 'translate-x-0'}`}
         >
           <img
             src={assets.loginImg}
             alt="login"
-            className="w-full h-full object-cover shrink-0 transition-opacity duration-300"
+            className={`w-full h-full object-cover shrink-0 transition-opacity duration-700 ease-in-out ${
+              imagesLoaded.login ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={() => setImagesLoaded((prev) => ({ ...prev, login: true }))}
           />
           <img
             src={assets.signupImg}
             alt="signup"
-            className="w-full h-full object-cover shrink-0 transition-opacity duration-300"
+            className={`w-full h-full object-cover shrink-0 transition-opacity duration-700 ease-in-out ${
+              imagesLoaded.signup ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={() =>
+              setImagesLoaded((prev) => ({ ...prev, signup: true }))
+            }
           />
         </div>
       </div>
