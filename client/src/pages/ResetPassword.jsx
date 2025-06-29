@@ -173,7 +173,7 @@ const ResetPassword = () => {
               required
             />
           </div>
-          <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+          <button className="w-full py-3 text-white font-medium rounded-full bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform">
             Submit
           </button>
         </form>
@@ -209,7 +209,7 @@ const ResetPassword = () => {
                 />
               ))}
           </div>
-          <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+          <button className="w-full py-3 text-white font-medium rounded-full bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform">
             Submit
           </button>
         </form>
@@ -249,7 +249,7 @@ const ResetPassword = () => {
               required
             />
           </div>
-          <button className="w-full py-3 text-white rounded-full bg-gradient-to-r from-yellow-400 to-orange-500">
+          <button className="w-full py-3 text-white font-medium rounded-full bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform">
             Submit
           </button>
         </form>

@@ -200,7 +200,7 @@ const Login = () => {
               className={`w-full py-2.5 rounded-full font-medium ${
                 globalLoading
                   ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white'
+                  : 'bg-gradient-to-r from-yellow-600 to-orange-700 text-white shadow-md hover:shadow-yellow-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform'
               }`}
             >
               {state}
@@ -220,7 +220,7 @@ const Login = () => {
               className={`mt-4 w-full py-2.5 rounded-full font-medium flex items-center justify-center gap-2 ${
                 globalLoading
                   ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
-                  : 'bg-white text-dark-bg shadow-md hover:shadow-lg transition'
+                  : 'bg-white text-dark-bg shadow-md hover:shadow-gray-500 hover:scale-105 active:scale-100 transition-all duration-300 transform'
               }`}
             >
               <img
