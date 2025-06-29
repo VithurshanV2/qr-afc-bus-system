@@ -107,7 +107,9 @@ const Login = () => {
       {/* Left image panel - only on desktop */}
       <div className="hidden lg:flex w-1/2 h-screen overflow-hidden relative bg-gray-200">
         <div
-          className={`w-full h-full flex transition-transform duration-700 ease-in-out will-change-transform ${state === 'Sign Up' ? '-translate-x-full' : 'translate-x-0'}`}
+          className={`w-full h-full flex transition-transform duration-700 ease-in-out will-change-transform ${
+            state === 'Sign Up' ? '-translate-x-full' : 'translate-x-0'
+          }`}
         >
           <img
             src={assets.loginImg}
@@ -141,7 +143,7 @@ const Login = () => {
           alt="logo"
           className="absolute top-6 left-6 w-32 sm:w-48 cursor-pointer"
         />
-        <div className="bg-dark-bg p-10 rounded-lg shadow-lg w-full sm:w-96 text-yellow-300 text-sm">
+        <div className="bg-dark-bg p-10 rounded-lg shadow-lg w-full sm:w-96 max-w-[384px] text-yellow-300 text-sm">
           <h2 className="text-3xl text-white text-center font-semibold mb-3">
             {state === 'Sign Up' ? 'Create Account' : 'Login'}
           </h2>
