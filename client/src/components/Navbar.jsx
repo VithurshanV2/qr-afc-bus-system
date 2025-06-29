@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/assets';
 import { AppContext } from '../context/AppContext';
@@ -9,6 +9,12 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { backendUrl, userData, setUserData, setIsLoggedIn, setGlobalLoading } =
     useContext(AppContext);
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
 
   const sendVerificationOtp = async () => {
     try {
@@ -58,9 +64,16 @@ const Navbar = () => {
       <img src={assets.logo} alt="logo" className="w-32 sm:w-48" />
 
       {userData ? (
-        <div className="flex justify-center items-center w-8 h-8 rounded-full bg-black text-white relative group">
+        <div
+          className="flex justify-center items-center w-8 h-8 rounded-full bg-black text-white relative sm:group"
+          onClick={toggleDropdown}
+        >
           {userData.name[0].toUpperCase()}
-          <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10">
+          <div
+            className={`absolute ${
+              isDropdownOpen ? 'block' : 'hidden'
+            } sm:group-hover:block top-0 right-0 z-10 text-black rounded pt-10`}
+          >
             <ul className="list-none m-0 p-2 bg-gray-100 text-sm">
               {!userData.isAccountVerified && (
                 <li
