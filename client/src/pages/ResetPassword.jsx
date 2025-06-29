@@ -142,7 +142,10 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-yellow-200 to-orange-400">
+    <div
+      className="flex items-center justify-center min-h-screen 
+      bg-gradient-to-br from-yellow-200 to-orange-400"
+    >
       <img
         onClick={() => navigate('/')}
         src={assets.logo}
@@ -154,7 +157,7 @@ const ResetPassword = () => {
       {!isEmailSent && (
         <form
           onSubmit={onSubmitEmail}
-          className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+          className="bg-dark-bg p-8 sm:p-8 rounded-lg shadow-lg w-full max-w-[384px] text-sm"
         >
           <h1 className="text-white text-2xl font-semibold text-center mb-4">
             Reset Password
@@ -173,7 +176,12 @@ const ResetPassword = () => {
               required
             />
           </div>
-          <button className="w-full py-3 text-white font-medium rounded-full bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform">
+          <button
+            className="w-full py-3 text-white font-medium rounded-full 
+            bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md 
+            hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 
+            transition-all duration-300 transform"
+          >
             Submit
           </button>
         </form>
@@ -183,7 +191,7 @@ const ResetPassword = () => {
       {!isOtpSubmitted && isEmailSent && (
         <form
           onSubmit={onSubmitOtp}
-          className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+          className="bg-dark-bg p-8 sm:p-8 rounded-lg shadow-lg w-full max-w-[384px] text-sm"
         >
           <h1 className="text-white text-2xl font-semibold text-center mb-4">
             Reset Password OTP
@@ -191,7 +199,10 @@ const ResetPassword = () => {
           <p className="text-yellow-200 text-center mb-6">
             Enter the 6-digit code sent to your Email ID
           </p>
-          <div className="flex justify-between mb-8" onPaste={handlePaste}>
+          <div
+            className="flex justify-between overflow-x-auto gap-1 mb-8"
+            onPaste={handlePaste}
+          >
             {Array(6)
               .fill(0)
               .map((_, index) => (
@@ -202,14 +213,19 @@ const ResetPassword = () => {
                   maxLength="1"
                   key={index}
                   required
-                  className="w-12 h-12 bg-input-bg text-white text-center text-xl rounded-md"
+                  className="w-11 h-12 sm:w-12 bg-input-bg text-white text-center text-xl rounded-md"
                   ref={(e) => (inputRefs.current[index] = e)}
                   onInput={(e) => handleInput(e, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                 />
               ))}
           </div>
-          <button className="w-full py-3 text-white font-medium rounded-full bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform">
+          <button
+            className="w-full py-3 text-white font-medium rounded-full 
+            bg-gradient-to-r from-yellow-600 to-orange-700 shadow-md 
+            hover:brightness-110 hover:shadow-yellow-800 hover:scale-105 active:scale-100 
+            transition-all duration-300 transform"
+          >
             Submit
           </button>
         </form>
@@ -219,7 +235,7 @@ const ResetPassword = () => {
       {isOtpSubmitted && isEmailSent && (
         <form
           onSubmit={onSubmitNewPassword}
-          className="bg-dark-bg p-8 rounded-lg shadow-lg w-96 text-sm"
+          className="bg-dark-bg p-8 sm:p-8 rounded-lg shadow-lg w-full max-w-[384px] text-sm"
         >
           <h1 className="text-white text-2xl font-semibold text-center mb-4">
             New Password
