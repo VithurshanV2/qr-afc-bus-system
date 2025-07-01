@@ -200,7 +200,7 @@ const ResetPassword = () => {
             Enter the 6-digit code sent to your Email ID
           </p>
           <div
-            className="flex justify-between overflow-x-auto gap-1 mb-8"
+            className="flex justify-between gap-1 mb-8"
             onPaste={handlePaste}
           >
             {Array(6)
@@ -213,7 +213,8 @@ const ResetPassword = () => {
                   maxLength="1"
                   key={index}
                   required
-                  className="w-11 h-12 sm:w-12 bg-input-bg text-white text-center text-xl rounded-md"
+                  className="w-11 h-12 sm:w-12 bg-input-bg text-white text-center text-xl rounded-md
+                  outline-none focus:ring-3 focus:ring-yellow-600"
                   ref={(e) => (inputRefs.current[index] = e)}
                   onInput={(e) => handleInput(e, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
