@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-import Login from './pages/Login';
-import EmailVerify from './pages/EmailVerify';
-import ResetPassword from './pages/ResetPassword';
+import Login from './pages/auth/Login';
+import EmailVerify from './pages/auth/EmailVerify';
+import ResetPassword from './pages/auth/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import Loader from './components/Loader';
 import { AppContext } from './context/AppContext';
