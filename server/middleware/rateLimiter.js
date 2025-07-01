@@ -5,6 +5,7 @@ export const authLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
   message: {
     success: false,
     message: 'Too many requests. Please try again later',
@@ -16,6 +17,7 @@ export const otpLimiter = rateLimit({
   max: 3,
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
   message: {
     success: false,
     message: 'Too many OTP attempts. Please try again later',
