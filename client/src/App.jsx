@@ -7,6 +7,7 @@ import ResetPassword from './pages/auth/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import Loader from './components/Loader';
 import { AppContext } from './context/AppContext';
+import CommuterHome from './pages/commuter/CommuterHome';
 
 const App = () => {
   const { globalLoading } = useContext(AppContext);
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/email-verify" element={<EmailVerify />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/commuter/home" element={<CommuterHome />} />
       </Routes>
     </div>
   );
