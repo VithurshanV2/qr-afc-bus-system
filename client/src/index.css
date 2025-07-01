@@ -8,4 +8,7 @@
 @theme {
   --color-dark-bg: #1f1f1f;
   --color-input-bg: #3a3a3a;
+
+  --shadow-bottom-navbar-left: 4.1px -5px 0 0 #1f1f1f;
+  --shadow-bottom-navbar-right: -4.1px -5px 0 0 #1f1f1f;
 }
