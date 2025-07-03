@@ -37,6 +37,8 @@ model User {
   resetOtp          String?
   resetOtpExpireAt  DateTime?
 
+  isFirstLogin Boolean @default(true)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
