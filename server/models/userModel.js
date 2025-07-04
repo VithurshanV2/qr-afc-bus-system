@@ -126,8 +126,17 @@ export const findOrCreateUserByGoogleId = async (profile) => {
         googleId,
         isAccountVerified: true,
         role: 'COMMUTER',
+        isFirstLogin: true,
       },
     });
   }
   return user;
+};
+
+// Update first time login status
+export const updateIsFirstLogin = async (id, isFirstLogin) => {
+  return await prisma.user.update({
+    where: { id },
+    data: { isFirstLogin },
+  });
 };
