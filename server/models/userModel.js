@@ -17,6 +17,7 @@ export const getUserByEmail = async (email) => {
       resetOtp: true,
       resetOtpExpireAt: true,
       isAccountVerified: true,
+      isFirstLogin: true,
     },
   });
 };
@@ -53,6 +54,7 @@ export const getUserById = async (id) => {
       resetOtp: true,
       resetOtpExpireAt: true,
       isAccountVerified: true,
+      isFirstLogin: true,
     },
   });
 };
@@ -138,5 +140,12 @@ export const updateIsFirstLogin = async (id, isFirstLogin) => {
   return await prisma.user.update({
     where: { id },
     data: { isFirstLogin },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      isFirstLogin: true,
+    },
   });
 };

@@ -5,6 +5,7 @@ import {
   getUserByEmail,
   getUserById,
   resetPasswordUserAccount,
+  updateIsFirstLogin,
   updateResetOtp,
   updateVerifyOtp,
   verifyUserAccount,
@@ -52,6 +53,12 @@ export const register = async (req, res) => {
 
     const user = await createUser({ name, email, password: hashedPassword });
 
+    let updateUser = user;
+
+    if (user.isFirstLogin) {
+      updateUser = await updateIsFirstLogin(user.id, false);
+    }
+
     // Generate JWT token with user's ID
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: '7d',
@@ -76,6 +83,7 @@ export const register = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        isFirstLogin: updateUser.isFirstLogin,
       },
     });
   } catch (error) {
@@ -116,6 +124,12 @@ export const login = async (req, res) => {
       });
     }
 
+    let updateUser = user;
+
+    if (user.isFirstLogin) {
+      updateUser = await updateIsFirstLogin(user.id, false);
+    }
+
     // Generate JWT token with user's ID
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: '7d',
@@ -137,6 +151,7 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        isFirstLogin: updateUser.isFirstLogin,
       },
     });
   } catch (error) {

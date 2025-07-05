@@ -70,7 +70,10 @@ const Login = () => {
         if (data.success) {
           setIsLoggedIn(true);
           getUserData();
-          navigate('/commuter/home');
+          const path = data.user.isFirstLogin
+            ? '/commuter/home'
+            : 'commuter/scan';
+          navigate(path);
         } else {
           toast.error(data.message);
         }
