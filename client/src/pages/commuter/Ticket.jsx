@@ -1,9 +1,10 @@
 import React from 'react';
+import BottomNav from '../../components/BottomNav';
 
 const Ticket = () => {
   return (
-    <div className="bg-dark-bg min-h-screen text-white">
-      <h1>Ticket</h1>
+    <div className="bg-dark-bg">
+      <h1 className="h-40"></h1>
     </div>
   );
 };
