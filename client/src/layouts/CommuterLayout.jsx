@@ -4,8 +4,10 @@ import BottomNav from '../components/BottomNav';
 
 const CommuterLayout = () => {
   return (
-    <div>
-      <Outlet />
+    <div className="flex flex-col min-h-screen bg-dark-bg text-shadow-white">
+      <div className="flex-grow overflow-y-auto">
+        <Outlet />
+      </div>
       <BottomNav />
     </div>
   );
