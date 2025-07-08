@@ -11,31 +11,26 @@ const BottomNav = () => {
     {
       name: 'Home',
       icon: <House />,
-      dis: 'translate-x-0',
       path: '/commuter/home',
     },
     {
       name: 'Ticket',
       icon: <Ticket />,
-      dis: 'translate-x-16',
       path: '/commuter/ticket',
     },
     {
       name: 'Scan',
       icon: <ScanQrCode />,
-      dis: 'translate-x-32',
       path: '/commuter/scan',
     },
     {
       name: 'Wallet',
       icon: <Wallet />,
-      dis: 'translate-x-48',
       path: '/commuter/wallet',
     },
     {
       name: 'Profile',
       icon: <UserCircle2 />,
-      dis: 'translate-x-64',
       path: '/commuter/profile',
     },
   ];
@@ -61,19 +56,21 @@ const BottomNav = () => {
 
   return (
     <div className="bg-white max-h-[4.4rem] px-6 rounded-t-xl">
-      <ul className="flex relative">
+      <ul className="flex relative w-full">
         <span
-          className={`bg-yellow-400 border-4 border-dark-bg h-16 w-16 absolute rounded-full duration-500 -top-5 z-0 ${
-            menus[animatedIndex]?.dis || 'translate-x-0'
-          }`}
+          className="bg-yellow-400 border-4 border-dark-bg h-16 absolute rounded-full duration-500 -top-5 z-0"
+          style={{
+            width: `${100 / menus.length}%`,
+            transform: `translateX(${animatedIndex * 100}%)`,
+          }}
         >
           <span className="w-3.5 h-3.5 bg-transparent absolute top-4 -left-[18px] rounded-tr-[11px] shadow-bottom-navbar-left"></span>
           <span className="w-3.5 h-3.5 bg-transparent absolute top-4 -right-[18px] rounded-tl-[11px] shadow-bottom-navbar-right"></span>
         </span>
         {menus.map((menu, index) => (
-          <li key={index} className="w-16">
+          <li key={index} className="flex-1 text-center">
             <a
-              className="flex flex-col items-center text-center pt-6"
+              className="flex flex-col items-center pt-6"
               onClick={() => handleClick(index, menu.path)}
             >
               <span
@@ -82,9 +79,9 @@ const BottomNav = () => {
                 {menu.icon}
               </span>
               <span
-                className={` ${
+                className={`duration-700 ${
                   activeIndex === index
-                    ? 'translate-y-4 duration-700 opacity-100'
+                    ? 'translate-y-4 opacity-100'
                     : 'opacity-0 translate-y-10'
                 } `}
               >
