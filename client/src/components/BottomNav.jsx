@@ -55,10 +55,10 @@ const BottomNav = () => {
   };
 
   return (
-    <div className="bg-white max-h-[4.4rem] px-6 rounded-t-xl">
+    <div className="bg-yellow-100 max-h-[4.4rem] px-6 rounded-t-xl">
       <ul className="flex relative w-full">
         <span
-          className="bg-yellow-400 border-4 border-dark-bg h-16 absolute rounded-full duration-500 -top-5 z-0"
+          className="bg-yellow-300 border-4 border-white h-16 absolute rounded-full duration-500 -top-5 z-0"
           style={{
             width: `${100 / menus.length}%`,
             transform: `translateX(${animatedIndex * 100}%)`,
