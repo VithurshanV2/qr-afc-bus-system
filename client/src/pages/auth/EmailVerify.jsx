@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { assets } from '../../assets/assets';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -10,6 +10,10 @@ const EmailVerify = () => {
 
   const { backendUrl, getUserData, isLoggedIn, userData, setGlobalLoading } =
     useContext(AppContext);
+
+  const location = useLocation();
+  const params = new window.URLSearchParams(location.search);
+  const redirectTo = params.get('redirectTo') || '/';
 
   axios.defaults.withCredentials = true;
 
@@ -57,7 +61,7 @@ const EmailVerify = () => {
       if (data.success) {
         toast.success(data.message);
         getUserData();
-        navigate('/');
+        navigate(redirectTo);
       } else {
         toast.error(data.message);
       }
@@ -71,9 +75,9 @@ const EmailVerify = () => {
 
   useEffect(() => {
     if (isLoggedIn && userData && userData.isAccountVerified) {
-      navigate('/');
+      navigate(redirectTo);
     }
-  }, [isLoggedIn, userData, navigate]);
+  }, [isLoggedIn, userData, navigate, redirectTo]);
 
   return (
     <div
