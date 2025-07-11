@@ -13,6 +13,7 @@ import Scan from './pages/commuter/Scan';
 import Wallet from './pages/commuter/Wallet';
 import Profile from './pages/commuter/Profile';
 import CommuterLayout from './layouts/CommuterLayout';
+import PrivateRoute from './components/PrivateRoute';
 
 const App = () => {
   const { globalLoading } = useContext(AppContext);
@@ -26,11 +27,25 @@ const App = () => {
         {/* Public routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/email-verify" element={<EmailVerify />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/email-verify"
+          element={
+            <PrivateRoute>
+              <EmailVerify />
+            </PrivateRoute>
+          }
+        />
 
         {/* Commuter routes */}
-        <Route path="/commuter" element={<CommuterLayout />}>
+        <Route
+          path="/commuter"
+          element={
+            <PrivateRoute>
+              <CommuterLayout />
+            </PrivateRoute>
+          }
+        >
           <Route path="home" element={<CommuterHome />} />
           <Route path="ticket" element={<Ticket />} />
           <Route path="scan" element={<Scan />} />
