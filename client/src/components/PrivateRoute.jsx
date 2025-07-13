@@ -4,9 +4,9 @@ import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const PrivateRoute = ({ children }) => {
-  const { isLoggedIn, userData, globalLoading } = useContext(AppContext);
+  const { isLoggedIn, userData, authChecked } = useContext(AppContext);
 
-  if (globalLoading) {
+  if (!authChecked) {
     return null;
   }
 

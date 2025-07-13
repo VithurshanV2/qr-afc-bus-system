@@ -13,6 +13,7 @@ export const AppContextProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const getAuthState = async () => {
     try {
@@ -20,7 +21,7 @@ export const AppContextProvider = (props) => {
       const { data } = await axios.get(backendUrl + '/api/auth/is-auth');
       if (data.success) {
         setIsLoggedIn(true);
-        getUserData();
+        await getUserData();
       }
     } catch (error) {
       if (error.response?.status !== 401) {
@@ -29,6 +30,7 @@ export const AppContextProvider = (props) => {
       }
     } finally {
       setGlobalLoading(false);
+      setAuthChecked(true);
     }
   };
 
@@ -58,6 +60,7 @@ export const AppContextProvider = (props) => {
     getUserData,
     globalLoading,
     setGlobalLoading,
+    authChecked,
   };
 
   return (
