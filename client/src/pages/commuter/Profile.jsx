@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { backendUrl, setUserData, setIsLoggedIn, setGlobalLoading } =
+  const { backendUrl, userData, setUserData, setIsLoggedIn, setGlobalLoading } =
     useContext(AppContext);
 
   const sendVerificationOtp = async () => {
@@ -64,12 +64,14 @@ const Profile = () => {
           Account Settings
         </h2>
         <div className="flex flex-col gap-4 mt-4">
-          <button
-            className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full hover:bg-yellow-300 transition"
-            onClick={sendVerificationOtp}
-          >
-            Verify email
-          </button>
+          {!userData.isAccountVerified && (
+            <button
+              className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full hover:bg-yellow-300 transition"
+              onClick={sendVerificationOtp}
+            >
+              Verify email
+            </button>
+          )}
           <button
             className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full hover:bg-yellow-300 transition"
             onClick={logout}
