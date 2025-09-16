@@ -137,14 +137,14 @@ const Login = () => {
 
       {/* Right form panel - always visible */}
       <div
-        className="relative flex flex-col items-center justify-center lg:w-1/2 min-h-screen px-6 sm:px-0
+        className="relative flex flex-col items-center justify-center lg:w-1/2 min-h-screen px-6 sm:px-0 pt-24 z-20
         bg-gradient-to-br from-yellow-200 to-orange-400"
       >
         <img
           onClick={() => navigate('/')}
           src={assets.logo}
           alt="logo"
-          className="absolute top-6 left-6 w-32 sm:w-48 cursor-pointer"
+          className="absolute top-6 left-6 w-32 z-10 sm:w-48 cursor-pointer"
         />
         <div className="bg-dark-bg p-10 rounded-lg shadow-lg w-full sm:w-96 max-w-[384px] text-yellow-300 text-sm">
           <h2 className="text-3xl text-white text-center font-semibold mb-3">
