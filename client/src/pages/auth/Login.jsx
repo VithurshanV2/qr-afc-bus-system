@@ -120,7 +120,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left image panel - only on desktop */}
-      <div className="hidden lg:flex w-1/2 h-screen overflow-hidden relative bg-gray-200">
+      <div className="hidden lg:flex w-1/2 sticky top-0 h-screen overflow-hidden bg-gray-200">
         <div
           className={`w-full h-full flex transition-transform duration-700 ease-in-out will-change-transform ${
             state === 'Sign Up' ? '-translate-x-full' : 'translate-x-0'
