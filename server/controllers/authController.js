@@ -18,18 +18,32 @@ import {
 
 // Password policy
 const isPasswordValid = (password) => {
+  // Password must be at least 8 characters and include uppercase, lowercase, and a number
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   return regex.test(password);
 };
 
+// Phone number validation
+const isPhoneNumberValid = (number) => {
+  const regex = /^(?:0|94|\+94)?(7[0-8][0-9]{7})$/;
+  return regex.test(number);
+};
+
 // User registration
 export const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, number, password } = req.body;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !number || !password) {
     return res
       .status(400)
       .json({ success: false, message: 'Missing required fields' });
+  }
+
+  if (!isPhoneNumberValid(number)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid phone number',
+    });
   }
 
   if (!isPasswordValid(password)) {
@@ -51,7 +65,12 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await createUser({ name, email, password: hashedPassword });
+    const user = await createUser({
+      name,
+      email,
+      number,
+      password: hashedPassword,
+    });
 
     let updateUser = user;
 

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Phone } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ const Login = () => {
   const [state, setState] = useState('Login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [number, setNumber] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState({
@@ -32,6 +33,11 @@ const Login = () => {
     return regex.test(password);
   };
 
+  const isPhoneNumberValid = (number) => {
+    const regex = /^(?:0|94|\+94)?(7[0-8][0-9]{7})$/;
+    return regex.test(number);
+  };
+
   const onSubmitHandler = async (e) => {
     try {
       setGlobalLoading(true);
@@ -41,6 +47,11 @@ const Login = () => {
       axios.defaults.withCredentials = true;
 
       if (state === 'Sign Up') {
+        if (!isPhoneNumberValid(number)) {
+          toast.error('Invalid phone number');
+          return;
+        }
+
         if (!isPasswordValid(password)) {
           toast.error(
             'Password must be at least 8 characters and include uppercase, lowercase, and a number',
@@ -51,6 +62,7 @@ const Login = () => {
         const { data } = await axios.post(backendUrl + '/api/auth/register', {
           name,
           email,
+          number,
           password,
         });
 
@@ -181,6 +193,19 @@ const Login = () => {
                 required
               />
             </div>
+            {state === 'Sign Up' && (
+              <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
+                <Phone size={20} color="#ffffff" />
+                <input
+                  onChange={(e) => setNumber(e.target.value)}
+                  value={number}
+                  className="bg-transparent outline-none pl-[4px]"
+                  type="tel"
+                  placeholder="Phone number"
+                  required
+                />
+              </div>
+            )}
             <div className="mb-4 relative flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-input-bg">
               <img src={assets.lock_icon} alt="lock icon" />
               <input

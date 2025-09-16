@@ -23,11 +23,12 @@ export const getUserByEmail = async (email) => {
 };
 
 // Create a new user in the database
-export const createUser = async ({ name, email, password }) => {
+export const createUser = async ({ name, email, number, password }) => {
   return await prisma.user.create({
     data: {
       name,
       email,
+      number,
       password,
     },
     select: {
