@@ -24,7 +24,7 @@ export const getUserByEmail = async (email) => {
 
 // Create a new user in the database
 export const createUser = async ({ name, email, number, password }) => {
-  return await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       name,
       email,
@@ -38,6 +38,13 @@ export const createUser = async ({ name, email, number, password }) => {
       role: true,
     },
   });
+
+  // Create wallet for the new user
+  await prisma.wallet.create({
+    data: { userId: user.id },
+  });
+
+  return user;
 };
 
 // Fetch a user by ID from the database
@@ -131,6 +138,11 @@ export const findOrCreateUserByGoogleId = async (profile) => {
         role: 'COMMUTER',
         isFirstLogin: true,
       },
+    });
+
+    // Create wallet for Google user
+    await prisma.wallet.create({
+      data: { userId: user.id },
     });
   }
   return user;
