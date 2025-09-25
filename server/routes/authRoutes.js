@@ -6,23 +6,31 @@ import {
   register,
   resetPassword,
   sendResetOtp,
-  sendVerifyOtp,
-  verifyEmail,
   verifyResetOtp,
 } from '../controllers/authController.js';
 import userAuth from '../middleware/userAuth.js';
 import { authLimiter, otpLimiter } from '../middleware/rateLimiter.js';
+import {
+  resendVerifyOtp,
+  sendVerifyOtp,
+  verifyEmail,
+} from '../controllers/otpController.js';
 
 const authRouter = express.Router();
 
 authRouter.post('/register', authLimiter, register);
 authRouter.post('/login', authLimiter, login);
 authRouter.post('/logout', logout);
+
+// Verification OTP
 authRouter.post('/send-verify-otp', userAuth, otpLimiter, sendVerifyOtp);
+authRouter.post('/resend-verify-otp', userAuth, otpLimiter, resendVerifyOtp);
 authRouter.post('/verify-account', userAuth, otpLimiter, verifyEmail);
-authRouter.get('/is-auth', userAuth, isAuthenticated);
+
+// Password reset OTP
 authRouter.post('/send-reset-otp', otpLimiter, sendResetOtp);
 authRouter.post('/verify-reset-otp', otpLimiter, verifyResetOtp);
 authRouter.post('/reset-password', resetPassword);
 
+authRouter.get('/is-auth', userAuth, isAuthenticated);
 export default authRouter;
