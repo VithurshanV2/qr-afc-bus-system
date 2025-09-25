@@ -1,9 +1,9 @@
-import { sendVerificationOtp, sendWelcomeEmail } from '../emails';
+import { sendVerificationOtp, sendWelcomeEmail } from '../emails/index.js';
 import {
   getUserById,
   updateVerifyOtp,
   verifyUserAccount,
-} from '../models/userModel';
+} from '../models/userModel.js';
 
 // Send verification OTP to the user's email
 export const sendVerifyOtp = async ({ userId }) => {

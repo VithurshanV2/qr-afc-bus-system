@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs';
-import { sendPasswordResetOtp } from '../emails';
+import { sendPasswordResetOtp } from '../emails/index.js';
 import {
   getUserByEmail,
   resetPasswordUserAccount,
   updateResetOtp,
-} from '../models/userModel';
+} from '../models/userModel.js';
 
 // Send OTP to user's email for password reset
 export const sendResetOtp = async (req, res) => {
