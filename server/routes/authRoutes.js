@@ -4,9 +4,6 @@ import {
   login,
   logout,
   register,
-  resetPassword,
-  sendResetOtp,
-  verifyResetOtp,
 } from '../controllers/authController.js';
 import userAuth from '../middleware/userAuth.js';
 import { authLimiter, otpLimiter } from '../middleware/rateLimiter.js';
@@ -15,6 +12,11 @@ import {
   sendVerifyOtp,
   verifyEmail,
 } from '../controllers/otpController.js';
+import {
+  resetPassword,
+  sendResetOtp,
+  verifyResetOtp,
+} from '../controllers/passwordController.js';
 
 const authRouter = express.Router();
 
