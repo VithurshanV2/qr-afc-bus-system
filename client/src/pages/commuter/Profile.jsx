@@ -8,31 +8,8 @@ import axios from 'axios';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { backendUrl, userData, setUserData, setIsLoggedIn, setGlobalLoading } =
+  const { backendUrl, setUserData, setIsLoggedIn, setGlobalLoading } =
     useContext(AppContext);
-
-  const sendVerificationOtp = async () => {
-    try {
-      setGlobalLoading(true);
-
-      axios.defaults.withCredentials = true;
-
-      const { data } = await axios.post(
-        backendUrl + '/api/auth/send-verify-otp',
-      );
-
-      if (data.success) {
-        navigate('/email-verify?redirectTo=/commuter/profile');
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Something went wrong');
-    } finally {
-      setGlobalLoading(false);
-    }
-  };
 
   const logout = async () => {
     try {
@@ -64,14 +41,6 @@ const Profile = () => {
           Account Settings
         </h2>
         <div className="flex flex-col gap-4 mt-4">
-          {!userData.isAccountVerified && (
-            <button
-              className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full hover:bg-yellow-300 transition"
-              onClick={sendVerificationOtp}
-            >
-              Verify email
-            </button>
-          )}
           <button
             className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full hover:bg-yellow-300 transition"
             onClick={logout}
