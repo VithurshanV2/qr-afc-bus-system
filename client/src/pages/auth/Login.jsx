@@ -69,7 +69,12 @@ const Login = () => {
         if (data.success) {
           setIsLoggedIn(true);
           await getUserData();
-          navigate('/commuter/home');
+
+          if (!data.user.isAccountVerified) {
+            navigate('/email-verify?redirectTo=/commuter/home');
+          } else {
+            navigate('/commuter/home');
+          }
         } else {
           toast.error(data.message);
         }

@@ -36,6 +36,8 @@ export const createUser = async ({ name, email, number, password }) => {
       name: true,
       email: true,
       role: true,
+      isAccountVerified: true,
+      isFirstLogin: true,
     },
   });
 

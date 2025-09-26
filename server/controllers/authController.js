@@ -93,6 +93,7 @@ export const register = async (req, res) => {
         email: user.email,
         role: user.role,
         isFirstLogin: updateUser.isFirstLogin,
+        isAccountVerified: user.isAccountVerified,
       },
     });
   } catch (error) {

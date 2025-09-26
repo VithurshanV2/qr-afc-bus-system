@@ -6,7 +6,11 @@ import {
   register,
 } from '../controllers/authController.js';
 import userAuth from '../middleware/userAuth.js';
-import { authLimiter, otpLimiter } from '../middleware/rateLimiter.js';
+import {
+  authLimiter,
+  otpLimiter,
+  resendOtpLimiter,
+} from '../middleware/rateLimiter.js';
 import {
   resendVerifyOtp,
   sendVerifyOtp,
@@ -26,7 +30,12 @@ authRouter.post('/logout', logout);
 
 // Verification OTP
 authRouter.post('/send-verify-otp', userAuth, otpLimiter, sendVerifyOtp);
-authRouter.post('/resend-verify-otp', userAuth, otpLimiter, resendVerifyOtp);
+authRouter.post(
+  '/resend-verify-otp',
+  userAuth,
+  resendOtpLimiter,
+  resendVerifyOtp,
+);
 authRouter.post('/verify-account', userAuth, otpLimiter, verifyEmail);
 
 // Password reset OTP

@@ -79,6 +79,45 @@ const EmailVerify = () => {
     }
   }, [isLoggedIn, userData, navigate, redirectTo]);
 
+  const [resendCooldown, setResendCooldown] = React.useState(0);
+
+  // Resend otp code
+  const handleResend = async () => {
+    if (resendCooldown > 0) {
+      return;
+    }
+
+    try {
+      setGlobalLoading(true);
+
+      const { data } = await axios.post(
+        backendUrl + '/api/auth/resend-verify-otp',
+      );
+
+      if (data.success) {
+        toast.success('A new OTP has been sent to your email');
+        setResendCooldown(60);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = window.setTimeout(
+        () => setResendCooldown(resendCooldown - 1),
+        1000,
+      );
+      return () => window.clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
   return (
     <div
       className="flex items-center justify-center min-h-screen
@@ -115,7 +154,10 @@ const EmailVerify = () => {
                 className="w-11 h-12 sm:w-12 bg-input-bg text-white text-center text-xl rounded-md
                 outline-none focus:ring-3 focus:ring-yellow-600"
                 ref={(e) => (inputRefs.current[index] = e)}
-                onInput={(e) => handleInput(e, index)}
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/\D/g, '');
+                  handleInput(e, index);
+                }}
                 onKeyDown={(e) => handleKeyDown(e, index)}
               />
             ))}
@@ -128,6 +170,18 @@ const EmailVerify = () => {
         >
           Verify email
         </button>
+        <p
+          onClick={handleResend}
+          className={`mt-3 text-yellow-400 text-center cursor-pointer transition ${
+            resendCooldown > 0
+              ? 'opacity-50 pointer-events-none'
+              : 'hover:text-yellow-300'
+          }`}
+        >
+          {resendCooldown > 0
+            ? `Resend Code in ${resendCooldown}s`
+            : 'Resend Code'}
+        </p>
       </form>
     </div>
   );

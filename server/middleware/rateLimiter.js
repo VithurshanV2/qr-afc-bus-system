@@ -23,3 +23,14 @@ export const otpLimiter = rateLimit({
     message: 'Too many OTP attempts. Please try again later',
   },
 });
+
+export const resendOtpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many resend requests. Please try again later',
+  },
+});
