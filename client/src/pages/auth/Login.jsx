@@ -88,13 +88,14 @@ const Login = () => {
           setIsLoggedIn(true);
           await getUserData();
 
+          const redirectPath = data.user.isFirstLogin
+            ? '/commuter/home'
+            : '/commuter/scan';
+
           if (!data.user.isAccountVerified) {
-            navigate('/email-verify?redirectTo=/commuter/home');
+            navigate(`/email-verify?redirectTo=${redirectPath}`);
           } else {
-            const path = data.user.isFirstLogin
-              ? '/commuter/home'
-              : '/commuter/scan';
-            navigate(path);
+            navigate(redirectPath);
           }
         } else {
           toast.error(data.message);

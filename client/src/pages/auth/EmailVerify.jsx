@@ -60,7 +60,7 @@ const EmailVerify = () => {
 
       if (data.success) {
         toast.success(data.message);
-        getUserData();
+        await getUserData();
         navigate(redirectTo);
       } else {
         toast.error(data.message);
