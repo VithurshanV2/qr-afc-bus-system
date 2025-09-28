@@ -7,7 +7,6 @@ import ResetPassword from './pages/auth/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 import Loader from './components/Loader';
 import { AppContext } from './context/AppContext';
-import CommuterHome from './pages/commuter/CommuterHome';
 import Ticket from './pages/commuter/Ticket';
 import Scan from './pages/commuter/Scan';
 import Wallet from './pages/commuter/Wallet';
@@ -46,7 +45,6 @@ const App = () => {
             </PrivateRoute>
           }
         >
-          <Route path="home" element={<CommuterHome />} />
           <Route path="ticket" element={<Ticket />} />
           <Route path="scan" element={<Scan />} />
           <Route path="wallet" element={<Wallet />} />

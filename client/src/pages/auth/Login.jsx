@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { assets } from '../../assets/assets';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -8,6 +8,8 @@ import { Eye, EyeOff, Phone } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialState = location.state?.mode === 'signup' ? 'Sign Up' : 'Login';
 
   const {
     backendUrl,
@@ -17,7 +19,7 @@ const Login = () => {
     setGlobalLoading,
   } = useContext(AppContext);
 
-  const [state, setState] = useState('Login');
+  const [state, setState] = useState(initialState);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [number, setNumber] = useState('');
@@ -71,9 +73,9 @@ const Login = () => {
           await getUserData();
 
           if (!data.user.isAccountVerified) {
-            navigate('/email-verify?redirectTo=/commuter/home');
+            navigate('/email-verify?redirectTo=/');
           } else {
-            navigate('/commuter/home');
+            navigate('/');
           }
         } else {
           toast.error(data.message);
@@ -88,9 +90,7 @@ const Login = () => {
           setIsLoggedIn(true);
           await getUserData();
 
-          const redirectPath = data.user.isFirstLogin
-            ? '/commuter/home'
-            : '/commuter/scan';
+          const redirectPath = data.user.isFirstLogin ? '/' : '/commuter/scan';
 
           if (!data.user.isAccountVerified) {
             navigate(`/email-verify?redirectTo=${redirectPath}`);

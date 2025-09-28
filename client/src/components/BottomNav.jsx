@@ -11,7 +11,7 @@ const BottomNav = () => {
     {
       name: 'Home',
       icon: <House />,
-      path: '/commuter/home',
+      path: '/',
     },
     {
       name: 'Ticket',
