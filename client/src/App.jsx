@@ -13,9 +13,10 @@ import Wallet from './pages/commuter/Wallet';
 import Profile from './pages/commuter/Profile';
 import CommuterLayout from './layouts/CommuterLayout';
 import PrivateRoute from './components/PrivateRoute';
+import BottomNav from './components/BottomNav';
 
 const App = () => {
-  const { globalLoading } = useContext(AppContext);
+  const { globalLoading, userData } = useContext(AppContext);
 
   return (
     <div>
@@ -51,6 +52,9 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
+
+      {/* BottomNav for commuters */}
+      {userData?.role === 'COMMUTER' && <BottomNav />}
     </div>
   );
 };
