@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import EmailVerify from './pages/auth/EmailVerify';
@@ -16,7 +16,26 @@ import PrivateRoute from './components/PrivateRoute';
 import BottomNav from './components/BottomNav';
 
 const App = () => {
-  const { globalLoading, userData } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { globalLoading, userData, isLoggedIn, authChecked } =
+    useContext(AppContext);
+
+  // Redirect users based on auth state
+  useEffect(() => {
+    if (!authChecked) {
+      return;
+    }
+
+    if (isLoggedIn && userData) {
+      if (!userData.isAccountVerified) {
+        navigate('/email-verify?redirectTo=/commuter/scan', { replace: true });
+      } else if (userData.isFirstLogin) {
+        navigate('/', { replace: true });
+      } else if (userData.role === 'COMMUTER') {
+        navigate('/commuter/scan', { replace: true });
+      }
+    }
+  }, [authChecked, isLoggedIn, userData, navigate]);
 
   return (
     <div>
