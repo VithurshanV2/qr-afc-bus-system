@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import EmailVerify from './pages/auth/EmailVerify';
@@ -17,6 +17,7 @@ import BottomNav from './components/BottomNav';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
+  const location = useLocation();
 
   return (
     <div>
@@ -54,7 +55,9 @@ const App = () => {
       </Routes>
 
       {/* BottomNav for commuters */}
-      {userData?.role === 'COMMUTER' && <BottomNav />}
+      {userData?.role === 'COMMUTER' &&
+        (location.pathname === '/' ||
+          location.pathname.startsWith('/commuter')) && <BottomNav />}
     </div>
   );
 };
