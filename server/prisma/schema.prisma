@@ -58,12 +58,13 @@ model Wallet {
 }
 
 model WalletTransaction {
-  id        Int             @id @default(autoincrement())
-  wallet    Wallet          @relation(fields: [walletId], references: [id])
-  walletId  Int
-  amount    Int
-  type      TransactionType
-  createdAt DateTime        @default(now())
+  id          Int             @id @default(autoincrement())
+  wallet      Wallet          @relation(fields: [walletId], references: [id])
+  walletId    Int
+  amount      Int
+  type        TransactionType
+  description String?
+  createdAt   DateTime        @default(now())
 
   @@index([walletId])
 }
