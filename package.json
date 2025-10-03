@@ -5,6 +5,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "start": "concurrently \"npm start --prefix server\" \"npm start --prefix client\"",
+    "build": "npm run build --prefix client",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,html,yml,yaml,scss,sass,less,graphql,gql,mdx,vue,svelte}\"",
     "prepare": "husky"
   },
@@ -33,6 +36,7 @@
   "homepage": "https://github.com/VithurshanV2/qr-afc-bus-system#readme",
   "devDependencies": {
     "@eslint/js": "^9.28.0",
+    "concurrently": "^9.2.1",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-react": "^7.37.5",
