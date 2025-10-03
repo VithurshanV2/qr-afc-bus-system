@@ -21,7 +21,7 @@ export const googleAuthCallback = async (req, res) => {
     // Check isFirstLogin
     if (user.isFirstLogin) {
       await updateIsFirstLogin(user.id, false);
-      res.redirect(`${process.env.CLIENT_URL}/commuter/home`);
+      res.redirect(`${process.env.CLIENT_URL}/`);
     }
 
     return res.redirect(`${process.env.CLIENT_URL}/commuter/scan`);
