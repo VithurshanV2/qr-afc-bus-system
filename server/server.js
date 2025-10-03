@@ -16,6 +16,13 @@ await connectDB();
 
 const allowedOrigins = ['http://localhost:5173'];
 
+// Mount webhook before express.json()
+app.use(
+  '/api/wallet/stripe-webhook',
+  express.raw({ type: 'application/json' }),
+  walletRouter,
+);
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: allowedOrigins, credentials: true }));

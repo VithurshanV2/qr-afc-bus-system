@@ -35,9 +35,3 @@ export const updateWalletBalance = async (
     return wallet;
   });
 };
-
-// Top up wallet via third party gateway
-export const topUpWallet = async () => {};
-
-// Deduct fare from the wallet balance
-export const deductFare = async () => {};
