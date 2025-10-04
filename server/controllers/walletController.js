@@ -5,8 +5,8 @@ import {
 } from '../models/walletModel.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const MAX_WALLET_BALANCE = 5000;
-const MIN_TOP_UP = 200;
+const MAX_WALLET_BALANCE = 5000 * 100;
+const MIN_TOP_UP = 200 * 100;
 
 // Get wallet balance for logged in user
 export const getWallet = async (req, res) => {
@@ -38,6 +38,7 @@ export const topUpWallet = async (req, res) => {
   try {
     const userId = req.userId;
     const { amount } = req.body;
+    const amountInCents = Math.round(amount * 100);
 
     if (!amount || amount <= 0) {
       return res
@@ -45,10 +46,10 @@ export const topUpWallet = async (req, res) => {
         .json({ success: false, message: 'Invalid amount' });
     }
 
-    if (amount < MIN_TOP_UP) {
+    if (amountInCents < MIN_TOP_UP) {
       return res.status(400).json({
         success: false,
-        message: `Minimum Top Up amount is ${MIN_TOP_UP}`,
+        message: `Minimum Top Up amount is ${MIN_TOP_UP / 100} LKR`,
       });
     }
 
@@ -61,16 +62,16 @@ export const topUpWallet = async (req, res) => {
     }
 
     // Check if top up exceeds max balance
-    if (wallet.balance + amount > MAX_WALLET_BALANCE) {
+    if (wallet.balance + amountInCents > MAX_WALLET_BALANCE) {
       return res.status(400).json({
         success: false,
-        message: `Top Up exceeds maximum wallet balance of ${MAX_WALLET_BALANCE} LKR`,
+        message: `Top Up exceeds maximum wallet balance of ${MAX_WALLET_BALANCE / 100} LKR`,
       });
     }
 
     // Stripe payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100,
+      amount: amountInCents,
       currency: 'lkr',
       metadata: { userId },
     });
@@ -106,7 +107,7 @@ export const stripeWebhook = async (req, res) => {
     try {
       const paymentIntent = event.data.object;
       const userId = paymentIntent.metadata.userId;
-      const amount = paymentIntent.amount / 100;
+      const amount = paymentIntent.amount;
 
       if (!userId) {
         return res.sendStatus(200);
