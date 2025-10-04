@@ -13,6 +13,11 @@ const Wallet = () => {
 
   const [balance, setBalance] = useState('');
   const [loading, setLoading] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState('');
+  const [selectedQuickAmount, setSelectedQuickAmount] = useState('');
+
+  const MIN_TOP_UP = 200 * 100;
+  const MAX_WALLET_BALANCE = 5000 * 100;
 
   useEffect(() => {
     const fetchWalletBalance = async () => {
@@ -36,6 +41,16 @@ const Wallet = () => {
 
     fetchWalletBalance();
   }, [backendUrl]);
+
+  const handleQuickAmountClick = (amount) => {
+    if (selectedQuickAmount === amount) {
+      setSelectedQuickAmount('');
+      setTopUpAmount('');
+    } else {
+      setSelectedQuickAmount(amount);
+      setTopUpAmount(amount);
+    }
+  };
 
   return (
     <div className="bg-white min-h-screen p-4">
@@ -62,8 +77,46 @@ const Wallet = () => {
             </div>
           )}
         </div>
+
+        {/* Top Up wallet section */}
         <div className="flex flex-col gap-4 mt-4">
-          <button className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full hover:bg-yellow-300 transition">
+          <input
+            type="number"
+            min={MIN_TOP_UP / 100}
+            max={MAX_WALLET_BALANCE / 100}
+            value={topUpAmount}
+            onChange={(e) => {
+              setTopUpAmount(e.target.value.replace(/^0+/, ''));
+              setSelectedQuickAmount('');
+            }}
+            placeholder="Enter amount (LKR)"
+            className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          />
+          <div className="flex gap-2">
+            {[200, 500, 1000].map((amount) => (
+              <button
+                key={amount}
+                onClick={() => handleQuickAmountClick(amount)}
+                className={`flex-1 px-4 py-3 rounded-full text-sm font-medium transition-all duration-200 transform
+                  ${
+                    selectedQuickAmount === amount
+                      ? 'bg-yellow-400 text-gray-800 shadow-lg scale-105'
+                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  }`}
+              >
+                {amount} LKR
+              </button>
+            ))}
+          </div>
+          <button
+            disabled={Number(topUpAmount) < MIN_TOP_UP / 100}
+            className={`w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full transition-all duration-200 transform
+            ${
+              topUpAmount >= MIN_TOP_UP / 100
+                ? 'hover:bg-yellow-300 active:scale-95 active:shadow-lg'
+                : 'opacity-50 cursor-not-allowed'
+            }`}
+          >
             Top Up
           </button>
           <div>Transaction history</div>
