@@ -33,7 +33,74 @@ export const getWallet = async (req, res) => {
   }
 };
 
-// Top up wallet via third party gateway (PayHere)
+export const createCheckoutSession = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { amount } = req.body;
+    const amountInCents = Math.round(amount * 100);
+
+    if (!amount || amount <= 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid amount' });
+    }
+
+    if (amountInCents < MIN_TOP_UP) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum Top Up amount is ${MIN_TOP_UP / 100} LKR`,
+      });
+    }
+
+    const wallet = await getWalletByUserId(userId);
+
+    if (!wallet) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Wallet not found' });
+    }
+
+    if (wallet.balance + amountInCents > MAX_WALLET_BALANCE) {
+      return res.status(400).json({
+        success: false,
+        message: `Top Up exceeds maximum wallet balance of ${MAX_WALLET_BALANCE / 100} LKR`,
+      });
+    }
+
+    // Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'lkr',
+            product_data: { name: 'Wallet Top Up' },
+            unit_amount: amountInCents,
+          },
+          quantity: 1,
+        },
+      ],
+
+      mode: 'payment',
+      metadata: { userId },
+      success_url: `${process.env.CLIENT_URL}/top-up-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL}/wallet`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      url: session.url,
+      message: 'Stripe checkout session created',
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Top up wallet via third party gateway
 export const topUpWallet = async (req, res) => {
   try {
     const userId = req.userId;

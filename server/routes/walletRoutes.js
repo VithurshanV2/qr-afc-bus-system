@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  createCheckoutSession,
   getWallet,
   stripeWebhook,
   topUpWallet,
@@ -13,5 +14,7 @@ walletRouter.post('/top-up', userAuth, topUpWallet);
 
 // Stripe webhook endpoint
 walletRouter.post('/stripe-webhook', stripeWebhook);
+
+walletRouter.post('/create-checkout-session', userAuth, createCheckoutSession);
 
 export default walletRouter;
