@@ -83,7 +83,7 @@ export const createCheckoutSession = async (req, res) => {
 
       mode: 'payment',
       metadata: { userId },
-      success_url: `${process.env.CLIENT_URL}/top-up-success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.CLIENT_URL}/commuter/wallet`,
       cancel_url: `${process.env.CLIENT_URL}/commuter/wallet`,
     });
 
@@ -125,7 +125,7 @@ export const stripeWebhook = async (req, res) => {
       }
 
       await updateWalletBalance(
-        userId,
+        parseInt(userId, 10),
         amount,
         'CREDIT',
         'Wallet Top Up via Stripe',
@@ -145,7 +145,7 @@ export const stripeWebhook = async (req, res) => {
       }
 
       await updateWalletBalance(
-        userId,
+        parseInt(userId, 10),
         amount,
         'CREDIT',
         'Wallet Top Up via Stripe',

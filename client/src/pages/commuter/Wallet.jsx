@@ -63,6 +63,46 @@ const Wallet = () => {
     }
   }, [topUpAmount]);
 
+  const handleTopUp = async () => {
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/wallet/create-checkout-session',
+        { amount: topUpAmount },
+      );
+
+      if (!data.success) {
+        toast.error(data.message);
+      } else {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    }
+  };
+
+  useEffect(() => {
+    const params = new window.URLSearchParams(window.location.search);
+    const session_id = params.get('session_id');
+
+    if (session_id) {
+      const fetchSession = async () => {
+        axios.defaults.withCredentials = true;
+
+        const { data } = await axios.post(
+          backendUrl + '/api/wallet/fetch-session',
+          { session_id },
+        );
+
+        if (data.success) {
+          setBalance(data.wallet.balance);
+        }
+      };
+      fetchSession();
+    }
+  }, [backendUrl]);
+
   return (
     <div className="bg-white min-h-screen p-4">
       <div className="flex items-start mb-4">
@@ -121,6 +161,7 @@ const Wallet = () => {
           </div>
           <button
             disabled={Number(topUpAmount) < MIN_TOP_UP / 100}
+            onClick={handleTopUp}
             className={`w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full transition-all duration-200 transform
             ${
               topUpAmount >= MIN_TOP_UP / 100
