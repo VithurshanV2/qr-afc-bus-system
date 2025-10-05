@@ -52,6 +52,17 @@ const Wallet = () => {
     }
   };
 
+  useEffect(() => {
+    const quickAmounts = [200, 500, 1000];
+    const typedAmount = Number(topUpAmount);
+
+    if (quickAmounts.includes(typedAmount)) {
+      setSelectedQuickAmount(typedAmount);
+    } else {
+      setSelectedQuickAmount('');
+    }
+  }, [topUpAmount]);
+
   return (
     <div className="bg-white min-h-screen p-4">
       <div className="flex items-start mb-4">
