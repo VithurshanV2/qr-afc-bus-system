@@ -84,7 +84,7 @@ export const createCheckoutSession = async (req, res) => {
       mode: 'payment',
       metadata: { userId },
       success_url: `${process.env.CLIENT_URL}/top-up-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/wallet`,
+      cancel_url: `${process.env.CLIENT_URL}/commuter/wallet`,
     });
 
     return res.status(200).json({
@@ -114,7 +114,27 @@ export const stripeWebhook = async (req, res) => {
     return res.status(400).json({ success: false, message: 'Webhook error' });
   }
 
-  if (event.type === 'payment_intent.succeeded') {
+  if (event.type === 'checkout.session.completed') {
+    try {
+      const session = event.data.object;
+      const userId = session.metadata.userId;
+      const amount = session.amount_total;
+
+      if (!userId) {
+        return res.sendStatus(200);
+      }
+
+      await updateWalletBalance(
+        userId,
+        amount,
+        'CREDIT',
+        'Wallet Top Up via Stripe',
+      );
+    } catch (error) {
+      console.error(error);
+      return res.sendStatus(500);
+    }
+  } else if (event.type === 'payment_intent.succeeded') {
     try {
       const paymentIntent = event.data.object;
       const userId = paymentIntent.metadata.userId;
