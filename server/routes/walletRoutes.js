@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   createCheckoutSession,
+  fetchCheckoutSession,
   getWallet,
   stripeWebhook,
 } from '../controllers/walletController.js';
@@ -14,5 +15,6 @@ walletRouter.get('/', userAuth, getWallet);
 walletRouter.post('/stripe-webhook', stripeWebhook);
 
 walletRouter.post('/create-checkout-session', userAuth, createCheckoutSession);
+walletRouter.post('/fetch-session', userAuth, fetchCheckoutSession);
 
 export default walletRouter;

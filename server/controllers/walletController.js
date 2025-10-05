@@ -164,3 +164,25 @@ export const stripeWebhook = async (req, res) => {
 
   return res.sendStatus(200);
 };
+
+export const fetchCheckoutSession = async (req, res) => {
+  try {
+    const { session_id } = req.body;
+    if (!session_id) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Missing session ID' });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+
+    const wallet = await getWalletByUserId(req.userId);
+
+    return res.status(200).json({ success: true, session, wallet });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
