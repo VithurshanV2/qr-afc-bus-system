@@ -100,62 +100,6 @@ export const createCheckoutSession = async (req, res) => {
   }
 };
 
-// Top up wallet via third party gateway
-export const topUpWallet = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const { amount } = req.body;
-    const amountInCents = Math.round(amount * 100);
-
-    if (!amount || amount <= 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Invalid amount' });
-    }
-
-    if (amountInCents < MIN_TOP_UP) {
-      return res.status(400).json({
-        success: false,
-        message: `Minimum Top Up amount is ${MIN_TOP_UP / 100} LKR`,
-      });
-    }
-
-    // Fetch current wallet balance
-    const wallet = await getWalletByUserId(userId);
-    if (!wallet) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Wallet not found' });
-    }
-
-    // Check if top up exceeds max balance
-    if (wallet.balance + amountInCents > MAX_WALLET_BALANCE) {
-      return res.status(400).json({
-        success: false,
-        message: `Top Up exceeds maximum wallet balance of ${MAX_WALLET_BALANCE / 100} LKR`,
-      });
-    }
-
-    // Stripe payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
-      currency: 'lkr',
-      metadata: { userId },
-    });
-
-    return res.status(200).json({
-      success: true,
-      clientSecret: paymentIntent.client_secret,
-      message: 'Stripe payment intent created',
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Internal server error' });
-  }
-};
-
 // Stripe webhook
 export const stripeWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
