@@ -39,7 +39,7 @@ export const createCheckoutSession = async (req, res) => {
     const { amount } = req.body;
     const amountInCents = Math.round(amount * 100);
 
-    if (!amount || amount <= 0) {
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isInteger(amount)) {
       return res
         .status(400)
         .json({ success: false, message: 'Invalid amount' });
@@ -119,6 +119,7 @@ export const stripeWebhook = async (req, res) => {
       const session = event.data.object;
       const userId = session.metadata.userId;
       const amount = session.amount_total;
+      const sessionId = session.id;
 
       if (!userId) {
         return res.sendStatus(200);
@@ -129,6 +130,7 @@ export const stripeWebhook = async (req, res) => {
         amount,
         'CREDIT',
         'Wallet Top Up via Stripe',
+        sessionId,
       );
     } catch (error) {
       console.error(error);

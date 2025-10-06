@@ -16,8 +16,19 @@ export const updateWalletBalance = async (
   amount,
   type = 'CREDIT',
   description,
+  sessionId,
 ) => {
   return await prisma.$transaction(async (prisma) => {
+    if (sessionId) {
+      const existing = await prisma.walletTransaction.findUnique({
+        where: { sessionId },
+      });
+
+      if (existing) {
+        return null;
+      }
+    }
+
     const wallet = await prisma.wallet.update({
       where: { userId },
       data: { balance: { increment: amount } },
@@ -29,6 +40,7 @@ export const updateWalletBalance = async (
         amount,
         type,
         description,
+        sessionId,
       },
     });
 

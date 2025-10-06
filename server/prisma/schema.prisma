@@ -64,6 +64,7 @@ model WalletTransaction {
   amount      Int
   type        TransactionType
   description String?
+  sessionId   String?         @unique
   createdAt   DateTime        @default(now())
 
   @@index([walletId])
