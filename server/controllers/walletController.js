@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import {
   getWalletByUserId,
+  getWalletTransaction,
   updateWalletBalance,
 } from '../models/walletModel.js';
 
@@ -181,6 +182,52 @@ export const fetchCheckoutSession = async (req, res) => {
     const wallet = await getWalletByUserId(req.userId);
 
     return res.status(200).json({ success: true, session, wallet });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Retrieve recent transactions
+export const getTransactions = async (req, res) => {
+  try {
+    const userId = res.userId;
+    const { cursor, limit } = req.query;
+
+    // Validate limit
+    let parsedLimit = parseInt(limit, 10);
+
+    if (!Number.isFinite(parsedLimit) || parsedLimit <= 0) {
+      parsedLimit = 5;
+    }
+
+    if (parsedLimit > 50) {
+      parsedLimit = 50;
+    }
+
+    // Validate cursor
+    let parsedCursor = cursor ? parseInt(cursor, 10) : undefined;
+
+    if (cursor && !Number.isFinite(parsedCursor)) {
+      parsedCursor = undefined;
+    }
+
+    const transactions = await getWalletTransaction(
+      userId,
+      parsedLimit,
+      parsedCursor,
+    );
+
+    return res.status(200).json({
+      success: true,
+      transactions,
+      nextCursor:
+        transactions.length > 0
+          ? transactions[transactions.length - 1].id
+          : null,
+    });
   } catch (error) {
     console.error(error);
     return res

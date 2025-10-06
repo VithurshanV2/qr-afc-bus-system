@@ -47,3 +47,26 @@ export const updateWalletBalance = async (
     return wallet;
   });
 };
+
+// Fetch transaction information
+export const getWalletTransaction = async (userId, limit = 5, cursor) => {
+  const query = {
+    where: { wallet: { userId } },
+    orderBy: { id: 'desc' },
+    take: limit,
+    select: {
+      id: true,
+      amount: true,
+      type: true,
+      description: true,
+      createdAt: true,
+    },
+  };
+
+  if (cursor) {
+    query.cursor = { id: cursor };
+    query.skip = 1;
+  }
+
+  return await prisma.walletTransaction.findMany(query);
+};
