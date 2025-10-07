@@ -151,7 +151,7 @@ const Wallet = () => {
         <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
       </div>
       <div className="mt-6 max-w-md mx-auto shadow rounded-xl p-6 border border-gray-200">
-        <h2 className="text-gray-900 text-lg font-semibold flex items-center gap-2">
+        <h2 className="text-gray-900 text-2xl font-medium flex items-center gap-2">
           Wallet
         </h2>
 
