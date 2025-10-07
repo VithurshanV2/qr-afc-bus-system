@@ -38,7 +38,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0">
-      <img src={assets.logo} alt="logo" className="w-32 sm:w-48" />
+      <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
 
       {userData ? (
         userData.role !== 'COMMUTER' && (
