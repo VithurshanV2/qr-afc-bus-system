@@ -15,6 +15,10 @@ const Wallet = () => {
   const [loading, setLoading] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState('');
   const [selectedQuickAmount, setSelectedQuickAmount] = useState('');
+  const [transactions, setTransactions] = useState([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
+  const [transactionsCursor, setTransactionsCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
 
   const MIN_TOP_UP = 200 * 100;
   const MAX_WALLET_BALANCE = 5000 * 100;
@@ -103,6 +107,44 @@ const Wallet = () => {
     }
   }, [backendUrl]);
 
+  const fetchTransactions = async (cursor = null) => {
+    try {
+      setTransactionsLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.get(
+        backendUrl + '/api/wallet/transactions',
+        { params: { limit: 5, cursor } },
+      );
+
+      if (data.success) {
+        if (cursor) {
+          setTransactions((prev) => [...prev, ...data.transactions]);
+        } else {
+          setTransactions(data.transactions);
+        }
+
+        setTransactionsCursor(data.nextCursor);
+        setHasMore(data.nextCursor !== null);
+      } else {
+        toast.error('Failed to load transactions');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setTransactionsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const handleLoadMore = () => {
+    fetchTransactions(transactionsCursor);
+  };
+
   return (
     <div className="bg-white min-h-screen p-4">
       <div className="flex items-start mb-4">
@@ -171,7 +213,61 @@ const Wallet = () => {
           >
             Top Up
           </button>
-          <div>Transaction history</div>
+
+          {/* Transaction history */}
+          <div className="mt-6">
+            <h3 className="text-gray-900 font-semibold mb-2">
+              Recent Transactions
+            </h3>
+            <div className="max-h-64 overflow-y-auto pr-4 flex flex-col gap-3">
+              {transactions.length === 0 && !transactionsLoading && (
+                <div className="text-gray-500 text-sm text-center py-3">
+                  No transactions yet
+                </div>
+              )}
+
+              {transactions.map((tx, index) => (
+                <div
+                  key={tx.id}
+                  className={`flex justify-between items-center py-3 ${
+                    index < transactions.length - 1
+                      ? 'border-b border-gray-200'
+                      : ''
+                  }`}
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className="text-gray-900 font-medium text-sm">
+                      {tx.description}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      {new Date(tx.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+
+                  <span
+                    className={`font-semibold ${
+                      tx.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
+                    {tx.type === 'CREDIT' ? '+' : '-'}
+                    {(tx.amount / 100).toFixed(2)} LKR
+                  </span>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={handleLoadMore}
+              disabled={!hasMore || transactionsLoading}
+              className="mt-4 py-2 w-full rounded-full text-sm bg-gray-200 text-gray-800 hover:bg-gray-300
+              disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {transactionsLoading
+                ? 'Loading...'
+                : hasMore
+                  ? 'Load More'
+                  : 'No More Transactions'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
