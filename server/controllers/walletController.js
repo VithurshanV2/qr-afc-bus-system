@@ -130,7 +130,7 @@ export const stripeWebhook = async (req, res) => {
         parseInt(userId, 10),
         amount,
         'CREDIT',
-        'Wallet Top Up via Stripe',
+        'Top Up via Stripe',
         sessionId,
       );
     } catch (error) {
@@ -151,7 +151,7 @@ export const stripeWebhook = async (req, res) => {
         parseInt(userId, 10),
         amount,
         'CREDIT',
-        'Wallet Top Up via Stripe',
+        'Top Up via Stripe',
       );
     } catch (error) {
       console.error(error);
