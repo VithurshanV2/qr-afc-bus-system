@@ -1,0 +1,52 @@
+import {
+  createTicketAtBoarding,
+  getNearestBoardingHalt,
+} from '../models/ticketModel';
+import { getActiveTripByBusId } from '../models/tripModel';
+
+// Commuter scans QR, determine the boarding halt
+export const scanQrBoarding = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { busId, latitude, longitude } = req.body;
+
+    if (!busId || !latitude || !longitude) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Missing required data' });
+    }
+
+    const trip = await getActiveTripByBusId(busId);
+
+    if (!trip) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'No active trip found for this bus' });
+    }
+
+    const boardingHalt = getNearestBoardingHalt(trip, latitude, longitude);
+
+    const ticket = await createTicketAtBoarding({
+      userId,
+      tripId: trip.id,
+      boardingHalt,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Boarding halt identified',
+      ticket,
+      tripInfo: {
+        id: trip.id,
+        bus: trip.bus,
+        route: trip.route,
+        direction: trip.direction,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
