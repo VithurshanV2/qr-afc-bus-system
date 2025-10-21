@@ -93,6 +93,7 @@ model Bus {
   operatorId         Int
   route              Route?      @relation(fields: [routeId], references: [id])
   routeId            Int?
+  qrCode             String      @unique
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
   Trip               Trip[]
