@@ -102,7 +102,8 @@ model Route {
   id        Int      @id @default(autoincrement())
   number    String   @unique
   name      String
-  halts     Json
+  haltsA    Json
+  haltsB    Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Bus       Bus[]
@@ -110,16 +111,22 @@ model Route {
 }
 
 model Trip {
-  id        Int       @id @default(autoincrement())
-  bus       Bus       @relation(fields: [busId], references: [id])
+  id        Int           @id @default(autoincrement())
+  bus       Bus           @relation(fields: [busId], references: [id])
   busId     Int
-  route     Route     @relation(fields: [routeId], references: [id])
+  route     Route         @relation(fields: [routeId], references: [id])
   routeId   Int
-  startTime DateTime  @default(now())
+  startTime DateTime      @default(now())
   endTime   DateTime?
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
+  isActive  Boolean       @default(true)
+  direction TripDirection
+  createdAt DateTime      @default(now())
   Ticket    Ticket[]
+}
+
+enum TripDirection {
+  DIRECTIONA
+  DIRECTIONB
 }
 
 model Ticket {
