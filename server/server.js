@@ -8,6 +8,7 @@ import authRouter from './routes/authRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import oauthRouter from './routes/oauthRoutes.js';
 import walletRouter from './routes/walletRoutes.js';
+import ticketRouter from './routes/ticketRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -33,5 +34,6 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/auth', oauthRouter);
 app.use('/api/wallet', walletRouter);
+app.use('/api/ticket', ticketRouter);
 
 app.listen(port, () => console.log(`Server started on PORT: ${port}`));
