@@ -33,13 +33,15 @@ export const getTicketById = async (id) => {
 
 // Compute nearest boarding halt from commuter GPS
 export const getNearestBoardingHalt = (trip, latitude, longitude) => {
-  let halts;
+  let haltsData;
 
   if (trip.direction === 'DIRECTIONA') {
-    halts = trip.route.haltsA;
+    haltsData = trip.route.haltsA;
   } else {
-    halts = trip.route.haltsB;
+    haltsData = trip.route.haltsB;
   }
+
+  const halts = haltsData.halts;
 
   let nearestHalt = halts[0];
   let minDistance = Infinity;
@@ -59,5 +61,5 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
     }
   });
 
-  return nearestHalt.name;
+  return nearestHalt.englishName;
 };
