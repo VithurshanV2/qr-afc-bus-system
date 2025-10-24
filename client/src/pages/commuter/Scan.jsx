@@ -4,14 +4,40 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import { BounceLoader } from 'react-spinners';
+import axios from 'axios';
 
 const Scan = () => {
   const { backendUrl } = useContext(AppContext);
-  const [setCameraReady] = useState(false);
+  const [_cameraReady, setCameraReady] = useState(false);
   const [cameraDenied, setCameraDenied] = useState(false);
-  const [setScannedCode] = useState('');
   const [qr, setQr] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Retrieve commuters current location via GPS
+  const fetchLocation = async () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        toast.error(`Geolocation not supported`);
+        return reject('Geolocation not supported');
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          resolve({ latitude, longitude });
+        },
+        (error) => {
+          toast.error('Could not get your location');
+          reject(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        },
+      );
+    });
+  };
 
   const startScanner = async () => {
     setLoading(true);
@@ -36,10 +62,38 @@ const Scan = () => {
 
       const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-      const onScanSuccess = (text) => {
-        setScannedCode(text);
-        html5QrCode.stop();
-        toast.success('QR code detected');
+      const onScanSuccess = async (text) => {
+        try {
+          await html5QrCode.stop();
+          setCameraReady(false);
+          toast.success('QR code detected');
+
+          let latitude = 0;
+          let longitude = 0;
+
+          try {
+            const coords = await fetchLocation();
+            latitude = coords.latitude;
+            longitude = coords.longitude;
+          } catch {
+            toast.warning('Could not get location');
+          }
+
+          axios.defaults.withCredentials = true;
+
+          const { data } = await axios.post(
+            backendUrl + '/api/ticket/scan-qr',
+            { busQrCode: text, latitude, longitude },
+          );
+
+          if (data.success) {
+            toast.success(`Boarding halt: ${data.ticket.boardingHalt}`);
+          } else {
+            toast.error(data.message);
+          }
+        } catch {
+          toast.error('Failed to process QR code');
+        }
       };
 
       await html5QrCode.start(
