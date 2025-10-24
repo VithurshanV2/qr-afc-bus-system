@@ -2,7 +2,7 @@ import {
   createTicketAtBoarding,
   getNearestBoardingHalt,
 } from '../models/ticketModel.js';
-import { getActiveTripByBusId } from '../models/tripModel.js';
+import { getActiveTripByBusQrCode } from '../models/tripModel.js';
 
 // Commuter scans QR, determine the boarding halt
 export const scanQrBoarding = async (req, res) => {
@@ -16,7 +16,7 @@ export const scanQrBoarding = async (req, res) => {
         .json({ success: false, message: 'Missing required data' });
     }
 
-    const trip = await getActiveTripByBusId(busId);
+    const trip = await getActiveTripByBusQrCode(busId);
 
     if (!trip) {
       return res

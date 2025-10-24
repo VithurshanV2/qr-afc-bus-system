@@ -2,11 +2,11 @@ import { PrismaClient } from '../generated/prisma/index.js';
 
 const prisma = new PrismaClient();
 
-// Fetch active trip by busId
-export const getActiveTripByBusId = async (busId) => {
+// Fetch active trip by bus QR code
+export const getActiveTripByBusQrCode = async (qrCode) => {
   return await prisma.trip.findFirst({
     where: {
-      busId,
+      bus: { qrCode },
       isActive: true,
     },
     include: {
