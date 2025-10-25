@@ -131,15 +131,22 @@ enum TripDirection {
 }
 
 model Ticket {
-  id              Int      @id @default(autoincrement())
-  commuter        User     @relation(fields: [commuterId], references: [id])
+  id              Int          @id @default(autoincrement())
+  commuter        User         @relation(fields: [commuterId], references: [id])
   commuterId      Int
-  trip            Trip     @relation(fields: [tripId], references: [id])
+  trip            Trip         @relation(fields: [tripId], references: [id])
   tripId          Int
   boardingHalt    String
-  destinationHalt String
-  adultCount      Int      @default(1)
-  childCount      Int      @default(0)
-  fare            Int
-  issuedAt        DateTime @default(now())
+  destinationHalt String?
+  adultCount      Int          @default(1)
+  childCount      Int          @default(0)
+  fare            Int?
+  status          TicketStatus @default(PENDING)
+  issuedAt        DateTime     @default(now())
+}
+
+enum TicketStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
 }

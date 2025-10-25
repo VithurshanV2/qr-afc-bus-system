@@ -95,7 +95,7 @@ const Scan = () => {
           const { data } = await axios.post(
             backendUrl + '/api/ticket/scan-qr',
             {
-              busQrCode: text,
+              busId: text,
               latitude,
               longitude,
             },

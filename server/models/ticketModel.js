@@ -14,6 +14,7 @@ export const createTicketAtBoarding = async ({
       commuterId: userId,
       tripId,
       boardingHalt,
+      status: 'PENDING',
     },
   });
 };
