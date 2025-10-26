@@ -44,23 +44,30 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
 
   const halts = haltsData.halts;
 
-  let nearestHalt = halts[0];
+  let nearestIndex = 0;
   let minDistance = Infinity;
 
-  halts.forEach((halt) => {
+  for (let i = 0; i < halts.length; i++) {
+    const halt = halts[i];
+
     const distance = geolib.getDistance(
-      {
-        latitude,
-        longitude,
-      },
+      { latitude, longitude },
       { latitude: halt.latitude, longitude: halt.longitude },
     );
 
     if (distance < minDistance) {
       minDistance = distance;
-      nearestHalt = halt;
+      nearestIndex = i;
     }
-  });
+  }
 
-  return nearestHalt.englishName;
+  let boardingIndex = nearestIndex;
+
+  if (nearestIndex > 0) {
+    boardingIndex = nearestIndex - 1;
+  }
+
+  const boardingHalt = halts[boardingIndex];
+
+  return boardingHalt.englishName;
 };
