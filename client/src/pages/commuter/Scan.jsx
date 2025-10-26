@@ -3,14 +3,17 @@ import { assets } from '../../assets/assets';
 import { Html5Qrcode } from 'html5-qrcode';
 import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
-import { BounceLoader } from 'react-spinners';
 import axios from 'axios';
 
 const Scan = () => {
   const { backendUrl } = useContext(AppContext);
+  const qrRef = useRef(null);
+
   const [cameraDenied, setCameraDenied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const qrRef = useRef(null);
+  const [scanSuccess, setScanSuccess] = useState('');
+  const [scanError, setScanError] = useState('');
+  const [scanning, setScanning] = useState(false);
 
   // Retrieve commuters current location via GPS
   const fetchLocation = async () => {
@@ -38,10 +41,9 @@ const Scan = () => {
     });
   };
 
+  // Stop and clear QR scanner
   const stopScanner = async () => {
-    const readerEl = document.getElementById('reader');
-
-    if (qrRef.current && readerEl) {
+    if (qrRef.current) {
       try {
         await qrRef.current.stop();
         qrRef.current.clear();
@@ -49,16 +51,19 @@ const Scan = () => {
       } catch (error) {
         toast.error(error.response?.data?.message || 'Something went wrong');
       }
-    } else {
-      toast.error('Something went wrong');
     }
   };
 
+  // Start QR scanner
   const startScanner = async () => {
+    if (scanning || loading) {
+      return;
+    }
+
     setLoading(true);
     setCameraDenied(false);
-
-    await stopScanner();
+    setScanSuccess('');
+    setScanError('');
 
     try {
       const devices = await Html5Qrcode.getCameras();
@@ -70,62 +75,79 @@ const Scan = () => {
       }
 
       const cameraId = devices[0].id;
-      const html5QrCode = new Html5Qrcode('reader');
-      qrRef.current = html5QrCode;
+      qrRef.current = new Html5Qrcode('reader');
 
       const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-      const onScanSuccess = async (text) => {
-        await stopScanner();
-
-        let latitude = 0;
-        let longitude = 0;
-
-        try {
-          const coords = await fetchLocation();
-          latitude = coords.latitude;
-          longitude = coords.longitude;
-        } catch {
-          toast.warning('Could not get location');
-        }
-
-        try {
-          axios.defaults.withCredentials = true;
-
-          const { data } = await axios.post(
-            backendUrl + '/api/ticket/scan-qr',
-            {
-              busId: text,
-              latitude,
-              longitude,
-            },
-          );
-
-          if (data.success) {
-            toast.success(`Boarding halt: ${data.ticket.boardingHalt}`);
-          } else {
-            toast.error(data.message);
-          }
-        } catch {
-          toast.error('Failed to process QR code');
-        }
-      };
-
-      await html5QrCode.start(
+      await qrRef.current.start(
         { deviceId: { exact: cameraId } },
         config,
-        onScanSuccess,
+        handleScanSuccess,
       );
     } catch (error) {
       if (error.name === 'NotAllowedError') {
         setCameraDenied(true);
-        toast.error('Camera access was denied');
       } else {
-        toast.error(error.response?.data?.message || 'Something went wrong');
+        setScanError(error.response?.data?.message || 'Something went wrong');
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle successful QR scan
+  const handleScanSuccess = async (text) => {
+    if (scanning) {
+      return;
+    }
+
+    setScanning(true);
+    try {
+      let latitude = 0;
+      let longitude = 0;
+
+      try {
+        const coords = await fetchLocation();
+        latitude = coords.latitude;
+        longitude = coords.longitude;
+      } catch {
+        toast.warning('Could not get location');
+      }
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(backendUrl + '/api/ticket/scan-qr', {
+        busId: text,
+        latitude,
+        longitude,
+      });
+
+      if (data.success) {
+        setScanSuccess(`Boarding halt: ${data.ticket.boardingHalt}`);
+        setScanError('');
+        await stopScanner();
+      } else {
+        setScanError(data.message);
+        setScanSuccess('');
+        await stopScanner();
+      }
+    } catch {
+      const message = 'Failed to process QR code';
+      setScanError(message);
+      setScanSuccess('');
+      await stopScanner();
+    } finally {
+      setScanning(false);
+    }
+  };
+
+  // Handle Rescan button
+  const handleRescan = async () => {
+    setScanError('');
+    setScanSuccess('');
+    setScanning(false);
+    await stopScanner();
+    await startScanner();
   };
 
   useEffect(() => {
@@ -149,31 +171,30 @@ const Scan = () => {
           id="reader"
           className="aspect-square mt-10 mb-10 rounded-xl bg-gray-100 w-full flex items-center justify-center text-gray-700"
         ></div>
+
         {loading && (
-          <div className="flex flex-col items-center justify-center gap-3">
-            <BounceLoader size={50} color="#FFB347" />
-            <span className="text-sm text-gray-700">Starting camera...</span>
-          </div>
+          <p className="text-center text-gray-700 mb-2">Starting camera</p>
         )}
-        {!loading && cameraDenied && (
-          <div className="flex flex-col items-center justify-center gap-3">
-            <span className="text-gray-700">Camera access was denied</span>
-            <button
-              onClick={startScanner}
-              className="bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full 
-              transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-            >
-              Retry Access
-            </button>
-          </div>
+        {scanError && (
+          <p className="text-center text-red-600 mb-2">{scanError}</p>
+        )}
+        {scanSuccess && (
+          <p className="text-center text-green-600  mb-2">{scanSuccess}</p>
+        )}
+        {cameraDenied && (
+          <p className="text-center text-red-600  mb-2">
+            Camera access was denied. Please enable camera permissions
+          </p>
         )}
 
-        {/* Scan button */}
+        {/* Rescan button */}
         <button
+          onClick={handleRescan}
+          disabled={loading || scanning}
           className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full 
-        transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
+            transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
         >
-          Scan
+          Rescan
         </button>
       </div>
     </div>
