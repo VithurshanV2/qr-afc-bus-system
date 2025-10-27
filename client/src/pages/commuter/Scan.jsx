@@ -12,6 +12,7 @@ const Scan = () => {
   const qrRef = useRef(null);
 
   const [cameraDenied, setCameraDenied] = useState(false);
+  const [locationDenied, setLocationDenied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchingHalt, setFetchingHalt] = useState(false);
   const [scanError, setScanError] = useState('');
@@ -33,7 +34,6 @@ const Scan = () => {
           resolve({ latitude, longitude });
         },
         (error) => {
-          toast.error('Could not get your location');
           reject(error);
         },
         {
@@ -114,8 +114,13 @@ const Scan = () => {
         const coords = await fetchLocation();
         latitude = coords.latitude;
         longitude = coords.longitude;
+        setLocationDenied(false);
       } catch {
-        toast.warning('Could not get your location');
+        setLocationDenied(true);
+        setFetchingHalt(false);
+        await stopScanner();
+        setScanning(false);
+        return;
       }
 
       axios.defaults.withCredentials = true;
@@ -170,13 +175,6 @@ const Scan = () => {
       <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
 
       <div className="mt-6 max-w-md mx-auto shadow rounded-xl p-6 border border-gray-200">
-        {/* Loader during backend fetch */}
-        {fetchingHalt && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <BounceLoader size={60} color="#FFB347" />
-          </div>
-        )}
-
         <AnimatePresence mode="wait">
           {/* Step 1: Scan */}
           {step === 1 && (
@@ -192,10 +190,26 @@ const Scan = () => {
               </h2>
 
               {/* QR code scanner and placeholder*/}
-              <div
-                id="reader"
-                className="aspect-square mt-6 mb-10 rounded-xl bg-gray-100 w-full flex items-center justify-center text-gray-700"
-              ></div>
+              <div className="relative">
+                <div
+                  id="reader"
+                  className="aspect-square mt-6 mb-10 rounded-xl bg-gray-100 w-full flex items-center justify-center text-gray-700"
+                ></div>
+
+                {fetchingHalt && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute top-0 left-0 w-full h-full bg-white/70 flex flex-col items-center justify-center z-20 backdrop:blur-sm"
+                  >
+                    <BounceLoader size={60} color="#FFB347" />
+                    <p className="mt-4 text-gray-700 font-medium text-center">
+                      Fetching boarding halt...
+                    </p>
+                  </motion.div>
+                )}
+              </div>
 
               {loading && (
                 <p className="text-center text-gray-700 mb-2">
@@ -208,6 +222,11 @@ const Scan = () => {
               {cameraDenied && (
                 <p className="text-center text-red-600  mb-2">
                   Camera access was denied. Please enable camera permissions
+                </p>
+              )}
+              {locationDenied && (
+                <p className="text-center text-red-600 mb-2">
+                  Location access was denied. Please enable location permissions
                 </p>
               )}
 
