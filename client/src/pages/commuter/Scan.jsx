@@ -6,9 +6,12 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { BounceLoader } from 'react-spinners';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CommuterContext } from '../../context/CommuterContext';
 
 const Scan = () => {
   const { backendUrl } = useContext(AppContext);
+  const { scanStep, setScanStep, setBoardingHalt } =
+    useContext(CommuterContext);
   const qrRef = useRef(null);
 
   const [cameraDenied, setCameraDenied] = useState(false);
@@ -17,8 +20,6 @@ const Scan = () => {
   const [fetchingHalt, setFetchingHalt] = useState(false);
   const [scanError, setScanError] = useState('');
   const [scanning, setScanning] = useState(false);
-  const [step, setStep] = useState(1);
-  const [_boardingHalt, setBoardingHalt] = useState('');
 
   // Retrieve commuters current location via GPS
   const fetchLocation = async () => {
@@ -133,13 +134,10 @@ const Scan = () => {
 
       if (data.success) {
         setBoardingHalt(data.ticket.boardingHalt);
+        setScanStep(2);
         setScanError('');
         await stopScanner();
-
-        window.setTimeout(() => {
-          setFetchingHalt(false);
-          setStep(2);
-        }, 800);
+        setFetchingHalt(false);
       } else {
         setScanError(data.message || 'Failed to scan');
         await stopScanner();
@@ -163,12 +161,14 @@ const Scan = () => {
   };
 
   useEffect(() => {
-    startScanner();
+    if (scanStep === 1) {
+      startScanner();
+    }
 
     return () => {
       stopScanner();
     };
-  }, [backendUrl]);
+  }, [backendUrl, scanStep]);
 
   return (
     <div className="bg-white min-h-screen p-4">
@@ -177,7 +177,7 @@ const Scan = () => {
       <div className="mt-6 max-w-md mx-auto shadow rounded-xl p-6 border border-gray-200">
         <AnimatePresence mode="wait">
           {/* Step 1: Scan */}
-          {step === 1 && (
+          {scanStep === 1 && (
             <motion.div
               key="scan"
               initial={{ opacity: 0, y: 20 }}
@@ -243,7 +243,7 @@ const Scan = () => {
           )}
 
           {/* Step 2: Select destination */}
-          {step === 2 && (
+          {scanStep === 2 && (
             <motion.div
               key="destination"
               initial={{ opacity: 0, x: 60 }}
