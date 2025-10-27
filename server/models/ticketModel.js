@@ -52,7 +52,7 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
   );
 
   if (firstDistance < 50) {
-    return firstHalt.englishName;
+    return firstHalt;
   }
 
   // Loop through consecutive halts to find which segment the commuter is on
@@ -86,7 +86,7 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
 
     // If commuter is between previous and current halt, pick previous as boarding halt
     if (dPrevious + dCurrent - dSegment < 100) {
-      return previous.englishName;
+      return previous;
     }
   }
 
@@ -107,5 +107,5 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
     }
   }
 
-  return nearestHalt.englishName;
+  return nearestHalt;
 };

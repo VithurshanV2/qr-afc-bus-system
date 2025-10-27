@@ -136,8 +136,8 @@ model Ticket {
   commuterId      Int
   trip            Trip         @relation(fields: [tripId], references: [id])
   tripId          Int
-  boardingHalt    String
-  destinationHalt String?
+  boardingHalt    Json
+  destinationHalt Json?
   adultCount      Int          @default(1)
   childCount      Int          @default(0)
   fare            Int?

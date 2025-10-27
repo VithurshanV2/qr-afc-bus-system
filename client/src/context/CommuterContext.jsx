@@ -5,11 +5,11 @@ export const CommuterContext = createContext();
 
 export const CommuterProvider = ({ children }) => {
   const [scanStep, setScanStep] = useState(1);
-  const [boardingHalt, setBoardingHalt] = useState('');
+  const [boardingHalt, setBoardingHalt] = useState(null);
 
   const resetCommuter = () => {
     setScanStep(1);
-    setBoardingHalt('');
+    setBoardingHalt(null);
   };
 
   const value = {
