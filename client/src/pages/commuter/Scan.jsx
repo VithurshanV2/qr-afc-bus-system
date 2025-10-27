@@ -4,6 +4,8 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { BounceLoader } from 'react-spinners';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Scan = () => {
   const { backendUrl } = useContext(AppContext);
@@ -11,9 +13,11 @@ const Scan = () => {
 
   const [cameraDenied, setCameraDenied] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [scanSuccess, setScanSuccess] = useState('');
+  const [fetchingHalt, setFetchingHalt] = useState(false);
   const [scanError, setScanError] = useState('');
   const [scanning, setScanning] = useState(false);
+  const [step, setStep] = useState(1);
+  const [_boardingHalt, setBoardingHalt] = useState('');
 
   // Retrieve commuters current location via GPS
   const fetchLocation = async () => {
@@ -48,8 +52,8 @@ const Scan = () => {
         await qrRef.current.stop();
         qrRef.current.clear();
         qrRef.current = null;
-      } catch (error) {
-        toast.error(error.response?.data?.message || 'Something went wrong');
+      } catch {
+        toast.error('Could not stop scanner');
       }
     }
   };
@@ -62,7 +66,6 @@ const Scan = () => {
 
     setLoading(true);
     setCameraDenied(false);
-    setScanSuccess('');
     setScanError('');
 
     try {
@@ -102,6 +105,7 @@ const Scan = () => {
     }
 
     setScanning(true);
+    setFetchingHalt(true);
     try {
       let latitude = 0;
       let longitude = 0;
@@ -111,7 +115,7 @@ const Scan = () => {
         latitude = coords.latitude;
         longitude = coords.longitude;
       } catch {
-        toast.warning('Could not get location');
+        toast.warning('Could not get your location');
       }
 
       axios.defaults.withCredentials = true;
@@ -123,19 +127,23 @@ const Scan = () => {
       });
 
       if (data.success) {
-        setScanSuccess(`Boarding halt: ${data.ticket.boardingHalt}`);
+        setBoardingHalt(data.ticket.boardingHalt);
         setScanError('');
         await stopScanner();
+
+        window.setTimeout(() => {
+          setFetchingHalt(false);
+          setStep(2);
+        }, 800);
       } else {
-        setScanError(data.message);
-        setScanSuccess('');
+        setScanError(data.message || 'Failed to scan');
         await stopScanner();
+        setFetchingHalt(false);
       }
     } catch {
-      const message = 'Failed to process QR code';
-      setScanError(message);
-      setScanSuccess('');
+      setScanError('Failed to process QR code');
       await stopScanner();
+      setFetchingHalt(false);
     } finally {
       setScanning(false);
     }
@@ -144,7 +152,6 @@ const Scan = () => {
   // Handle Rescan button
   const handleRescan = async () => {
     setScanError('');
-    setScanSuccess('');
     setScanning(false);
     await stopScanner();
     await startScanner();
@@ -160,42 +167,77 @@ const Scan = () => {
 
   return (
     <div className="bg-white min-h-screen p-4">
-      <div className="">
-        <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
-      </div>
+      <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
+
       <div className="mt-6 max-w-md mx-auto shadow rounded-xl p-6 border border-gray-200">
-        <h2 className="text-gray-900 text-2xl font-medium">Scan</h2>
-
-        {/* QR code scanner and placeholder*/}
-        <div
-          id="reader"
-          className="aspect-square mt-10 mb-10 rounded-xl bg-gray-100 w-full flex items-center justify-center text-gray-700"
-        ></div>
-
-        {loading && (
-          <p className="text-center text-gray-700 mb-2">Starting camera</p>
-        )}
-        {scanError && (
-          <p className="text-center text-red-600 mb-2">{scanError}</p>
-        )}
-        {scanSuccess && (
-          <p className="text-center text-green-600  mb-2">{scanSuccess}</p>
-        )}
-        {cameraDenied && (
-          <p className="text-center text-red-600  mb-2">
-            Camera access was denied. Please enable camera permissions
-          </p>
+        {/* Loader during backend fetch */}
+        {fetchingHalt && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <BounceLoader size={60} color="#FFB347" />
+          </div>
         )}
 
-        {/* Rescan button */}
-        <button
-          onClick={handleRescan}
-          disabled={loading || scanning}
-          className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full 
+        <AnimatePresence mode="wait">
+          {/* Step 1: Scan */}
+          {step === 1 && (
+            <motion.div
+              key="scan"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <h2 className="text-gray-900 text-2xl font-medium text-center">
+                Scan
+              </h2>
+
+              {/* QR code scanner and placeholder*/}
+              <div
+                id="reader"
+                className="aspect-square mt-6 mb-10 rounded-xl bg-gray-100 w-full flex items-center justify-center text-gray-700"
+              ></div>
+
+              {loading && (
+                <p className="text-center text-gray-700 mb-2">
+                  Starting camera
+                </p>
+              )}
+              {scanError && (
+                <p className="text-center text-red-600 mb-2">{scanError}</p>
+              )}
+              {cameraDenied && (
+                <p className="text-center text-red-600  mb-2">
+                  Camera access was denied. Please enable camera permissions
+                </p>
+              )}
+
+              {/* Rescan button */}
+              <button
+                onClick={handleRescan}
+                disabled={loading || scanning}
+                className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full 
             transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-        >
-          Rescan
-        </button>
+              >
+                Rescan
+              </button>
+            </motion.div>
+          )}
+
+          {/* Step 2: Select destination */}
+          {step === 2 && (
+            <motion.div
+              key="destination"
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -60 }}
+              transition={{ duration: 0.4 }}
+            >
+              <h2 className="text-gray-900 text-2xl font-semibold text-center mb-4">
+                Select Your Destination Halt
+              </h2>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
