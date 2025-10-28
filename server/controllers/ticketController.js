@@ -88,7 +88,7 @@ export const getUpcomingHalts = async (req, res) => {
 };
 
 // Select a destination halt and update ticket
-export const selectDestinationHalt = async (res, req) => {
+export const selectDestinationHalt = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const { destinationHalt } = req.body;
@@ -99,7 +99,7 @@ export const selectDestinationHalt = async (res, req) => {
         .json({ success: false, message: 'Missing required data' });
     }
 
-    const ticket = await getTicketById(ticketId);
+    const ticket = await getTicketById(Number(ticketId));
 
     if (!ticket) {
       return res
@@ -113,7 +113,7 @@ export const selectDestinationHalt = async (res, req) => {
     );
 
     const isValidDestination = upcomingHalts.some(
-      (halt) => halt.id === destinationHalt,
+      (halt) => halt.id === destinationHalt.id,
     );
 
     if (!isValidDestination) {
@@ -131,7 +131,7 @@ export const selectDestinationHalt = async (res, req) => {
     });
   } catch (error) {
     console.error(error);
-    return req
+    return res
       .status(500)
       .json({ success: false, message: 'Internal server error' });
   }
