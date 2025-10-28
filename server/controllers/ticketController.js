@@ -4,6 +4,7 @@ import {
   getTicketById,
   getUpcomingDestinationHalts,
   setDestinationHalt,
+  setPassengerCount,
 } from '../models/ticketModel.js';
 import { getActiveTripByBusQrCode } from '../models/tripModel.js';
 
@@ -127,6 +128,45 @@ export const selectDestinationHalt = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Destination halt is selected successfully',
+      ticket: updateTicket,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Add accompanying passengers to the ticket
+export const setAccompanyingPassengers = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const { adultCount, childCount } = req.body;
+
+    if (!ticketId || !adultCount || !childCount) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Missing required fields' });
+    }
+
+    if (adultCount < 0 || childCount < 0) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'write a message here to let them no 0 passengersS or something',
+      });
+    }
+
+    const updateTicket = await setPassengerCount(
+      Number(ticketId),
+      adultCount,
+      childCount,
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Accompanying passengers added successfully',
       ticket: updateTicket,
     });
   } catch (error) {

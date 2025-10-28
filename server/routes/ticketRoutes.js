@@ -4,6 +4,7 @@ import {
   getUpcomingHalts,
   scanQrBoarding,
   selectDestinationHalt,
+  setAccompanyingPassengers,
 } from '../controllers/ticketController.js';
 
 const ticketRouter = express.Router();
@@ -14,6 +15,11 @@ ticketRouter.post(
   '/destination-halt/:ticketId',
   userAuth,
   selectDestinationHalt,
+);
+ticketRouter.post(
+  '/accompanying-passengers/:ticketId',
+  userAuth,
+  setAccompanyingPassengers,
 );
 
 export default ticketRouter;

@@ -138,3 +138,11 @@ export const setDestinationHalt = async (ticketId, destinationHalt) => {
     data: { destinationHalt, status: 'PENDING' },
   });
 };
+
+// Update passenger count
+export const setPassengerCount = async (ticketId, adultCount, childCount) => {
+  return await prisma.ticket.update({
+    where: { id: ticketId },
+    data: { adultCount, childCount, status: 'PENDING' },
+  });
+};
