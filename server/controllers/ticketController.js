@@ -1,6 +1,8 @@
 import {
   createTicketAtBoarding,
   getNearestBoardingHalt,
+  getTicketById,
+  getUpcomingDestinationHalts,
 } from '../models/ticketModel.js';
 import { getActiveTripByBusQrCode } from '../models/tripModel.js';
 
@@ -43,6 +45,39 @@ export const scanQrBoarding = async (req, res) => {
         direction: trip.direction,
       },
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch upcoming destination halts after boarding halt
+export const getDestinationHalts = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+
+    if (!ticketId) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Ticket ID is required' });
+    }
+
+    const ticket = await getTicketById(Number(ticketId));
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    const upcomingHalts = getUpcomingDestinationHalts(
+      ticket.trip,
+      ticket.boardingHalt,
+    );
+
+    return res.status(200).json({ success: true, upcomingHalts });
   } catch (error) {
     console.error(error);
     return res
