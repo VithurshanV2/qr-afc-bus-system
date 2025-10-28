@@ -28,7 +28,11 @@ export const scanQrBoarding = async (req, res) => {
         .json({ success: false, message: 'No active trip found for this bus' });
     }
 
-    const boardingHalt = getNearestBoardingHalt(trip, latitude, longitude);
+    const boardingHalt = await getNearestBoardingHalt(
+      trip,
+      latitude,
+      longitude,
+    );
 
     const ticket = await createTicketAtBoarding({
       userId,
@@ -59,6 +63,7 @@ export const scanQrBoarding = async (req, res) => {
 export const getUpcomingHalts = async (req, res) => {
   try {
     const { ticketId } = req.params;
+    const userId = req.userId;
 
     if (!ticketId) {
       return res
@@ -74,7 +79,13 @@ export const getUpcomingHalts = async (req, res) => {
         .json({ success: false, message: 'Ticket not found' });
     }
 
-    const upcomingHalts = getUpcomingDestinationHalts(
+    if (ticket.commuterId !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: 'Unauthorized ticket' });
+    }
+
+    const upcomingHalts = await getUpcomingDestinationHalts(
       ticket.trip,
       ticket.boardingHalt,
     );
@@ -93,6 +104,7 @@ export const selectDestinationHalt = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const { destinationHalt } = req.body;
+    const userId = req.userId;
 
     if (!ticketId || !destinationHalt || !destinationHalt.id) {
       return res
@@ -108,7 +120,13 @@ export const selectDestinationHalt = async (req, res) => {
         .json({ success: false, message: 'Ticket not found' });
     }
 
-    const upcomingHalts = getUpcomingDestinationHalts(
+    if (ticket.commuterId !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: 'Unauthorized ticket' });
+    }
+
+    const upcomingHalts = await getUpcomingDestinationHalts(
       ticket.trip,
       ticket.boardingHalt,
     );
@@ -123,7 +141,7 @@ export const selectDestinationHalt = async (req, res) => {
         .json({ success: false, message: 'Invalid destination halt' });
     }
 
-    const updateTicket = setDestinationHalt(ticket.id, destinationHalt);
+    const updateTicket = await setDestinationHalt(ticket.id, destinationHalt);
 
     return res.status(200).json({
       success: true,
@@ -143,6 +161,7 @@ export const setAccompanyingPassengers = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const { adultCount, childCount } = req.body;
+    const userId = req.userId;
 
     if (!ticketId || !adultCount || !childCount) {
       return res
@@ -150,12 +169,25 @@ export const setAccompanyingPassengers = async (req, res) => {
         .json({ success: false, message: 'Missing required fields' });
     }
 
-    if (adultCount < 0 || childCount < 0) {
+    if (adultCount + childCount < 1) {
       return res.status(400).json({
         success: false,
-        message:
-          'write a message here to let them no 0 passengersS or something',
+        message: 'At least one passenger is required',
       });
+    }
+
+    const ticket = await getTicketById(Number(ticketId));
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    if (ticket.commuterId !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: 'Unauthorized ticket' });
     }
 
     const updateTicket = await setPassengerCount(
