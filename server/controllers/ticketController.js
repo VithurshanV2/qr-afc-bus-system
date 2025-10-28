@@ -3,6 +3,7 @@ import {
   getNearestBoardingHalt,
   getTicketById,
   getUpcomingDestinationHalts,
+  setDestinationHalt,
 } from '../models/ticketModel.js';
 import { getActiveTripByBusQrCode } from '../models/tripModel.js';
 
@@ -54,7 +55,7 @@ export const scanQrBoarding = async (req, res) => {
 };
 
 // Fetch upcoming destination halts after boarding halt
-export const getDestinationHalts = async (req, res) => {
+export const getUpcomingHalts = async (req, res) => {
   try {
     const { ticketId } = req.params;
 
@@ -81,6 +82,56 @@ export const getDestinationHalts = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Select a destination halt and update ticket
+export const selectDestinationHalt = async (res, req) => {
+  try {
+    const { ticketId } = req.params;
+    const { destinationHalt } = req.body;
+
+    if (!ticketId || !destinationHalt || !destinationHalt.id) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Missing required data' });
+    }
+
+    const ticket = await getTicketById(ticketId);
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    const upcomingHalts = getUpcomingDestinationHalts(
+      ticket.trip,
+      ticket.boardingHalt,
+    );
+
+    const isValidDestination = upcomingHalts.some(
+      (halt) => halt.id === destinationHalt,
+    );
+
+    if (!isValidDestination) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Invalid destination halt' });
+    }
+
+    const updateTicket = setDestinationHalt(ticket.id, destinationHalt);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Destination halt is selected successfully',
+      ticket: updateTicket,
+    });
+  } catch (error) {
+    console.error(error);
+    return req
       .status(500)
       .json({ success: false, message: 'Internal server error' });
   }
