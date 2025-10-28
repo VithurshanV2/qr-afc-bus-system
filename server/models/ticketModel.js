@@ -109,3 +109,32 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
 
   return nearestHalt;
 };
+
+// Fetch upcoming destination halts after boarding halt
+export const getUpcomingDestinationHalts = (trip, boardingHalt) => {
+  let haltsData;
+
+  if (trip.direction === 'DIRECTIONA') {
+    haltsData = trip.route.haltsA;
+  } else {
+    haltsData = trip.route.haltsB;
+  }
+
+  const halts = haltsData.halts;
+
+  const boardingIndex = halts.findIndex((halt) => halt.id === boardingHalt.id);
+
+  if (boardingIndex === -1) {
+    return halts;
+  }
+
+  return halts.slice(boardingIndex + 1);
+};
+
+// Update ticket with destination halt
+export const setDestinationHalt = async (ticketId, destinationHalt) => {
+  return await prisma.ticket.update({
+    where: { id: ticketId },
+    data: { destinationHalt, status: 'PENDING' },
+  });
+};
