@@ -234,7 +234,18 @@ export const getFares = async (req, res) => {
 
     const fares = calculateFare(ticket.trip, ticket);
 
-    return res.status(200).json({ success: true, fares });
+    const ticketSummary = {
+      boardingHalt: ticket.boardingHalt.englishName,
+      destinationHalt: ticket.destinationHalt.englishName,
+      adultCount: ticket.adultCount,
+      childCount: ticket.childCount,
+      baseFare: fares.baseFare,
+      totalFare: fares.totalFare,
+      routeNumber: ticket.trip.route.number,
+      routeName: ticket.trip.route.name,
+    };
+
+    return res.status(200).json({ success: true, ticketSummary });
   } catch (error) {
     console.error(error);
     return res
