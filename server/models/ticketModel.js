@@ -146,3 +146,25 @@ export const setPassengerCount = async (ticketId, adultCount, childCount) => {
     data: { adultCount, childCount, status: 'PENDING' },
   });
 };
+
+// Calculate base fare and total fare
+export const calculateFare = (trip, ticket) => {
+  let haltsData;
+
+  if (trip.direction === 'DIRECTIONA') {
+    haltsData = trip.route.haltsA;
+  } else {
+    haltsData = trip.route.haltsB;
+  }
+
+  const halts = haltsData.halts;
+
+  const haltsTraveled = ticket.destinationHalt.id - ticket.boardingHalt.id;
+
+  const baseFare = halts[haltsTraveled].fare;
+
+  const totalFare =
+    baseFare * ticket.adultCount + (baseFare / 2) * ticket.childCount;
+
+  return { baseFare, totalFare };
+};

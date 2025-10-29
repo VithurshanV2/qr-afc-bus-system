@@ -1,4 +1,5 @@
 import {
+  calculateFare,
   createTicketAtBoarding,
   getNearestBoardingHalt,
   getTicketById,
@@ -28,11 +29,7 @@ export const scanQrBoarding = async (req, res) => {
         .json({ success: false, message: 'No active trip found for this bus' });
     }
 
-    const boardingHalt = await getNearestBoardingHalt(
-      trip,
-      latitude,
-      longitude,
-    );
+    const boardingHalt = getNearestBoardingHalt(trip, latitude, longitude);
 
     const ticket = await createTicketAtBoarding({
       userId,
@@ -85,7 +82,7 @@ export const getUpcomingHalts = async (req, res) => {
         .json({ success: false, message: 'Unauthorized ticket' });
     }
 
-    const upcomingHalts = await getUpcomingDestinationHalts(
+    const upcomingHalts = getUpcomingDestinationHalts(
       ticket.trip,
       ticket.boardingHalt,
     );
@@ -126,7 +123,7 @@ export const selectDestinationHalt = async (req, res) => {
         .json({ success: false, message: 'Unauthorized ticket' });
     }
 
-    const upcomingHalts = await getUpcomingDestinationHalts(
+    const upcomingHalts = getUpcomingDestinationHalts(
       ticket.trip,
       ticket.boardingHalt,
     );
@@ -201,6 +198,43 @@ export const setAccompanyingPassengers = async (req, res) => {
       message: 'Accompanying passengers added successfully',
       ticket: updateTicket,
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Get base fare and total fare
+export const getFares = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const userId = req.userId;
+
+    if (!ticketId) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Missing required data' });
+    }
+
+    const ticket = await getTicketById(Number(ticketId));
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    if (ticket.commuterId !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: 'Unauthorized ticket' });
+    }
+
+    const fares = calculateFare(ticket.trip, ticket);
+
+    return res.status(200).json({ success: true, fares });
   } catch (error) {
     console.error(error);
     return res

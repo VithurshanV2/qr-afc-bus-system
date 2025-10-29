@@ -140,7 +140,8 @@ model Ticket {
   destinationHalt Json?
   adultCount      Int          @default(1)
   childCount      Int          @default(0)
-  fare            Int?
+  baseFare        Int?
+  totalFare       Int?
   status          TicketStatus @default(PENDING)
   issuedAt        DateTime     @default(now())
 }
