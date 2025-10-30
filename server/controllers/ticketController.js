@@ -1,13 +1,15 @@
 import {
-  calculateFare,
   createTicketAtBoarding,
-  getNearestBoardingHalt,
   getTicketById,
-  getUpcomingDestinationHalts,
   setDestinationHalt,
   setPassengerCount,
 } from '../models/ticketModel.js';
 import { getActiveTripByBusQrCode } from '../models/tripModel.js';
+import {
+  calculateFare,
+  getNearestBoardingHalt,
+  getUpcomingDestinationHalts,
+} from '../services/ticketService.js';
 
 // Commuter scans QR, determine the boarding halt
 export const scanQrBoarding = async (req, res) => {
