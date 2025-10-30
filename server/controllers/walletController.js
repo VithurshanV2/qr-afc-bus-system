@@ -2,8 +2,15 @@ import Stripe from 'stripe';
 import {
   getWalletByUserId,
   getWalletTransaction,
+  payTicketFare,
   updateWalletBalance,
 } from '../models/walletModel.js';
+import {
+  getAuthorizedTicket,
+  validateHaltSelection,
+  validatePassengerCount,
+} from '../utils/ticketUtils.js';
+import { calculateFare } from '../services/ticketService.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const MAX_WALLET_BALANCE = 5000 * 100;
@@ -233,5 +240,36 @@ export const getTransactions = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fare is deducted from commuters wallet balance
+export const payFare = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+    const userId = req.userId;
+
+    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    if (!ticket) return;
+
+    const haltError = validateHaltSelection(ticket);
+    if (haltError) return res.status(400).json(haltError);
+
+    const passengerError = validatePassengerCount(ticket);
+    if (passengerError) return res.status(400).json(passengerError);
+
+    const fares = calculateFare(ticket.trip, ticket);
+
+    const result = await payTicketFare(ticketId, userId, fares);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Ticket paid successfully',
+      ticket: result.updatedTicket,
+    });
+  } catch (error) {
+    console.error(error);
+    const status = error.message === 'Insufficient balance' ? 400 : 500;
+    return res.status(status).json({ success: false, message: error.message });
   }
 };

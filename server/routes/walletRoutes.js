@@ -4,6 +4,7 @@ import {
   fetchCheckoutSession,
   getTransactions,
   getWallet,
+  payFare,
   stripeWebhook,
 } from '../controllers/walletController.js';
 import userAuth from '../middleware/userAuth.js';
@@ -12,6 +13,7 @@ const walletRouter = express.Router();
 
 walletRouter.get('/', userAuth, getWallet);
 walletRouter.get('/transactions', userAuth, getTransactions);
+walletRouter.post('/pay-fare/:ticketId', userAuth, payFare);
 
 // Stripe webhook endpoint
 walletRouter.post('/stripe-webhook', stripeWebhook);
