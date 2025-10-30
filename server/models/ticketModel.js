@@ -1,4 +1,5 @@
 import { PrismaClient } from '../generated/prisma/index.js';
+import { getHaltsByDirection } from '../utils/routeUtils.js';
 import geolib from 'geolib';
 
 const prisma = new PrismaClient();
@@ -34,15 +35,7 @@ export const getTicketById = async (id) => {
 
 // Compute nearest boarding halt from commuter GPS
 export const getNearestBoardingHalt = (trip, latitude, longitude) => {
-  let haltsData;
-
-  if (trip.direction === 'DIRECTIONA') {
-    haltsData = trip.route.haltsA;
-  } else {
-    haltsData = trip.route.haltsB;
-  }
-
-  const halts = haltsData.halts;
+  const halts = getHaltsByDirection(trip);
 
   // If commuter is close to first halt, return it
   const firstHalt = halts[0];
@@ -112,15 +105,7 @@ export const getNearestBoardingHalt = (trip, latitude, longitude) => {
 
 // Fetch upcoming destination halts after boarding halt
 export const getUpcomingDestinationHalts = (trip, boardingHalt) => {
-  let haltsData;
-
-  if (trip.direction === 'DIRECTIONA') {
-    haltsData = trip.route.haltsA;
-  } else {
-    haltsData = trip.route.haltsB;
-  }
-
-  const halts = haltsData.halts;
+  const halts = getHaltsByDirection(trip);
 
   const boardingIndex = halts.findIndex((halt) => halt.id === boardingHalt.id);
 
@@ -149,15 +134,7 @@ export const setPassengerCount = async (ticketId, adultCount, childCount) => {
 
 // Calculate base fare and total fare
 export const calculateFare = (trip, ticket) => {
-  let haltsData;
-
-  if (trip.direction === 'DIRECTIONA') {
-    haltsData = trip.route.haltsA;
-  } else {
-    haltsData = trip.route.haltsB;
-  }
-
-  const halts = haltsData.halts;
+  const halts = getHaltsByDirection(trip);
 
   const haltsTraveled = ticket.destinationHalt.id - ticket.boardingHalt.id;
 
