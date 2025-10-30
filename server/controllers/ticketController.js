@@ -1,6 +1,5 @@
 import {
   createTicketAtBoarding,
-  getTicketById,
   setDestinationHalt,
   setPassengerCount,
 } from '../models/ticketModel.js';
@@ -10,6 +9,7 @@ import {
   getNearestBoardingHalt,
   getUpcomingDestinationHalts,
 } from '../services/ticketService.js';
+import { getAuthorizedTicket } from '../utils/ticketUtils.js';
 
 // Commuter scans QR, determine the boarding halt
 export const scanQrBoarding = async (req, res) => {
@@ -70,19 +70,8 @@ export const getUpcomingHalts = async (req, res) => {
         .json({ success: false, message: 'Ticket ID is required' });
     }
 
-    const ticket = await getTicketById(Number(ticketId));
-
-    if (!ticket) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Ticket not found' });
-    }
-
-    if (ticket.commuterId !== userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: 'Unauthorized ticket' });
-    }
+    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    if (!ticket) return;
 
     const upcomingHalts = getUpcomingDestinationHalts(
       ticket.trip,
@@ -111,19 +100,8 @@ export const selectDestinationHalt = async (req, res) => {
         .json({ success: false, message: 'Missing required data' });
     }
 
-    const ticket = await getTicketById(Number(ticketId));
-
-    if (!ticket) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Ticket not found' });
-    }
-
-    if (ticket.commuterId !== userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: 'Unauthorized ticket' });
-    }
+    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    if (!ticket) return;
 
     const upcomingHalts = getUpcomingDestinationHalts(
       ticket.trip,
@@ -175,19 +153,8 @@ export const setAccompanyingPassengers = async (req, res) => {
       });
     }
 
-    const ticket = await getTicketById(Number(ticketId));
-
-    if (!ticket) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Ticket not found' });
-    }
-
-    if (ticket.commuterId !== userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: 'Unauthorized ticket' });
-    }
+    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    if (!ticket) return;
 
     const updateTicket = await setPassengerCount(
       Number(ticketId),
@@ -220,19 +187,8 @@ export const getFares = async (req, res) => {
         .json({ success: false, message: 'Missing required data' });
     }
 
-    const ticket = await getTicketById(Number(ticketId));
-
-    if (!ticket) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Ticket not found' });
-    }
-
-    if (ticket.commuterId !== userId) {
-      return res
-        .status(403)
-        .json({ success: false, message: 'Unauthorized ticket' });
-    }
+    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    if (!ticket) return;
 
     const fares = calculateFare(ticket.trip, ticket);
 
