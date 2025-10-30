@@ -10,6 +10,7 @@ import {
   getUpcomingDestinationHalts,
 } from '../services/ticketService.js';
 import { getAuthorizedTicket } from '../utils/ticketUtils.js';
+import { requireFields } from '../utils/validateRequest.js';
 
 // Commuter scans QR, determine the boarding halt
 export const scanQrBoarding = async (req, res) => {
@@ -17,11 +18,14 @@ export const scanQrBoarding = async (req, res) => {
     const userId = req.userId;
     const { busId, latitude, longitude } = req.body;
 
-    if (!busId || !latitude || !longitude) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Missing required data' });
-    }
+    if (
+      !requireFields(res, { busId, latitude, longitude }, [
+        'busId',
+        'latitude',
+        'longitude',
+      ])
+    )
+      return;
 
     const trip = await getActiveTripByBusQrCode(busId);
 
@@ -64,11 +68,7 @@ export const getUpcomingHalts = async (req, res) => {
     const { ticketId } = req.params;
     const userId = req.userId;
 
-    if (!ticketId) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Ticket ID is required' });
-    }
+    if (!requireFields(res, { ticketId }, ['ticketId'])) return;
 
     const ticket = await getAuthorizedTicket(ticketId, userId, res);
     if (!ticket) return;
@@ -94,7 +94,15 @@ export const selectDestinationHalt = async (req, res) => {
     const { destinationHalt } = req.body;
     const userId = req.userId;
 
-    if (!ticketId || !destinationHalt || !destinationHalt.id) {
+    if (
+      !requireFields(res, { ticketId, destinationHalt }, [
+        'ticketId',
+        'destinationHalt',
+      ])
+    )
+      return;
+
+    if (!destinationHalt.id) {
       return res
         .status(400)
         .json({ success: false, message: 'Missing required data' });
@@ -140,16 +148,19 @@ export const setAccompanyingPassengers = async (req, res) => {
     const { adultCount, childCount } = req.body;
     const userId = req.userId;
 
-    if (!ticketId || !adultCount || !childCount) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Missing required fields' });
-    }
+    if (
+      !requireFields(res, { ticketId, adultCount, childCount }, [
+        'ticketId',
+        'adultCount',
+        'childCount',
+      ])
+    )
+      return;
 
     if (adultCount + childCount < 1) {
       return res.status(400).json({
         success: false,
-        message: 'At least one passenger is required',
+        message: 'At least one passenger must be selected',
       });
     }
 
@@ -181,14 +192,24 @@ export const getFares = async (req, res) => {
     const { ticketId } = req.params;
     const userId = req.userId;
 
-    if (!ticketId) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Missing required data' });
-    }
+    if (!requireFields(res, { ticketId }, ['ticketId'])) return;
 
     const ticket = await getAuthorizedTicket(ticketId, userId, res);
     if (!ticket) return;
+
+    if (!ticket.boardingHalt || !ticket.destinationHalt) {
+      return res.status(400).json({
+        success: false,
+        message: 'Boarding and destination halts must be selected first',
+      });
+    }
+
+    if (ticket.adultCount + ticket.childCount < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one passenger must be selected',
+      });
+    }
 
     const fares = calculateFare(ticket.trip, ticket);
 
