@@ -37,6 +37,16 @@ export const scanQrBoarding = async (req, res) => {
         .json({ success: false, message: 'No active trip found for this bus' });
     }
 
+    const activeTicket = await getActiveTicket(userId);
+
+    if (activeTicket) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'An active ticket exists. Please either cancel or complete it to proceed',
+      });
+    }
+
     const boardingHalt = getNearestBoardingHalt(trip, latitude, longitude);
 
     const ticket = await createTicketAtBoarding({
@@ -198,6 +208,13 @@ export const getFares = async (req, res) => {
 
     const ticket = await getAuthorizedTicket(ticketId, userId, res);
     if (!ticket) return;
+
+    if (ticket.status !== 'PENDING') {
+      return res.status(400).json({
+        success: false,
+        message: 'Ticket is either cancelled or expired',
+      });
+    }
 
     if (!ticket.boardingHalt || !ticket.destinationHalt) {
       return res.status(400).json({
