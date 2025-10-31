@@ -237,7 +237,8 @@ const Wallet = () => {
                 >
                   <div className="flex flex-col gap-1">
                     <span className="text-gray-900 font-medium text-sm">
-                      {tx.description}
+                      {tx.description.replace(/\((.*?)\)/g, '')}
+                      {/* remove parentheses and their contents */}
                     </span>
                     <span className="text-gray-500 text-xs">
                       {new Date(tx.createdAt).toLocaleString()}
@@ -245,7 +246,7 @@ const Wallet = () => {
                   </div>
 
                   <span
-                    className={`font-semibold ${
+                    className={`font-semibold flex-shrink-0 ${
                       tx.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
                     }`}
                   >
