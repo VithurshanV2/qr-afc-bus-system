@@ -16,6 +16,7 @@ export default [
         window: true,
         document: true,
         navigator: true,
+        console: true,
       },
       parserOptions: {
         ecmaFeatures: { jsx: true },
