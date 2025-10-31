@@ -2,6 +2,7 @@ import express from 'express';
 import userAuth from '../middleware/userAuth.js';
 import {
   cancelTicket,
+  fetchActiveTicket,
   getFares,
   getUpcomingHalts,
   scanQrBoarding,
@@ -25,5 +26,6 @@ ticketRouter.post(
 );
 ticketRouter.get('/fares/:ticketId', userAuth, getFares);
 ticketRouter.post('/cancel', userAuth, cancelTicket);
+ticketRouter.get('/active', userAuth, fetchActiveTicket);
 
 export default ticketRouter;

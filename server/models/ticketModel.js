@@ -82,6 +82,10 @@ export const getActiveTicket = async (userId) => {
       expiresAt: { gt: new Date() },
     },
     orderBy: { id: 'desc' },
+    include: {
+      trip: { include: { bus: true, route: true } },
+      commuter: true,
+    },
   });
 };
 

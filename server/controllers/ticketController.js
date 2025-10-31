@@ -235,6 +235,28 @@ export const getFares = async (req, res) => {
   }
 };
 
+// fetch active ticket
+export const fetchActiveTicket = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const ticket = await getActiveTicket(userId);
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'No active ticket' });
+    }
+
+    return res.status(200).json({ success: true, ticket });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
 // Cancel active ticket
 export const cancelTicket = async (req, res) => {
   try {
