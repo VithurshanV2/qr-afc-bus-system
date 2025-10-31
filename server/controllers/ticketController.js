@@ -1,5 +1,7 @@
 import {
   createTicketAtBoarding,
+  getActiveTicket,
+  setCancelTicket,
   setDestinationHalt,
   setPassengerCount,
 } from '../models/ticketModel.js';
@@ -225,6 +227,34 @@ export const getFares = async (req, res) => {
     };
 
     return res.status(200).json({ success: true, ticketSummary });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Cancel active ticket
+export const cancelTicket = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const activeTicket = await getActiveTicket(userId);
+
+    if (!activeTicket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'No active ticket found' });
+    }
+
+    const cancelTicket = await setCancelTicket(activeTicket);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Ticket cancelled successfully',
+      cancelTicket,
+    });
   } catch (error) {
     console.error(error);
     return res

@@ -84,3 +84,11 @@ export const getActiveTicket = async (userId) => {
     orderBy: { id: 'desc' },
   });
 };
+
+// Cancel active ticket
+export const setCancelTicket = async (activeTicket) => {
+  return await prisma.ticket.update({
+    where: { id: activeTicket.id },
+    data: { status: 'CANCELLED', cancelledAt: new Date() },
+  });
+};
