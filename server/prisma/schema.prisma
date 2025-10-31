@@ -144,10 +144,15 @@ model Ticket {
   totalFare       Int?
   status          TicketStatus @default(PENDING)
   issuedAt        DateTime     @default(now())
+  expiresAt       DateTime?
+  cancelledAt     DateTime?
+
+  @@index([commuterId, status])
 }
 
 enum TicketStatus {
   PENDING
+  EXPIRED
   CONFIRMED
   CANCELLED
 }
