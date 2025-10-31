@@ -76,7 +76,9 @@ export const payTicketFare = async (ticketId, userId, fares) => {
   return await prisma.$transaction(async (tx) => {
     const ticket = await tx.ticket.findUnique({
       where: { id: ticketId },
-      select: { id: true, status: true, commuterId: true },
+      include: {
+        trip: { include: { route: true } },
+      },
     });
 
     if (!ticket) {
@@ -114,7 +116,7 @@ export const payTicketFare = async (ticketId, userId, fares) => {
         walletId: wallet.id,
         amount: fares.totalFare,
         type: 'DEBIT',
-        description: `Ticket #${ticket.id}: ${ticket.boardingHalt.name} - ${ticket.destinationHalt.name} via Route ${ticket.trip.route.number}`,
+        description: `Ticket #${ticket.id}: ${ticket.boardingHalt.englishName} - ${ticket.destinationHalt.englishName} via Route ${ticket.trip.route.number}`,
         sessionId: `ticket-${ticket.id}-${Date.now()}`,
       },
     });

@@ -246,7 +246,7 @@ export const getTransactions = async (req, res) => {
 // Fare is deducted from commuters wallet balance
 export const payFare = async (req, res) => {
   try {
-    const { ticketId } = req.params;
+    const ticketId = Number(req.params.ticketId);
     const userId = req.userId;
 
     const ticket = await getAuthorizedTicket(ticketId, userId, res);
