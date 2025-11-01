@@ -8,8 +8,13 @@ import { BounceLoader } from 'react-spinners';
 
 const DestinationSelection = () => {
   const { backendUrl } = useContext(AppContext);
-  const { activeTicket, boardingHalt, setScanStep, setActiveTicket } =
-    useContext(CommuterContext);
+  const {
+    activeTicket,
+    boardingHalt,
+    setScanStep,
+    setActiveTicket,
+    resetCommuter,
+  } = useContext(CommuterContext);
 
   const [loading, setLoading] = useState(false);
   const [upcomingHalts, setUpcomingHalts] = useState([]);
@@ -46,13 +51,20 @@ const DestinationSelection = () => {
     fetchHalts();
   }, [backendUrl, activeTicket]);
 
-  // selecting a destination halt
-  const selectDestinationHalt = async (halt) => {
-    if (!activeTicket) {
+  // Confirm selected destination halt
+  const handleConfirm = async () => {
+    if (!activeTicket || !selectedHalt) {
       return;
     }
 
-    setSelectedHalt(halt.id);
+    const halt = upcomingHalts.find(
+      (destinationHalt) => destinationHalt.id === selectedHalt,
+    );
+
+    if (!halt) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -71,6 +83,32 @@ const DestinationSelection = () => {
         setScanStep(3);
       } else {
         toast.error(data.message || 'Failed to select destination halt');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cancel ticket
+  const handleCancel = async () => {
+    if (!activeTicket) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(backendUrl + '/api/ticket/cancel');
+
+      if (data.success) {
+        toast.success(data.message || 'Ticket cancelled successfully');
+        resetCommuter();
+      } else {
+        toast.error(data.message || 'Failed to cancel ticket');
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
@@ -123,12 +161,12 @@ const DestinationSelection = () => {
             upcomingHalts.map((halt) => (
               <button
                 key={halt.id}
-                onClick={() => selectDestinationHalt(halt)}
+                onClick={() => setSelectedHalt(halt.id)}
                 disabled={loading}
                 className={`w-full py-3 px-4 rounded-xl boarder transition-all duration-200 
                   ${
                     selectedHalt === halt.id
-                      ? 'bg-yellow-300 border-yellow-400 text-gray-800 shadow-md'
+                      ? 'bg-yellow-400 border-yellow-500 text-gray-800 shadow-md'
                       : 'bg-gray-100 boarder-gray-200 text-gray-800 hover:bg-gray-200'
                   }`}
               >
@@ -142,6 +180,31 @@ const DestinationSelection = () => {
           )}
         </div>
       )}
+
+      {/* Cancel and Next buttons */}
+      <div className="flex mt-6 gap-3">
+        <button
+          onClick={handleCancel}
+          disabled={loading}
+          className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-full 
+          transition-all duration-200 transform hover:bg-gray-300 active:scale-95 active:shadow-lg"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={handleConfirm}
+          disabled={!selectedHalt || loading}
+          className={`flex-1 px-4 py-2 rounded-full transition-all duration-200 transform active:scale-95 active:shadow-lg
+            ${
+              selectedHalt && !loading
+                ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-300'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+        >
+          Next
+        </button>
+      </div>
     </motion.div>
   );
 };
