@@ -13,7 +13,7 @@ const DestinationSelection = () => {
 
   const [loading, setLoading] = useState(false);
   const [upcomingHalts, setUpcomingHalts] = useState([]);
-  const [_selectedHalt, setSelectedHalt] = useState(null);
+  const [selectedHalt, setSelectedHalt] = useState(null);
 
   // Fetch upcoming destination halts
   useEffect(() => {
@@ -93,37 +93,52 @@ const DestinationSelection = () => {
 
       {/* Trip info */}
       {activeTicket && (
-        <div>
-          <p>
-            <span>Route:</span> {activeTicket.trip?.route?.name} - (
+        <div className=" text-gray-700 mb-4">
+          <p className="mb-1">
+            <span className="font-semibold text-gray-900">Route:</span>{' '}
+            {activeTicket.trip?.route?.name} - (
             {activeTicket.trip?.route?.number})
           </p>
           <p>
-            <span>Boarding Halt:</span> {boardingHalt.replace(/\((.*?)\)/g, '')}
+            <span className="font-semibold text-gray-900">Boarding Halt:</span>{' '}
+            {boardingHalt.replace(/\((.*?)\)/g, '')}
           </p>
         </div>
       )}
 
       {/* Destination halt list */}
       {loading ? (
-        <div>
+        <div className="flex flex-col items-center justify-center py-10">
           <BounceLoader size={60} color="#FFB347" />
-          <p>Loading upcoming halts...</p>
+          <p className="mt-2 text-gray-700 font-medium">
+            Loading upcoming halts...
+          </p>
         </div>
       ) : (
-        <div>
+        <div
+          className="max-h-72 overflow-y-auto flex flex-col gap-3 mt-4"
+          style={{ scrollbarWidth: 'thin' }}
+        >
           {upcomingHalts.length > 0 ? (
             upcomingHalts.map((halt) => (
               <button
                 key={halt.id}
                 onClick={() => selectDestinationHalt(halt)}
                 disabled={loading}
+                className={`w-full py-3 px-4 rounded-xl boarder transition-all duration-200 
+                  ${
+                    selectedHalt === halt.id
+                      ? 'bg-yellow-300 border-yellow-400 text-gray-800 shadow-md'
+                      : 'bg-gray-100 boarder-gray-200 text-gray-800 hover:bg-gray-200'
+                  }`}
               >
                 {halt.englishName}
               </button>
             ))
           ) : (
-            <p>No upcoming halts available</p>
+            <p className="text-center text-gray-700 ">
+              No upcoming halts available
+            </p>
           )}
         </div>
       )}
