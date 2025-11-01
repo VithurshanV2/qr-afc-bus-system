@@ -154,8 +154,8 @@ const DestinationSelection = () => {
         </div>
       ) : (
         <div
-          className="max-h-72 overflow-y-auto flex flex-col gap-3 mt-4"
-          style={{ scrollbarWidth: 'thin' }}
+          className="overflow-y-auto flex flex-col gap-3 mt-4"
+          style={{ maxHeight: 'calc(70vh - 200px)', scrollbarWidth: 'thin' }}
         >
           {upcomingHalts.length > 0 ? (
             upcomingHalts.map((halt) => (
@@ -163,11 +163,11 @@ const DestinationSelection = () => {
                 key={halt.id}
                 onClick={() => setSelectedHalt(halt.id)}
                 disabled={loading}
-                className={`w-full py-3 px-4 rounded-xl boarder transition-all duration-200 
+                className={`w-full py-3 px-4 rounded-xl boarder transition-all duration-200 transform
                   ${
                     selectedHalt === halt.id
-                      ? 'bg-yellow-400 border-yellow-500 text-gray-800 shadow-md'
-                      : 'bg-gray-100 boarder-gray-200 text-gray-800 hover:bg-gray-200'
+                      ? 'bg-yellow-400 border-yellow-500 text-gray-800 shadow-md active:scale-95'
+                      : 'bg-gray-100 boarder-gray-200 text-gray-800 hover:bg-gray-200 active:scale-95'
                   }`}
               >
                 {halt.englishName}
