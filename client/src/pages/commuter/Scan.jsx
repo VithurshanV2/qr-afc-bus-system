@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { CommuterContext } from '../../context/CommuterContext';
 import QrScanner from './components/QrScanner';
 import DestinationSelection from './components/DestinationSelection';
+import PassengerSelection from './components/PassengerSelection';
 
 const Scan = () => {
   const { scanStep } = useContext(CommuterContext);
@@ -19,6 +20,9 @@ const Scan = () => {
 
           {/* Step 2: Select destination */}
           {scanStep === 2 && <DestinationSelection />}
+
+          {/* Step 3: Add accompanying passengers */}
+          {scanStep === 3 && <PassengerSelection />}
         </AnimatePresence>
       </div>
     </div>
