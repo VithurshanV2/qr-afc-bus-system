@@ -50,6 +50,9 @@ export const setDestinationHalt = async (ticketId, destinationHalt) => {
   return await prisma.ticket.update({
     where: { id: ticketId },
     data: { destinationHalt, status: 'PENDING' },
+    include: {
+      trip: { include: { bus: true, route: true } },
+    },
   });
 };
 
@@ -58,6 +61,9 @@ export const setPassengerCount = async (ticketId, adultCount, childCount) => {
   return await prisma.ticket.update({
     where: { id: ticketId },
     data: { adultCount, childCount, status: 'PENDING' },
+    include: {
+      trip: { include: { bus: true, route: true } },
+    },
   });
 };
 
