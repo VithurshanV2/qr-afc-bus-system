@@ -232,18 +232,13 @@ export const getFares = async (req, res) => {
 
     const fares = calculateFare(ticket.trip, ticket);
 
-    const ticketSummary = {
-      boardingHalt: ticket.boardingHalt.englishName,
-      destinationHalt: ticket.destinationHalt.englishName,
-      adultCount: ticket.adultCount,
-      childCount: ticket.childCount,
+    const updatedTicket = {
+      ...ticket,
       baseFare: fares.baseFare,
       totalFare: fares.totalFare,
-      routeNumber: ticket.trip.route.number,
-      routeName: ticket.trip.route.name,
     };
 
-    return res.status(200).json({ success: true, ticketSummary });
+    return res.status(200).json({ success: true, ticket: updatedTicket });
   } catch (error) {
     console.error(error);
     return res
