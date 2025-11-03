@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AppContext } from '../../../context/AppContext';
-import { CommuterContext } from '../../../context/CommuterContext';
+import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
@@ -44,7 +44,7 @@ const PassengerSelection = () => {
       if (data.success) {
         setActiveTicket(data.ticket);
         toast.success('Added accompanying passengers');
-        setScanStep(4);
+        setScanStep(SCAN_STEPS.PAYMENT);
       } else {
         toast.error(data.message || 'Failed to add accompanying passengers');
       }
@@ -83,7 +83,7 @@ const PassengerSelection = () => {
 
   // Go back to destination selection
   const handleBack = () => {
-    setScanStep(2);
+    setScanStep(SCAN_STEPS.DESTINATION);
   };
 
   return (

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { BounceLoader } from 'react-spinners';
 import { motion } from 'framer-motion';
-import { CommuterContext } from '../../../context/CommuterContext';
+import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
 
 const QrScanner = () => {
   const { backendUrl } = useContext(AppContext);
@@ -132,7 +132,7 @@ const QrScanner = () => {
 
       if (data.success) {
         setBoardingHalt(data.ticket.boardingHalt);
-        setScanStep(2);
+        setScanStep(SCAN_STEPS.DESTINATION);
         setScanError('');
         await stopScanner();
         setFetchingHalt(false);

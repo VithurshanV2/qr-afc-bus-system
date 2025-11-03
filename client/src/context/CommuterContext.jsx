@@ -3,12 +3,19 @@ import PropTypes from 'prop-types';
 import { AppContext } from './AppContext';
 import axios from 'axios';
 
+export const SCAN_STEPS = {
+  SCAN: 1,
+  DESTINATION: 2,
+  PASSENGERS: 3,
+  PAYMENT: 4,
+};
+
 export const CommuterContext = createContext();
 
 export const CommuterProvider = ({ children }) => {
   const { backendUrl } = useContext(AppContext);
 
-  const [scanStep, setScanStep] = useState(1);
+  const [scanStep, setScanStep] = useState(SCAN_STEPS.SCAN);
   const [boardingHalt, setBoardingHalt] = useState(null);
   const [activeTicket, setActiveTicket] = useState(null);
 

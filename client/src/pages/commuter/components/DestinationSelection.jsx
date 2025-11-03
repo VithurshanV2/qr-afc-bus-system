@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AppContext } from '../../../context/AppContext';
-import { CommuterContext } from '../../../context/CommuterContext';
+import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { BounceLoader } from 'react-spinners';
@@ -80,7 +80,7 @@ const DestinationSelection = () => {
         toast.success(
           data.message || 'Destination halt is selected successfully ',
         );
-        setScanStep(3);
+        setScanStep(SCAN_STEPS.PASSENGERS);
       } else {
         toast.error(data.message || 'Failed to select destination halt');
       }
