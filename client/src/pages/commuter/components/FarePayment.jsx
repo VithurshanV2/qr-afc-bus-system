@@ -19,8 +19,8 @@ const PassengerSelection = () => {
   } = useContext(CommuterContext);
 
   const [loading, setLoading] = useState(false);
-  const [baseFare, setBaseFare] = useState(0);
-  const [totalFare, setTotalFare] = useState(0);
+  const [_baseFare, setBaseFare] = useState(0);
+  const [_totalFare, setTotalFare] = useState(0);
 
   const fetchedFare = useRef(false);
 
@@ -123,35 +123,33 @@ const PassengerSelection = () => {
         Fare Summary
       </h2>
 
-      {/* Trip info */}
-      <div className=" text-gray-700 mb-4">
-        <p className="mb-1">
-          <span className="font-semibold text-gray-900">Route:</span>{' '}
-          {activeTicket.trip?.route?.name} - ({activeTicket.trip?.route?.number}
-          )
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold text-gray-900">BoardingHalt:</span>{' '}
-          {boardingHalt.replace(/\((.*?)\)/g, '')}
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold text-gray-900">DestinationHalt:</span>{' '}
-          {activeTicket.destinationHalt?.englishName.replace(/\((.*?)\)/g, '')}
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold text-gray-900">
-            Accompanying passengers:
-          </span>{' '}
-          {activeTicket.adultCount + ' adults '} {activeTicket.childCount}
-        </p>
-        <p className="mb-1">
-          <span className="font-semibold text-gray-900">BaseFare:</span>
-          {baseFare}
-          {totalFare}
-        </p>
+      {/* Fare summary*/}
+      <div className="text-center space-y-4">
+        {/* Route info */}
+        <div>
+          <p className="text-gray-700 text-sm mb-0.5">Route</p>
+          <p className="text-gray-900 text-xl font-medium leading-tight">
+            {activeTicket.trip?.route?.name} ({activeTicket.trip?.route?.number}
+            )
+          </p>
+        </div>
+
+        {/* Halts info */}
+        <div>
+          <p className="text-gray-700 text-sm mb-0.5">
+            Boarding Halt - Destination Halt
+          </p>
+          <p className="text-gray-900 text-xl font-medium leading-tight">
+            {boardingHalt.replace(/\((.*?)\)/g, '')} {'-'}{' '}
+            {activeTicket.destinationHalt?.englishName.replace(
+              /\((.*?)\)/g,
+              '',
+            )}
+          </p>
+        </div>
       </div>
 
-      {/* Cancel and Next buttons */}
+      {/* Cancel and Pay Fare buttons */}
       <div className="flex mt-6 gap-3">
         <button
           onClick={handleCancel}
