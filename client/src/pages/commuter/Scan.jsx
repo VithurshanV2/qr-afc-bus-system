@@ -5,6 +5,7 @@ import { CommuterContext } from '../../context/CommuterContext';
 import QrScanner from './components/QrScanner';
 import DestinationSelection from './components/DestinationSelection';
 import PassengerSelection from './components/PassengerSelection';
+import FarePayment from './components/FarePayment';
 
 const Scan = () => {
   const { scanStep } = useContext(CommuterContext);
@@ -23,6 +24,9 @@ const Scan = () => {
 
           {/* Step 3: Add accompanying passengers */}
           {scanStep === 3 && <PassengerSelection />}
+
+          {/* Step 3: Fare calculation and payment */}
+          {scanStep === 4 && <FarePayment />}
         </AnimatePresence>
       </div>
     </div>
