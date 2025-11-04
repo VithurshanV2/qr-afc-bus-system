@@ -70,6 +70,43 @@ const PassengerSelection = () => {
     calculateTotalFare();
   }, [activeTicket]);
 
+  // Pay fare
+  const payFare = async () => {
+    if (!activeTicket) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.get(
+        backendUrl + `/api/wallet/pay-fare/${activeTicket.id}`,
+      );
+
+      if (data.success) {
+        toast.success(data.message || 'Ticket paid successfully');
+        // navigate to the ticket page
+      } else {
+        toast.error(data.message || 'Ticket payment failed');
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+
+      if (message === 'Insufficient balance') {
+        handleInsufficientBalance();
+      } else {
+        toast.error(message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Provide wallet top up option when insufficient balance
+  const handleInsufficientBalance = async () => {};
+
   // Cancel ticket
   const handleCancel = async () => {
     if (!activeTicket) {
@@ -161,6 +198,7 @@ const PassengerSelection = () => {
         </button>
 
         <button
+          onClick={payFare}
           disabled={loading}
           className="flex-1 bg-yellow-200 text-yellow-800 hover:bg-yellow-300 px-4 py-2 rounded-full transition-all duration-200 
           transform active:scale-95 active:shadow-lg"
