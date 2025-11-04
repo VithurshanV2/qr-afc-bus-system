@@ -7,6 +7,7 @@ import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
 import { useRef } from 'react';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const PassengerSelection = () => {
   const { backendUrl } = useContext(AppContext);
@@ -21,6 +22,7 @@ const PassengerSelection = () => {
   const [loading, setLoading] = useState(false);
   const [_baseFare, setBaseFare] = useState(0);
   const [_totalFare, setTotalFare] = useState(0);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const fetchedFare = useRef(false);
 
@@ -81,7 +83,7 @@ const PassengerSelection = () => {
     try {
       axios.defaults.withCredentials = true;
 
-      const { data } = await axios.get(
+      const { data } = await axios.post(
         backendUrl + `/api/wallet/pay-fare/${activeTicket.id}`,
       );
 
@@ -105,7 +107,9 @@ const PassengerSelection = () => {
   };
 
   // Provide wallet top up option when insufficient balance
-  const handleInsufficientBalance = async () => {};
+  const handleInsufficientBalance = async () => {
+    setIsConfirmOpen(true);
+  };
 
   // Cancel ticket
   const handleCancel = async () => {
@@ -206,6 +210,20 @@ const PassengerSelection = () => {
           Pay Fare
         </button>
       </div>
+
+      {/* Confirm model when wallet balance is insufficient */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="Insufficient Balance"
+        message="Your wallet balance is insufficient to complete this payment. Would you like to top up now?"
+        confirmText="Top Up Wallet"
+        cancelText="Cancel"
+        onConfirm={() => {
+          setIsConfirmOpen(false);
+          window.location.href = `/commuter/wallet?from=scan&ticketId=${activeTicket.id}`;
+        }}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </motion.div>
   );
 };
