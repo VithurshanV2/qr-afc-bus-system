@@ -20,8 +20,8 @@ const PassengerSelection = () => {
   } = useContext(CommuterContext);
 
   const [loading, setLoading] = useState(false);
-  const [_baseFare, setBaseFare] = useState(0);
-  const [_totalFare, setTotalFare] = useState(0);
+  const [baseFare, setBaseFare] = useState(0);
+  const [totalFare, setTotalFare] = useState(0);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const fetchedFare = useRef(false);
@@ -165,27 +165,69 @@ const PassengerSelection = () => {
       </h2>
 
       {/* Fare summary*/}
-      <div className="text-center space-y-4">
-        {/* Route info */}
-        <div>
-          <p className="text-gray-700 text-sm mb-0.5">Route</p>
-          <p className="text-gray-900 text-xl font-medium leading-tight">
-            {activeTicket.trip?.route?.name} ({activeTicket.trip?.route?.number}
-            )
-          </p>
+      <div className="space-y-5">
+        {/* Route, Bus, Ticket ID info */}
+        <div className=" border-b border-gray-200 pb-3 mb-3">
+          <div className="flex justify-between items-start">
+            <div className="flex-1 ">
+              <p className="text-gray-800 font-medium">
+                <span className="text-gray-600 font-medium">Route:</span>{' '}
+                {activeTicket.trip?.route?.name || 'N/A'} (
+                {activeTicket.trip?.route?.number || 'N/A'})
+              </p>
+              <p className="text-gray-800 font-medium">
+                <span className="text-gray-600 font-medium">Bus Reg. No.:</span>{' '}
+                {activeTicket.trip?.bus?.registrationNumber || 'N/A'}
+              </p>
+            </div>
+
+            <div className="ml-4 text-right">
+              <p className="text-gray-800 font-medium">
+                <span className="text-gray-600 font-medium">Ticket ID: </span>{' '}
+                <span className="text-yellow-600 font-semibold">
+                  #{activeTicket?.id}
+                </span>
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Halts info */}
-        <div>
-          <p className="text-gray-700 text-sm mb-0.5">
+        <div className="text-center mb-4 border-b border-gray-200 pb-3">
+          <p className="text-gray-600 text-sm tracking-wide">
             Boarding Halt - Destination Halt
           </p>
-          <p className="text-gray-900 text-xl font-medium leading-tight">
+          <p className="text-2xl font-medium text-gray-900 truncate mx-auto whitespace-nowrap">
             {boardingHalt.replace(/\((.*?)\)/g, '')} {'-'}{' '}
             {activeTicket.destinationHalt?.englishName.replace(
               /\((.*?)\)/g,
               '',
             )}
+          </p>
+        </div>
+
+        {/* Fare info */}
+        <div className="flex justify-between mb-1.5">
+          <span className="text-gray-600">Base Fare</span>
+          <span className="text-gray-900 font-medium">
+            {baseFare.toFixed(2)} LKR
+          </span>
+        </div>
+
+        <div className="flex justify-between">
+          <span className="text-gray-600">
+            {activeTicket.adultCount || 'N/A'} Adult
+            {activeTicket.adultCount > 1 ? 's' : ''}
+            {activeTicket.childCount > 0 &&
+              `, ${activeTicket.childCount} Child${activeTicket.childCount > 1 ? 'ren' : ''}`}
+          </span>
+        </div>
+
+        {/* Total fare */}
+        <div className="text-center mt-2">
+          <p className="text-gray-600 tracking-wide text-sm">Total Fare</p>
+          <p className="text-4xl font-medium text-gray-900">
+            {totalFare.toFixed(2)} LKR
           </p>
         </div>
       </div>
