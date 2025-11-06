@@ -33,9 +33,12 @@ export const CommuterProvider = ({ children }) => {
         const { data } = await axios.get(backendUrl + '/api/ticket/active');
 
         if (data.success && data.ticket) {
-          setActiveTicket(data.ticket);
-          setScanStep(2);
-          setBoardingHalt(data.ticket.boardingHalt.englishName);
+          const { ticket, progressStep } = data;
+          setActiveTicket(ticket);
+          setBoardingHalt(ticket.boardingHalt?.englishName || null);
+          setScanStep(progressStep || SCAN_STEPS.SCAN);
+        } else {
+          resetCommuter();
         }
       } catch (error) {
         console.error(error.response?.data?.message || 'Something went wrong');

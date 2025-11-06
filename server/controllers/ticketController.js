@@ -260,7 +260,31 @@ export const fetchActiveTicket = async (req, res) => {
         .json({ success: false, message: 'No active ticket' });
     }
 
-    return res.status(200).json({ success: true, ticket });
+    const PROGRESS = {
+      SCAN: 1,
+      DESTINATION: 2,
+      PASSENGERS: 3,
+      PAYMENT: 4,
+    };
+
+    let progressStep = PROGRESS.SCAN;
+
+    if (ticket.boardingHalt && !ticket.destinationHalt) {
+      progressStep = PROGRESS.DESTINATION;
+    } else if (
+      ticket.destinationHalt &&
+      ticket.adultCount === 1 &&
+      ticket.childCount === 0
+    ) {
+      progressStep = PROGRESS.PASSENGERS;
+    } else if (
+      ticket.destinationHalt &&
+      (ticket.adultCount > 1 || ticket.childCount > 0)
+    ) {
+      progressStep = PROGRESS.PAYMENT;
+    }
+
+    return res.status(200).json({ success: true, ticket, progressStep });
   } catch (error) {
     console.error(error);
     return res
