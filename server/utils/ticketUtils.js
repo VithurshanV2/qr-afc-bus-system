@@ -18,6 +18,24 @@ export const getAuthorizedTicket = async (ticketId, userId, res) => {
   return ticket;
 };
 
+export const ensurePendingTicket = async (ticketId, userId, res) => {
+  const ticket = await getAuthorizedTicket(ticketId, userId, res);
+
+  if (!ticket) {
+    return null;
+  }
+
+  if (ticket.status !== 'PENDING') {
+    res.status(400).json({
+      success: false,
+      message: 'Ticket is either cancelled or expired',
+    });
+    return null;
+  }
+
+  return ticket;
+};
+
 export const validateHaltSelection = (ticket) => {
   if (!ticket.boardingHalt || !ticket.destinationHalt) {
     return {

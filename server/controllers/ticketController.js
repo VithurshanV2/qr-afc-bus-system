@@ -11,7 +11,10 @@ import {
   getNearestBoardingHalt,
   getUpcomingDestinationHalts,
 } from '../services/ticketService.js';
-import { getAuthorizedTicket } from '../utils/ticketUtils.js';
+import {
+  ensurePendingTicket,
+  getAuthorizedTicket,
+} from '../utils/ticketUtils.js';
 import { requireFields } from '../utils/validateRequest.js';
 
 // Commuter scans QR, determine the boarding halt
@@ -120,7 +123,7 @@ export const selectDestinationHalt = async (req, res) => {
         .json({ success: false, message: 'Missing required data' });
     }
 
-    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    const ticket = await ensurePendingTicket(ticketId, userId, res);
     if (!ticket) return;
 
     const upcomingHalts = getUpcomingDestinationHalts(
@@ -176,7 +179,7 @@ export const setAccompanyingPassengers = async (req, res) => {
       });
     }
 
-    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    const ticket = await ensurePendingTicket(ticketId, userId, res);
     if (!ticket) return;
 
     const updateTicket = await setPassengerCount(
@@ -206,15 +209,8 @@ export const getFares = async (req, res) => {
 
     if (!requireFields(res, { ticketId }, ['ticketId'])) return;
 
-    const ticket = await getAuthorizedTicket(ticketId, userId, res);
+    const ticket = await ensurePendingTicket(ticketId, userId, res);
     if (!ticket) return;
-
-    if (ticket.status !== 'PENDING') {
-      return res.status(400).json({
-        success: false,
-        message: 'Ticket is either cancelled or expired',
-      });
-    }
 
     if (!ticket.boardingHalt || !ticket.destinationHalt) {
       return res.status(400).json({
