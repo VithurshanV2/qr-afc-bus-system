@@ -11,7 +11,7 @@ const Scan = () => {
   const { scanStep } = useContext(CommuterContext);
 
   return (
-    <div className="bg-white min-h-screen p-4">
+    <div className="bg-white min-h-[calc(100vh-4.4rem)] p-4">
       <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
 
       <div className="mt-6 max-w-md mx-auto shadow rounded-xl p-6 border border-gray-200">

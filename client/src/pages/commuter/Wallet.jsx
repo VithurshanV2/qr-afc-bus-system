@@ -146,7 +146,7 @@ const Wallet = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen p-4">
+    <div className="bg-white min-h-[calc(100vh-4.4rem)] p-4">
       <div className="flex items-start mb-4">
         <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
       </div>
