@@ -8,8 +8,11 @@ import { ArrowLeft } from 'lucide-react';
 import { useEffect } from 'react';
 import { useRef } from 'react';
 import ConfirmModal from '../../../components/ConfirmModal';
+import { useNavigate } from 'react-router-dom';
 
 const PassengerSelection = () => {
+  const navigate = useNavigate();
+
   const { backendUrl } = useContext(AppContext);
   const {
     activeTicket,
@@ -88,7 +91,9 @@ const PassengerSelection = () => {
 
       if (data.success) {
         toast.success(data.message || 'Ticket paid successfully');
-        // navigate to the ticket page
+        resetCommuter();
+
+        navigate('/commuter/ticket');
       } else {
         toast.error(data.message || 'Ticket payment failed');
       }
