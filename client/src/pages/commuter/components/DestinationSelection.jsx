@@ -77,9 +77,6 @@ const DestinationSelection = () => {
 
       if (data.success) {
         setActiveTicket(data.ticket);
-        toast.success(
-          data.message || 'Destination halt is selected successfully ',
-        );
         setScanStep(SCAN_STEPS.PASSENGERS);
       } else {
         toast.error(data.message || 'Failed to select destination halt');

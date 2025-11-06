@@ -43,7 +43,6 @@ const PassengerSelection = () => {
 
       if (data.success) {
         setActiveTicket(data.ticket);
-        toast.success('Added accompanying passengers');
         setScanStep(SCAN_STEPS.PAYMENT);
       } else {
         toast.error(data.message || 'Failed to add accompanying passengers');

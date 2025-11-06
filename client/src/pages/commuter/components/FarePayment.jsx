@@ -52,7 +52,6 @@ const PassengerSelection = () => {
 
         setBaseFare(updated.baseFare / 100);
         setTotalFare(updated.totalFare / 100);
-        toast.success('Total fare calculated');
       } else {
         toast.error(data.message || 'Failed to calculate fare');
       }
