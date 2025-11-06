@@ -22,7 +22,7 @@ const PassengerSelection = () => {
   const [loading, setLoading] = useState(false);
   const [baseFare, setBaseFare] = useState(0);
   const [totalFare, setTotalFare] = useState(0);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [modalType, setModalType] = useState(null);
 
   const fetchedFare = useRef(false);
 
@@ -107,7 +107,7 @@ const PassengerSelection = () => {
 
   // Provide wallet top up option when insufficient balance
   const handleInsufficientBalance = async () => {
-    setIsConfirmOpen(true);
+    setModalType('insufficient');
   };
 
   // Cancel ticket
@@ -139,6 +139,16 @@ const PassengerSelection = () => {
   // Go back to passenger selection
   const handleBack = () => {
     setScanStep(SCAN_STEPS.PASSENGERS);
+  };
+
+  // Open confirm modal before payment
+  const handleConfirmPay = () => {
+    setModalType('confirmPayment');
+  };
+
+  // Open cancel modal
+  const handleConfirmCancel = () => {
+    setModalType('cancelTicket');
   };
 
   return (
@@ -234,7 +244,7 @@ const PassengerSelection = () => {
       {/* Cancel and Pay Fare buttons */}
       <div className="flex mt-6 gap-3">
         <button
-          onClick={handleCancel}
+          onClick={handleConfirmCancel}
           disabled={loading}
           className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-full 
           transition-all duration-200 transform hover:bg-gray-300 active:scale-95 active:shadow-lg"
@@ -243,7 +253,7 @@ const PassengerSelection = () => {
         </button>
 
         <button
-          onClick={payFare}
+          onClick={handleConfirmPay}
           disabled={loading}
           className="flex-1 bg-yellow-200 text-yellow-800 hover:bg-yellow-300 px-4 py-2 rounded-full transition-all duration-200 
           transform active:scale-95 active:shadow-lg"
@@ -252,18 +262,46 @@ const PassengerSelection = () => {
         </button>
       </div>
 
-      {/* Confirm model when wallet balance is insufficient */}
+      {/* Confirm modal when wallet balance is insufficient */}
       <ConfirmModal
-        isOpen={isConfirmOpen}
+        isOpen={modalType === 'insufficient'}
         title="Insufficient Balance"
         message="Your wallet balance is insufficient to complete this payment. Would you like to top up now?"
         confirmText="Top Up Wallet"
         cancelText="Cancel"
         onConfirm={() => {
-          setIsConfirmOpen(false);
+          setModalType(null);
           window.location.href = `/commuter/wallet?from=scan&ticketId=${activeTicket.id}`;
         }}
-        onCancel={() => setIsConfirmOpen(false)}
+        onCancel={() => setModalType(null)}
+      />
+
+      {/* Confirm modal for confirm payment */}
+      <ConfirmModal
+        isOpen={modalType === 'confirmPayment'}
+        title="Confirm Payment"
+        message={`${totalFare.toFixed(2)} LKR will be deducted from your wallet balance. Do you want to proceed?`}
+        confirmText="Confirm"
+        cancelText="Cancel"
+        onConfirm={() => {
+          setModalType(null);
+          payFare();
+        }}
+        onCancel={() => setModalType(null)}
+      />
+
+      {/* Confirm modal for cancel ticket */}
+      <ConfirmModal
+        isOpen={modalType === 'cancelTicket'}
+        title="Cancel Ticket"
+        message="Are you sure you want to cancel this ticket?"
+        confirmText="Yes, Cancel"
+        cancelText="Go Back"
+        onConfirm={() => {
+          setModalType(null);
+          handleCancel();
+        }}
+        onCancel={() => setModalType(null)}
       />
     </motion.div>
   );

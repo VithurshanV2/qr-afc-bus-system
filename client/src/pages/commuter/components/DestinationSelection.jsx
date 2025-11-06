@@ -5,6 +5,7 @@ import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { BounceLoader } from 'react-spinners';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const DestinationSelection = () => {
   const { backendUrl } = useContext(AppContext);
@@ -19,6 +20,7 @@ const DestinationSelection = () => {
   const [loading, setLoading] = useState(false);
   const [upcomingHalts, setUpcomingHalts] = useState([]);
   const [selectedHalt, setSelectedHalt] = useState(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   // Fetch upcoming destination halts
   useEffect(() => {
@@ -181,7 +183,7 @@ const DestinationSelection = () => {
       {/* Cancel and Next buttons */}
       <div className="flex mt-6 gap-3">
         <button
-          onClick={handleCancel}
+          onClick={() => setIsConfirmOpen(true)}
           disabled={loading}
           className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-full 
           transition-all duration-200 transform hover:bg-gray-300 active:scale-95 active:shadow-lg"
@@ -202,6 +204,20 @@ const DestinationSelection = () => {
           Next
         </button>
       </div>
+
+      {/* Confirm modal for cancel ticket */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="Cancel Ticket"
+        message="Are you sure you want to cancel this ticket?"
+        confirmText="Yes, Cancel"
+        cancelText="Go Back"
+        onConfirm={() => {
+          setIsConfirmOpen(false);
+          handleCancel();
+        }}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </motion.div>
   );
 };

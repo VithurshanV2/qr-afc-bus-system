@@ -5,6 +5,7 @@ import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const PassengerSelection = () => {
   const { backendUrl } = useContext(AppContext);
@@ -19,6 +20,7 @@ const PassengerSelection = () => {
   const [loading, setLoading] = useState(false);
   const [adultCount, setAdultCount] = useState(1);
   const [childCount, setChildCount] = useState(0);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   // Update passenger count
   const setPassengerCount = async () => {
@@ -172,7 +174,7 @@ const PassengerSelection = () => {
       {/* Cancel and Next buttons */}
       <div className="flex mt-6 gap-3">
         <button
-          onClick={handleCancel}
+          onClick={() => setIsConfirmOpen(true)}
           disabled={loading}
           className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-full 
           transition-all duration-200 transform hover:bg-gray-300 active:scale-95 active:shadow-lg"
@@ -189,6 +191,20 @@ const PassengerSelection = () => {
           Continue
         </button>
       </div>
+
+      {/* Confirm modal for cancel ticket */}
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="Cancel Ticket"
+        message="Are you sure you want to cancel this ticket?"
+        confirmText="Yes, Cancel"
+        cancelText="Go Back"
+        onConfirm={() => {
+          setIsConfirmOpen(false);
+          handleCancel();
+        }}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </motion.div>
   );
 };
