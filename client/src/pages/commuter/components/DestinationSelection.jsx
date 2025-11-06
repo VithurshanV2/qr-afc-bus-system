@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AppContext } from '../../../context/AppContext';
 import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
@@ -22,6 +22,8 @@ const DestinationSelection = () => {
   const [selectedHalt, setSelectedHalt] = useState(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
+  const selectedHaltRef = useRef(null);
+
   // Fetch upcoming destination halts
   useEffect(() => {
     const fetchHalts = async () => {
@@ -40,6 +42,10 @@ const DestinationSelection = () => {
 
         if (data.success) {
           setUpcomingHalts(data.upcomingHalts);
+
+          if (activeTicket?.destinationHalt) {
+            setSelectedHalt(activeTicket.destinationHalt.id);
+          }
         } else {
           toast.error(data.message || 'Failed to fetch upcoming halts');
         }
@@ -116,6 +122,16 @@ const DestinationSelection = () => {
     }
   };
 
+  // scroll and center in the selected destination halt
+  useEffect(() => {
+    if (selectedHaltRef.current) {
+      selectedHaltRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [selectedHalt]);
+
   return (
     <motion.div
       key="destination"
@@ -160,6 +176,7 @@ const DestinationSelection = () => {
             upcomingHalts.map((halt) => (
               <button
                 key={halt.id}
+                ref={selectedHalt === halt.id ? selectedHaltRef : null}
                 onClick={() => setSelectedHalt(halt.id)}
                 disabled={loading}
                 className={`w-full py-3 px-4 rounded-xl boarder transition-all duration-200 transform
