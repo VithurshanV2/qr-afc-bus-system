@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AppContext } from '../../../context/AppContext';
 import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
@@ -86,6 +86,17 @@ const PassengerSelection = () => {
   const handleBack = () => {
     setScanStep(SCAN_STEPS.DESTINATION);
   };
+
+  // Preserve selected accompanying passengers
+  useEffect(() => {
+    if (activeTicket?.adultCount !== undefined) {
+      setAdultCount(activeTicket.adultCount);
+    }
+
+    if (activeTicket?.childCount !== undefined) {
+      setChildCount(activeTicket.childCount);
+    }
+  }, [activeTicket]);
 
   return (
     <motion.div
