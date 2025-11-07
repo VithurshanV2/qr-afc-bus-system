@@ -4,6 +4,7 @@ import {
   cancelTicket,
   fetchActiveTicket,
   fetchLatestTicket,
+  fetchPastTickets,
   getFares,
   getUpcomingHalts,
   scanQrBoarding,
@@ -29,5 +30,6 @@ ticketRouter.get('/fares/:ticketId', userAuth, getFares);
 ticketRouter.post('/cancel', userAuth, cancelTicket);
 ticketRouter.get('/active', userAuth, fetchActiveTicket);
 ticketRouter.get('/latest', userAuth, fetchLatestTicket);
+ticketRouter.get('/past', userAuth, fetchPastTickets);
 
 export default ticketRouter;

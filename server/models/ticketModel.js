@@ -114,3 +114,28 @@ export const getLatestTicket = async (userId) => {
     orderBy: { issuedAt: 'desc' },
   });
 };
+
+// Get past tickets excluding the latest ticket
+export const getPastTickets = async (
+  userId,
+  limit = 5,
+  cursor,
+  latestTicketId,
+) => {
+  const query = {
+    where: { commuterId: userId, status: 'CONFIRMED' },
+    orderBy: { issuedAt: 'desc' },
+    take: limit,
+  };
+
+  if (latestTicketId) {
+    query.where.id = { not: latestTicketId };
+  }
+
+  if (cursor) {
+    query.cursor = { id: cursor };
+    query.skip = 1;
+  }
+
+  return await prisma.ticket.findMany(query);
+};

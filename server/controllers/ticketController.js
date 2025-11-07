@@ -2,6 +2,7 @@ import {
   createTicketAtBoarding,
   getActiveTicket,
   getLatestTicket,
+  getPastTickets,
   setCancelTicket,
   setDestinationHalt,
   setPassengerCount,
@@ -338,6 +339,52 @@ export const fetchLatestTicket = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, ticket });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch past tickets
+export const fetchPastTickets = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { cursor, limit } = req.query;
+
+    // Validate limit
+    let parsedLimit = parseInt(limit, 10);
+
+    if (!Number.isFinite(parsedLimit) || parsedLimit <= 0) {
+      parsedLimit = 5;
+    }
+
+    if (parsedLimit > 50) {
+      parsedLimit = 50;
+    }
+
+    // Validate cursor
+    let parsedCursor = cursor ? parseInt(cursor, 10) : undefined;
+
+    if (cursor && !Number.isFinite(parsedCursor)) {
+      parsedCursor = undefined;
+    }
+
+    const latestTicketId = await getLatestTicket(userId)?.id;
+
+    const tickets = await getPastTickets(
+      userId,
+      parsedLimit,
+      parsedCursor,
+      latestTicketId,
+    );
+
+    return res.status(200).json({
+      success: true,
+      tickets,
+      nextCursor: tickets.length > 0 ? tickets[tickets.length - 1].id : null,
+    });
   } catch (error) {
     console.error(error);
     return res
