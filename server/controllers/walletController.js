@@ -200,7 +200,7 @@ export const fetchCheckoutSession = async (req, res) => {
 // Retrieve recent transactions
 export const getTransactions = async (req, res) => {
   try {
-    const userId = res.userId;
+    const userId = req.userId;
     const { cursor, limit } = req.query;
 
     // Validate limit
