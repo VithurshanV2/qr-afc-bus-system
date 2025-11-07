@@ -1,6 +1,7 @@
 import {
   createTicketAtBoarding,
   getActiveTicket,
+  getLatestTicket,
   setCancelTicket,
   setDestinationHalt,
   setPassengerCount,
@@ -309,6 +310,34 @@ export const cancelTicket = async (req, res) => {
       message: 'Ticket cancelled successfully',
       cancelTicket,
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch latest ticket
+export const fetchLatestTicket = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const ticket = await getLatestTicket(userId);
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    if (ticket.commuterId !== userId) {
+      return res
+        .status(403)
+        .json({ success: false, message: 'Unauthorized ticket' });
+    }
+
+    return res.status(200).json({ success: true, ticket });
   } catch (error) {
     console.error(error);
     return res

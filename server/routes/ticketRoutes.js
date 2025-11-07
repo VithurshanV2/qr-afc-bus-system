@@ -3,6 +3,7 @@ import userAuth from '../middleware/userAuth.js';
 import {
   cancelTicket,
   fetchActiveTicket,
+  fetchLatestTicket,
   getFares,
   getUpcomingHalts,
   scanQrBoarding,
@@ -27,5 +28,6 @@ ticketRouter.post(
 ticketRouter.get('/fares/:ticketId', userAuth, getFares);
 ticketRouter.post('/cancel', userAuth, cancelTicket);
 ticketRouter.get('/active', userAuth, fetchActiveTicket);
+ticketRouter.get('/latest', userAuth, fetchLatestTicket);
 
 export default ticketRouter;

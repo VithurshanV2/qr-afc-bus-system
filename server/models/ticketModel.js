@@ -102,3 +102,15 @@ export const setCancelTicket = async (activeTicket) => {
     data: { status: 'CANCELLED', cancelledAt: new Date() },
   });
 };
+
+// Get latest ticket
+export const getLatestTicket = async (userId) => {
+  return await prisma.ticket.findFirst({
+    where: { commuterId: userId, status: 'CONFIRMED' },
+    include: {
+      trip: { include: { bus: true, route: true } },
+      commuter: true,
+    },
+    orderBy: { issuedAt: 'desc' },
+  });
+};
