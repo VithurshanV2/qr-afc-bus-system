@@ -117,11 +117,11 @@ const Ticket = () => {
             {/* Ticket History */}
             {viewPastTickets && (
               <>
-                <div className="flex items-center justify-center mb-4 mt-6 relative">
+                <div className="mb-4 mt-4">
                   {/* Back button */}
                   <button
                     onClick={() => setViewPastTickets(false)}
-                    className="absolute left-0 flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
+                    className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
                   >
                     <ArrowLeft size={18} />
                     <span className="text-sm text-gray-800">Back</span>
@@ -130,6 +130,10 @@ const Ticket = () => {
                   <h3 className="text-gray-900 font-semibold text-2xl text-center">
                     Ticket History
                   </h3>
+
+                  <p className="text-gray-700 text-sm text-center">
+                    Click on a ticket to view the full ticket
+                  </p>
                 </div>
 
                 <div
