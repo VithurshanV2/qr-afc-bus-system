@@ -21,6 +21,7 @@ const Ticket = () => {
   const [pastCursor, setPastCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const [viewPastTickets, setViewPastTickets] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
 
   // Fetch latest ticket of the user
   const fetchLatestTicket = async () => {
@@ -147,6 +148,7 @@ const Ticket = () => {
                   {pastTickets.map((tx) => (
                     <button
                       key={tx.id}
+                      onClick={() => setSelectedTicket(tx)}
                       className="w-full flex justify-between items-center p-4 rounded-xl border border-gray-200 shadow-200 shadow-sm hover:shadow-md transition-all text-left"
                     >
                       {/* Halts info */}
@@ -190,6 +192,39 @@ const Ticket = () => {
               </>
             )}
           </motion.div>
+        </AnimatePresence>
+        <AnimatePresence>
+          {selectedTicket && (
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <motion.div
+                className="fixed inset-0 z-40 flex items-center justify-center p-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
+                  {/* Back button */}
+                  <button
+                    onClick={() => setSelectedTicket(null)}
+                    className="absolute top-6 left-6 flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
+                  >
+                    <ArrowLeft size={18} />
+                    <span className="text-sm text-gray-800">Back</span>
+                  </button>
+                  <div className="pt-12 pb-4">
+                    <TicketCard ticket={selectedTicket} />
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>
