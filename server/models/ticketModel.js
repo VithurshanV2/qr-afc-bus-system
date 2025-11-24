@@ -126,6 +126,12 @@ export const getPastTickets = async (
     where: { commuterId: userId, status: 'CONFIRMED' },
     orderBy: { issuedAt: 'desc' },
     take: limit,
+    include: {
+      commuter: true,
+      trip: {
+        include: { route: true, bus: true },
+      },
+    },
   };
 
   if (latestTicketId) {
