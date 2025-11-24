@@ -12,7 +12,11 @@ const Ticket = () => {
   const { backendUrl } = useContext(AppContext);
 
   const [ticket, setTicket] = useState(null);
+  const [pastTickets, setPastTickets] = useState([]);
   const [_loading, setLoading] = useState(false);
+  const [pastLoading, setPastLoading] = useState(false);
+  const [pastCursor, setPastCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
 
   // Fetch latest ticket of the user
   const fetchLatestTicket = async () => {
@@ -37,6 +41,42 @@ const Ticket = () => {
   useEffect(() => {
     fetchLatestTicket();
   }, []);
+
+  // Fetch past tickets
+  const fetchPastTickets = async (cursor = null) => {
+    try {
+      setPastLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.get(backendUrl + '/api/ticket/past', {
+        params: { limit: 5, cursor },
+      });
+
+      if (data.success) {
+        if (cursor) {
+          setPastTickets((prev) => [...prev, ...data.tickets]);
+        } else {
+          setPastTickets(data.tickets);
+        }
+
+        setPastCursor(data.nextCursor);
+        setHasMore(data.nextCursor !== null);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setPastLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPastTickets();
+  }, []);
+
+  const handleLoadMore = () => {
+    fetchPastTickets(pastCursor);
+  };
 
   if (!ticket) {
     return;
@@ -152,6 +192,59 @@ const Ticket = () => {
                   {(totalFare / 100).toFixed(2)} LKR
                 </p>
               </div>
+            </div>
+
+            {/* Ticket History */}
+            <div className="mt-6">
+              <h3 className="text-gray-900 font-semibold mb-2">
+                Ticket History
+              </h3>
+              <div className="max-h-64 overflow-y-auto pr-4 flex flex-col gap-3">
+                {pastTickets.length === 0 && !pastLoading && (
+                  <div className="text-gray-500 text-sm text-center py-3">
+                    No past tickets yet
+                  </div>
+                )}
+
+                {pastTickets.map((tx, index) => (
+                  <div
+                    key={tx.id}
+                    className={`flex justify-between items-center py-3 ${
+                      index < pastTickets.length - 1
+                        ? 'border-b border-gray-200'
+                        : ''
+                    }`}
+                  >
+                    <div className="flex justify-between mb-1">
+                      <span className="text-gray-900 font-medium">
+                        Ticket #{tx.id}
+                      </span>
+                      <span>{(tx.totalFare / 100).toFixed(2)} LKR</span>
+                    </div>
+                    <p>
+                      {tx.boardingHalt?.englishName.replace(/\((.*?)\)/g, '')}{' '}
+                      {'-'}{' '}
+                      {tx.destinationHalt?.englishName.replace(
+                        /\((.*?)\)/g,
+                        '',
+                      )}
+                    </p>
+                    <p>{new Date(tx.issuedAt).toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={handleLoadMore}
+                disabled={!hasMore || pastLoading}
+                className="mt-4 py-2 w-full rounded-full text-sm bg-gray-200 text-gray-800 hover:bg-gray-300
+              disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {pastLoading
+                  ? 'Loading...'
+                  : hasMore
+                    ? 'Load More'
+                    : 'No More Transactions'}
+              </button>
             </div>
           </motion.div>
         </AnimatePresence>
