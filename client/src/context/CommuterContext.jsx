@@ -20,9 +20,21 @@ export const CommuterProvider = ({ children }) => {
   const [activeTicket, setActiveTicket] = useState(null);
 
   const resetCommuter = () => {
-    setScanStep(1);
+    setScanStep(SCAN_STEPS.SCAN);
     setBoardingHalt(null);
     setActiveTicket(null);
+    window.localStorage.removeItem('ticketExpiresAt');
+  };
+
+  const setActiveTicketWithTimer = (ticket) => {
+    setActiveTicket(ticket);
+
+    if (ticket?.expiresAt) {
+      window.localStorage.setItem(
+        'ticketExpiresAt',
+        new Date(ticket.expiresAt).getTime(),
+      );
+    }
   };
 
   useEffect(() => {
@@ -60,7 +72,7 @@ export const CommuterProvider = ({ children }) => {
     boardingHalt,
     setBoardingHalt,
     activeTicket,
-    setActiveTicket,
+    setActiveTicket: setActiveTicketWithTimer,
     resetCommuter,
   };
 

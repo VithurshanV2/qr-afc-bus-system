@@ -9,7 +9,8 @@ import { CommuterContext, SCAN_STEPS } from '../../../context/CommuterContext';
 
 const QrScanner = () => {
   const { backendUrl } = useContext(AppContext);
-  const { setScanStep, setBoardingHalt } = useContext(CommuterContext);
+  const { setScanStep, setBoardingHalt, setActiveTicket } =
+    useContext(CommuterContext);
   const qrRef = useRef(null);
 
   const [cameraDenied, setCameraDenied] = useState(false);
@@ -131,7 +132,9 @@ const QrScanner = () => {
       });
 
       if (data.success) {
-        setBoardingHalt(data.ticket.boardingHalt);
+        const { ticket, tripInfo } = data;
+        setActiveTicket({ ...ticket, trip: tripInfo });
+        setBoardingHalt(data.ticket.boardingHalt?.englishName || '');
         setScanStep(SCAN_STEPS.DESTINATION);
         setScanError('');
         await stopScanner();
