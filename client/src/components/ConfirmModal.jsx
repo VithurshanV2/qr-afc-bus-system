@@ -7,7 +7,7 @@ const ConfirmModel = ({
   title = 'Confirm Action',
   message = '',
   confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  cancelText,
   onConfirm,
   onCancel,
 }) => {
@@ -38,17 +38,20 @@ const ConfirmModel = ({
               </h3>
               <p className="text-gray-700 mb-6">{message}</p>
               <div className="flex gap-3">
-                <button
-                  onClick={onCancel}
-                  className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-full hover:bg-gray-300 
-                  transition-all duration--200 active:scale-95"
-                >
-                  {cancelText}
-                </button>
+                {onCancel && cancelText && (
+                  <button
+                    onClick={onCancel}
+                    className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-full hover:bg-gray-300 
+                  transition-all duration-200 active:scale-95"
+                  >
+                    {cancelText}
+                  </button>
+                )}
+
                 <button
                   onClick={onConfirm}
-                  className="flex-1 bg-yellow-200 text-yellow-800 py-2 rounded-full hover:bg-yellow-300 
-                  transition-all duration--200 active:scale-95"
+                  className={`${onCancel && cancelText ? 'flex-1' : 'w-full'} bg-yellow-200 text-yellow-800 py-2 rounded-full hover:bg-yellow-300 
+                  transition-all duration-200 active:scale-95`}
                 >
                   {confirmText}
                 </button>

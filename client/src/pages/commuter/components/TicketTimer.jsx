@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useContext } from 'react';
+import { CommuterContext } from '../../../context/CommuterContext';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const TicketTimer = () => {
   const navigate = useNavigate();
+
+  const { resetCommuter } = useContext(CommuterContext);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [expired, setExpired] = useState(false);
 
   // Convert ms to ms:ss
   const formatTime = (ms) => {
@@ -30,8 +36,7 @@ const TicketTimer = () => {
       const msRemaining = expiresAt - now;
 
       if (msRemaining <= 0) {
-        window.localStorage.removeItem('ticketExpiresAt');
-        navigate('/commuter/scan', { replace: true });
+        setExpired(true);
       } else {
         setTimeLeft(msRemaining);
       }
@@ -41,20 +46,39 @@ const TicketTimer = () => {
     const interval = window.setInterval(updateTimer, 1000);
 
     return () => window.clearInterval(interval);
-  }, [navigate]);
+  }, []);
 
-  if (timeLeft <= 0) {
+  const handleExpiredConfirm = () => {
+    window.localStorage.removeItem('ticketExpiresAt');
+    resetCommuter();
+    navigate('/commuter/scan', { replace: true });
+  };
+
+  if (timeLeft <= 0 && !expired) {
     return null;
   }
 
   return (
-    <motion.div
-      className="bg-yellow-300 text-yellow-800 px-4 py-2 rounded-full font-semibold 
+    <>
+      {timeLeft > 0 && (
+        <motion.div
+          className="bg-yellow-300 text-yellow-800 px-4 py-2 rounded-full font-semibold 
         text-lg text-center w-32 mx-auto"
-    >
-      <span className="font-semibold">Exp: </span>
-      {formatTime(timeLeft)}
-    </motion.div>
+        >
+          <span className="font-semibold">Exp: </span>
+          {formatTime(timeLeft)}
+        </motion.div>
+      )}
+
+      {/* Confirm modal on expiry */}
+      <ConfirmModal
+        isOpen={expired}
+        title="Ticket Expired"
+        message="Your ticket has expired. Please scan again."
+        confirmText="OK"
+        onConfirm={handleExpiredConfirm}
+      />
+    </>
   );
 };
 

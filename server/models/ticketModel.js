@@ -81,6 +81,8 @@ export const expireOldTickets = async (userId) => {
 
 // Get active tickets
 export const getActiveTicket = async (userId) => {
+  await expireOldTickets(userId);
+
   return await prisma.ticket.findFirst({
     where: {
       commuterId: userId,
