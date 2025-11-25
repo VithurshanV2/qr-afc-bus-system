@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { BounceLoader } from 'react-spinners';
 import ConfirmModal from '../../../components/ConfirmModal';
+import TicketTimer from './TicketTimer';
 
 const DestinationSelection = () => {
   const { backendUrl } = useContext(AppContext);
@@ -140,6 +141,14 @@ const DestinationSelection = () => {
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.4 }}
     >
+      {/* Timer */}
+      <div className="flex justify-end items-center mb-4">
+        {/* Timer */}
+        <div className="text-right">
+          <TicketTimer />
+        </div>
+      </div>
+
       <h2 className="text-gray-900 text-2xl font-semibold text-center mb-4">
         Select Your Destination Halt
       </h2>

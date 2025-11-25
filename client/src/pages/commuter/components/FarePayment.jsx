@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import ConfirmModal from '../../../components/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
+import TicketTimer from './TicketTimer';
 
 const PassengerSelection = () => {
   const navigate = useNavigate();
@@ -164,15 +165,22 @@ const PassengerSelection = () => {
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Back button */}
-      <button
-        onClick={handleBack}
-        disabled={loading}
-        className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
-      >
-        <ArrowLeft size={18} />
-        <span className="text-sm text-gray-800">Back</span>
-      </button>
+      <div className="flex justify-between items-center mb-4">
+        {/* Back button */}
+        <button
+          onClick={handleBack}
+          disabled={loading}
+          className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
+        >
+          <ArrowLeft size={18} />
+          <span className="text-sm text-gray-800">Back</span>
+        </button>
+
+        {/* Timer */}
+        <div className="text-right">
+          <TicketTimer />
+        </div>
+      </div>
 
       <h2 className="text-gray-900 text-2xl font-semibold text-center mb-4">
         Fare Summary

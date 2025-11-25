@@ -34,11 +34,17 @@ export const CommuterProvider = ({ children }) => {
 
         if (data.success && data.ticket) {
           const { ticket, progressStep } = data;
+
+          const expiresAt = new Date(ticket.expiresAt).getTime();
+
+          window.localStorage.setItem('ticketExpiresAt', expiresAt);
+
           setActiveTicket(ticket);
           setBoardingHalt(ticket.boardingHalt?.englishName || null);
           setScanStep(progressStep || SCAN_STEPS.SCAN);
         } else {
           resetCommuter();
+          window.localStorage.removeItem('ticketExpiresAt');
         }
       } catch (error) {
         console.error(error.response?.data?.message || 'Something went wrong');
