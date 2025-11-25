@@ -71,9 +71,11 @@ const Wallet = () => {
     try {
       axios.defaults.withCredentials = true;
 
+      const numericAmount = Number(topUpAmount);
+
       const { data } = await axios.post(
         backendUrl + '/api/wallet/create-checkout-session',
-        { amount: topUpAmount },
+        { amount: numericAmount },
       );
 
       if (!data.success) {
