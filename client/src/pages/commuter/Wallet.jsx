@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { assets } from '../../assets/assets';
 import { useState } from 'react';
 import { useContext } from 'react';
@@ -10,6 +10,8 @@ import { BounceLoader } from 'react-spinners';
 
 const Wallet = () => {
   const { backendUrl } = useContext(AppContext);
+  const transactionsRef = useRef(null);
+  const firstNewRef = useRef(null);
 
   const [balance, setBalance] = useState('');
   const [loading, setLoading] = useState(false);
@@ -122,7 +124,12 @@ const Wallet = () => {
 
       if (data.success) {
         if (cursor) {
-          setTransactions((prev) => [...prev, ...data.transactions]);
+          const newTxs = data.transactions.map((tx, i) => ({
+            ...tx,
+            isFirstNew: i === 0,
+          }));
+
+          setTransactions((prev) => [...prev, ...newTxs]);
         } else {
           setTransactions(data.transactions);
         }
@@ -146,6 +153,17 @@ const Wallet = () => {
   const handleLoadMore = () => {
     fetchTransactions(transactionsCursor);
   };
+
+  useLayoutEffect(() => {
+    if (firstNewRef.current && transactionsRef.current) {
+      const container = transactionsRef.current;
+      const firstNew = firstNewRef.current;
+
+      container.scrollTop = firstNew.offsetTop - container.offsetTop;
+
+      firstNewRef.current = null;
+    }
+  }, [transactions]);
 
   return (
     <div className="bg-white min-h-[calc(100vh-4.4rem)] p-4">
@@ -221,7 +239,10 @@ const Wallet = () => {
             <h3 className="text-gray-900 font-semibold mb-2">
               Recent Transactions
             </h3>
-            <div className="max-h-64 overflow-y-auto pr-4 flex flex-col gap-3">
+            <div
+              ref={transactionsRef}
+              className="max-h-64 overflow-y-auto pr-4 flex flex-col gap-3"
+            >
               {transactions.length === 0 && !transactionsLoading && (
                 <div className="text-gray-500 text-sm text-center py-3">
                   No transactions yet
@@ -231,6 +252,7 @@ const Wallet = () => {
               {transactions.map((tx, index) => (
                 <div
                   key={tx.id}
+                  ref={tx.isFirstNew ? firstNewRef : null}
                   className={`flex justify-between items-center py-3 ${
                     index < transactions.length - 1
                       ? 'border-b border-gray-200'
