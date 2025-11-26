@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { assets } from '../../assets/assets';
 import { useState } from 'react';
 import { useContext } from 'react';
@@ -13,6 +13,8 @@ import TicketCard from './components/TicketCard';
 
 const Ticket = () => {
   const { backendUrl } = useContext(AppContext);
+  const pastTicketsRef = useRef(null);
+  const firstNewRef = useRef(null);
 
   const [ticket, setTicket] = useState(null);
   const [pastTickets, setPastTickets] = useState([]);
@@ -56,7 +58,12 @@ const Ticket = () => {
 
       if (data.success) {
         if (cursor) {
-          setPastTickets((prev) => [...prev, ...data.tickets]);
+          const newTxs = data.tickets.map((tx, i) => ({
+            ...tx,
+            isFirstNew: i === 0,
+          }));
+
+          setPastTickets((prev) => [...prev, ...newTxs]);
         } else {
           setPastTickets(data.tickets);
         }
@@ -79,6 +86,17 @@ const Ticket = () => {
   const handleLoadMore = () => {
     fetchPastTickets(pastCursor);
   };
+
+  useLayoutEffect(() => {
+    if (firstNewRef.current && pastTicketsRef.current) {
+      const container = pastTicketsRef.current;
+      const firstNew = firstNewRef.current;
+
+      container.scrollTop = firstNew.offsetTop - container.offsetTop;
+
+      firstNewRef.current = null;
+    }
+  }, [pastTickets]);
 
   return (
     <div className="bg-white min-h-[calc(100vh-4.4rem)] p-4">
@@ -137,6 +155,7 @@ const Ticket = () => {
                 </div>
 
                 <div
+                  ref={pastTicketsRef}
                   className="overflow-y-auto flex flex-col gap-3 mt-4"
                   style={{
                     maxHeight: 'calc(70vh - 200px)',
@@ -152,6 +171,7 @@ const Ticket = () => {
                   {pastTickets.map((tx) => (
                     <button
                       key={tx.id}
+                      ref={tx.isFirstNew ? firstNewRef : null}
                       onClick={() => setSelectedTicket(tx)}
                       className="w-full flex justify-between items-center p-4 rounded-xl border border-gray-200 shadow-200 shadow-sm hover:shadow-md transition-all text-left"
                     >
