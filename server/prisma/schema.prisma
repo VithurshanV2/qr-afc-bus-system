@@ -156,3 +156,24 @@ enum TicketStatus {
   CONFIRMED
   CANCELLED
 }
+
+model BusOperatorRequest {
+  id           Int           @id @default(autoincrement())
+  fullName     String
+  nic          String
+  email        String
+  phone        String
+  address      String?
+  buses        Json
+  uploadedDocs Json
+  status       RequestStatus @default(PENDING)
+  remarks      String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
