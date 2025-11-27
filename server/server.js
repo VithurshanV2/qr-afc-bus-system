@@ -9,6 +9,7 @@ import userRouter from './routes/userRoutes.js';
 import oauthRouter from './routes/oauthRoutes.js';
 import walletRouter from './routes/walletRoutes.js';
 import ticketRouter from './routes/ticketRoutes.js';
+import operatorRequestRouter from './routes/operatorRequestRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -35,5 +36,6 @@ app.use('/api/user', userRouter);
 app.use('/api/auth', oauthRouter);
 app.use('/api/wallet', walletRouter);
 app.use('/api/ticket', ticketRouter);
+app.use('/api/operator-requests', operatorRequestRouter);
 
 app.listen(port, () => console.log(`Server started on PORT: ${port}`));
