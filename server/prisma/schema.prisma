@@ -159,10 +159,10 @@ enum TicketStatus {
 
 model BusOperatorRequest {
   id           Int           @id @default(autoincrement())
-  fullName     String
+  name         String
   nic          String
   email        String
-  phone        String
+  number       String
   address      String?
   buses        Json
   uploadedDocs Json
