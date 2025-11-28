@@ -4,6 +4,7 @@ import { assets } from '../assets/assets';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -37,7 +38,12 @@ const Navbar = () => {
   };
 
   return (
-    <div className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0">
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="w-full flex justify-between items-center p-4 sm:p-6 sm:px-24 absolute top-0"
+    >
       <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
 
       {userData ? (
@@ -71,7 +77,7 @@ const Navbar = () => {
           Login <img src={assets.right_arrow_icon} alt="right arrow icon" />
         </button>
       )}
-    </div>
+    </motion.div>
   );
 };
 
