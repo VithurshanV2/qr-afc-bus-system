@@ -14,6 +14,7 @@ import Profile from './pages/commuter/Profile';
 import CommuterLayout from './layouts/CommuterLayout';
 import PrivateRoute from './components/PrivateRoute';
 import BottomNav from './components/BottomNav';
+import BusOperatorForm from './pages/bus-operator/BusOperatorForm';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -52,6 +53,9 @@ const App = () => {
           <Route path="wallet" element={<Wallet />} />
           <Route path="profile" element={<Profile />} />
         </Route>
+
+        {/* Bus operator routes */}
+        <Route path="bus-operator-request" element={<BusOperatorForm />} />
       </Routes>
 
       {/* BottomNav for commuters */}
