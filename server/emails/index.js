@@ -2,6 +2,7 @@ import transporter from '../config/nodemailer.js';
 import welcomeTemplate from './templates/welcome.js';
 import verifyOtpTemplate from './templates/verifyOtp.js';
 import resetPasswordOtpTemplate from './templates/resetPasswordOtp.js';
+import operatorRequestReceivedTemplate from './templates/operatorRequestReceived.js';
 
 const logoUrl = process.env.EMAIL_LOGO_URL;
 
@@ -62,6 +63,25 @@ export async function sendPasswordResetOtp({ to, name, otp }) {
             Please use this OTP within 15 minutes to reset account password.
 
             If you didn't request this, you can ignore this message.
+            
+            Safe travels,
+            The SmartFare Team`,
+    html,
+  });
+}
+
+export async function sendOperatorRequestReceived({ to, name }) {
+  const html = operatorRequestReceivedTemplate({ name, logoUrl });
+
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Bus Operator Account Request Received',
+    text: `Hello, ${name},
+
+            We have received your bus operator account request. 
+            
+            The National Transport Commission (NTC) will review your request and contact you via email once it has been approved.
             
             Safe travels,
             The SmartFare Team`,

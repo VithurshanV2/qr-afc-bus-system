@@ -6,6 +6,7 @@ import { AppContext } from '../../context/AppContext';
 const BusOperatorForm = () => {
   const { backendUrl, setGlobalLoading } = useContext(AppContext);
 
+  const [submitted, setSubmitted] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -204,6 +205,7 @@ const BusOperatorForm = () => {
       );
 
       if (data.success) {
+        setSubmitted(true);
         toast.success('Your account request form has been submitted');
       } else {
         toast.error(data.message);
@@ -218,163 +220,182 @@ const BusOperatorForm = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        {/* Basic info */}
-        <section>
-          <div>
-            <label>Full Name</label>
-            <input
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-            {errors.fullName && (
-              <p className="text-red-600">{errors.fullName}</p>
-            )}
-          </div>
-          <div>
-            <label>Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            {errors.email && <p className="text-red-600">{errors.email}</p>}
-          </div>
-          <div>
-            <label>Phone Number</label>
-            <input
-              type="text"
-              required
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-            {errors.phoneNumber && (
-              <p className="text-red-600">{errors.phoneNumber}</p>
-            )}
-          </div>
-          <div>
-            <label>NIC number</label>
-            <input
-              type="text"
-              required
-              value={nic}
-              onChange={(e) => setNic(e.target.value)}
-            />
-            {errors.nic && <p className="text-red-600">{errors.nic}</p>}
-          </div>
-          <div>
-            <label>Address</label>
-            <input
-              type="text"
-              required
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-            {errors.address && <p className="text-red-600">{errors.address}</p>}
-          </div>
-        </section>
-
-        {/* Bus section */}
-        <section>
-          <h2>Buses</h2>
-          {buses.map((bus, i) => (
-            <div key={i}>
-              <div>
-                <label>Registration Number</label>
-                <input
-                  type="text"
-                  required
-                  value={bus.registrationNumber}
-                  onChange={(e) =>
-                    updateBus(i, 'registrationNumber', e.target.value)
-                  }
-                />
-                {errors.buses[i]?.registrationNumber && (
-                  <p className="text-red-600">
-                    {errors.buses[i].registrationNumber}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label>Route Name</label>
-                <input
-                  type="text"
-                  required
-                  value={bus.routeName}
-                  onChange={(e) => updateBus(i, 'routeName', e.target.value)}
-                />
-                {errors.buses[i]?.routeName && (
-                  <p className="text-red-600">{errors.buses[i].routeName}</p>
-                )}
-              </div>
-              <div>
-                <label>Route Number</label>
-                <input
-                  type="text"
-                  required
-                  value={bus.routeNumber}
-                  onChange={(e) => updateBus(i, 'routeNumber', e.target.value)}
-                />
-                {errors.buses[i]?.routeNumber && (
-                  <p className="text-red-600">{errors.buses[i].routeNumber}</p>
-                )}
-              </div>
-              <div>
-                <label>Bus Type</label>
-                <select
-                  value={bus.busType}
-                  onChange={(e) => updateBus(i, 'busType', e.target.value)}
-                >
-                  <option value="normal">Normal</option>
-                  <option value="semi-luxury">Semi-Luxury</option>
-                  <option value="luxury">Luxury</option>
-                  <option value="super-luxury">Super-Luxury</option>
-                </select>
-              </div>
-              {buses.length > 1 && (
-                <button type="button" onClick={() => removeBus(i)}>
-                  Remove Bus
-                </button>
+      {submitted ? (
+        <div>
+          <h2>Request Form Submitted Successfully!</h2>
+          <p>
+            Thank you for submitting your bus operator account request form. The
+            National Transport Commission (NTC) has received your application
+            and will review it shortly. You will be notified via email once the
+            verification process is complete.
+          </p>
+          <a href="/">Go back to home page</a>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit}>
+          {/* Basic info */}
+          <section>
+            <div>
+              <label>Full Name</label>
+              <input
+                type="text"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              {errors.fullName && (
+                <p className="text-red-600">{errors.fullName}</p>
               )}
             </div>
-          ))}
-          <button type="button" onClick={addBus}>
-            Add Bus
-          </button>
-        </section>
+            <div>
+              <label>Email</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {errors.email && <p className="text-red-600">{errors.email}</p>}
+            </div>
+            <div>
+              <label>Phone Number</label>
+              <input
+                type="text"
+                required
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+              {errors.phoneNumber && (
+                <p className="text-red-600">{errors.phoneNumber}</p>
+              )}
+            </div>
+            <div>
+              <label>NIC number</label>
+              <input
+                type="text"
+                required
+                value={nic}
+                onChange={(e) => setNic(e.target.value)}
+              />
+              {errors.nic && <p className="text-red-600">{errors.nic}</p>}
+            </div>
+            <div>
+              <label>Address</label>
+              <input
+                type="text"
+                required
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+              {errors.address && (
+                <p className="text-red-600">{errors.address}</p>
+              )}
+            </div>
+          </section>
 
-        {/* Documents */}
-        <section>
-          <div>
-            <h2>Documents</h2>
-          </div>
-          <div>
-            <label>Permit</label>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange(setPermit, 'permit')}
-            />
-            {errors.permit && <p className="text-red-600">{errors.permit}</p>}
-          </div>
-          <div>
-            <label>Insurance</label>
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange(setInsurance, 'insurance')}
-            />
-            {errors.insurance && (
-              <p className="text-red-600">{errors.insurance}</p>
-            )}
-          </div>
-        </section>
+          {/* Bus section */}
+          <section>
+            <h2>Buses</h2>
+            {buses.map((bus, i) => (
+              <div key={i}>
+                <div>
+                  <label>Registration Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={bus.registrationNumber}
+                    onChange={(e) =>
+                      updateBus(i, 'registrationNumber', e.target.value)
+                    }
+                  />
+                  {errors.buses[i]?.registrationNumber && (
+                    <p className="text-red-600">
+                      {errors.buses[i].registrationNumber}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label>Route Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={bus.routeName}
+                    onChange={(e) => updateBus(i, 'routeName', e.target.value)}
+                  />
+                  {errors.buses[i]?.routeName && (
+                    <p className="text-red-600">{errors.buses[i].routeName}</p>
+                  )}
+                </div>
+                <div>
+                  <label>Route Number</label>
+                  <input
+                    type="text"
+                    required
+                    value={bus.routeNumber}
+                    onChange={(e) =>
+                      updateBus(i, 'routeNumber', e.target.value)
+                    }
+                  />
+                  {errors.buses[i]?.routeNumber && (
+                    <p className="text-red-600">
+                      {errors.buses[i].routeNumber}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label>Bus Type</label>
+                  <select
+                    value={bus.busType}
+                    onChange={(e) => updateBus(i, 'busType', e.target.value)}
+                  >
+                    <option value="normal">Normal</option>
+                    <option value="semi-luxury">Semi-Luxury</option>
+                    <option value="luxury">Luxury</option>
+                    <option value="super-luxury">Super-Luxury</option>
+                  </select>
+                </div>
+                {buses.length > 1 && (
+                  <button type="button" onClick={() => removeBus(i)}>
+                    Remove Bus
+                  </button>
+                )}
+              </div>
+            ))}
+            <button type="button" onClick={addBus}>
+              Add Bus
+            </button>
+          </section>
 
-        <button type="submit">Submit</button>
-      </form>
+          {/* Documents */}
+          <section>
+            <div>
+              <h2>Documents</h2>
+            </div>
+            <div>
+              <label>Permit</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange(setPermit, 'permit')}
+              />
+              {errors.permit && <p className="text-red-600">{errors.permit}</p>}
+            </div>
+            <div>
+              <label>Insurance</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange(setInsurance, 'insurance')}
+              />
+              {errors.insurance && (
+                <p className="text-red-600">{errors.insurance}</p>
+              )}
+            </div>
+          </section>
+
+          <button type="submit">Submit</button>
+        </form>
+      )}
     </div>
   );
 };

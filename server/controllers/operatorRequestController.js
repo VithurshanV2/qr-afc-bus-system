@@ -1,3 +1,4 @@
+import { sendOperatorRequestReceived } from '../emails/index.js';
 import { createOperatorRequest } from '../models/operatorRequestModel.js';
 
 // Phone number validation
@@ -52,6 +53,8 @@ export const submitOperatorRequest = async (req, res) => {
       buses,
       uploadedDocs,
     });
+
+    await sendOperatorRequestReceived({ to: email, name });
 
     return res.status(201).json({
       success: true,
