@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useContext, useState } from 'react';
+import { toast } from 'react-toastify';
+import { AppContext } from '../../context/AppContext';
 
 const BusOperatorForm = () => {
+  const { backendUrl, setGlobalLoading } = useContext(AppContext);
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -10,12 +15,83 @@ const BusOperatorForm = () => {
   const [routeName, setRouteName] = useState('');
   const [routeNumber, setRouteNumber] = useState('');
   const [busType, setBusType] = useState('normal');
-  const [_permit, setPermit] = useState(null);
-  const [_insurance, setInsurance] = useState(null);
+  const [permit, setPermit] = useState(null);
+  const [insurance, setInsurance] = useState(null);
+
+  const isPhoneNumberValid = (number) => {
+    const regex = /^(?:0|94|\+94)?(7[0-8][0-9]{7})$/;
+    return regex.test(number);
+  };
+
+  const isNicValid = (nic) => {
+    const regex = /^(\d{9}[VvXx]|\d{12})/;
+    return regex.test(nic);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setGlobalLoading(true);
+
+      if (!fullName || !email || !phoneNumber || !nic || !address) {
+        toast.error('Please fill all required fields');
+        return;
+      }
+
+      if (!isPhoneNumberValid(phoneNumber)) {
+        toast.error('Invalid phone number');
+        return;
+      }
+
+      if (!isNicValid(nic)) {
+        toast.error('Invalid NIC number');
+        return;
+      }
+
+      const buses = [{ registrationNumber, routeName, routeNumber, busType }];
+
+      const formData = new window.FormData();
+      formData.append('name', fullName);
+      formData.append('email', email);
+      formData.append('number', phoneNumber);
+      formData.append('nic', nic);
+      formData.append('address', address);
+      formData.append('buses', JSON.stringify(buses));
+
+      if (permit) {
+        formData.append('permit', permit);
+      }
+
+      if (insurance) {
+        formData.append('insurance', insurance);
+      }
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/operator-requests',
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        },
+      );
+
+      if (data.success) {
+        toast.success('Your account request form has been submitted');
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
   return (
     <div>
-      <form action="">
+      <form onSubmit={handleSubmit}>
         {/* Basic info */}
         <section>
           <div>
