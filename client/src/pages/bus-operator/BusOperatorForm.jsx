@@ -11,12 +11,29 @@ const BusOperatorForm = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [nic, setNic] = useState('');
   const [address, setAddress] = useState('');
-  const [registrationNumber, setRegistrationNumber] = useState('');
-  const [routeName, setRouteName] = useState('');
-  const [routeNumber, setRouteNumber] = useState('');
-  const [busType, setBusType] = useState('normal');
+
+  const [buses, setBuses] = useState([
+    {
+      registrationNumber: '',
+      routeName: '',
+      routeNumber: '',
+      busType: 'normal',
+    },
+  ]);
+
   const [permit, setPermit] = useState(null);
   const [insurance, setInsurance] = useState(null);
+
+  const [errors, setErrors] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    nic: '',
+    address: '',
+    buses: [{}],
+    permit: '',
+    insurance: '',
+  });
 
   const isPhoneNumberValid = (number) => {
     const regex = /^(?:0|94|\+94)?(7[0-8][0-9]{7})$/;
@@ -28,27 +45,143 @@ const BusOperatorForm = () => {
     return regex.test(nic);
   };
 
+  // File check
+  const handleFileChange = (setter, field) => (e) => {
+    const file = e.target.files[0];
+    const newErrors = { ...errors };
+
+    if (!file) {
+      return;
+    }
+
+    if (file.type !== 'application/pdf') {
+      newErrors[field] = 'Only PDF files are allowed';
+      setErrors(newErrors);
+      setter(null);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      newErrors[field] = 'File size must be less than 5MB';
+      setErrors(newErrors);
+      setter(null);
+      return;
+    }
+
+    newErrors[field] = '';
+    setErrors(newErrors);
+    setter(file);
+  };
+
+  // Add, remove and update bus fields
+  const addBus = () => {
+    setBuses([
+      ...buses,
+      {
+        registrationNumber: '',
+        routeName: '',
+        routeNumber: '',
+        busType: 'normal',
+      },
+    ]);
+
+    setErrors({ ...errors, buses: [...errors.buses, {}] });
+  };
+
+  const removeBus = (index) => {
+    const updatedBuses = buses.filter((bus, i) => i !== index);
+    setBuses(updatedBuses);
+  };
+
+  const updateBus = (index, field, value) => {
+    const updatedBuses = [...buses];
+    updatedBuses[index][field] = value;
+    setBuses(updatedBuses);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+      nic: '',
+      address: '',
+      buses: [{}],
+      permit: '',
+      insurance: '',
+    };
+
+    let hasError = false;
+
+    if (!fullName) {
+      newErrors.fullName = 'Full name is required';
+      hasError = true;
+    }
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+      hasError = true;
+    }
+
+    if (!phoneNumber) {
+      newErrors.phoneNumber = 'Phone number is required';
+      hasError = true;
+    } else if (!isPhoneNumberValid(phoneNumber)) {
+      newErrors.phoneNumber = 'Invalid phone number';
+      hasError = true;
+    }
+
+    if (!nic) {
+      newErrors.nic = 'NIC number is required';
+      hasError = true;
+    } else if (!isNicValid(nic)) {
+      newErrors.nic = 'Invalid NIC number';
+      hasError = true;
+    }
+
+    if (!address) {
+      newErrors.address = 'Address is required';
+      hasError = true;
+    }
+
+    buses.forEach((bus, i) => {
+      newErrors.buses[i] = {};
+
+      if (!bus.registrationNumber) {
+        newErrors.buses[i].registrationNumber = 'Required';
+        hasError = true;
+      }
+
+      if (!bus.routeName) {
+        newErrors.buses[i].routeName = 'Required';
+        hasError = true;
+      }
+
+      if (!bus.routeNumber) {
+        newErrors.buses[i].routeNumber = 'Required';
+        hasError = true;
+      }
+    });
+
+    if (permit === null) {
+      newErrors.permit = 'Permit document is required';
+      hasError = true;
+    }
+
+    if (insurance === null) {
+      newErrors.insurance = 'Insurance document is required';
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
+
     try {
       setGlobalLoading(true);
-
-      if (!fullName || !email || !phoneNumber || !nic || !address) {
-        toast.error('Please fill all required fields');
-        return;
-      }
-
-      if (!isPhoneNumberValid(phoneNumber)) {
-        toast.error('Invalid phone number');
-        return;
-      }
-
-      if (!isNicValid(nic)) {
-        toast.error('Invalid NIC number');
-        return;
-      }
-
-      const buses = [{ registrationNumber, routeName, routeNumber, busType }];
 
       const formData = new window.FormData();
       formData.append('name', fullName);
@@ -57,14 +190,8 @@ const BusOperatorForm = () => {
       formData.append('nic', nic);
       formData.append('address', address);
       formData.append('buses', JSON.stringify(buses));
-
-      if (permit) {
-        formData.append('permit', permit);
-      }
-
-      if (insurance) {
-        formData.append('insurance', insurance);
-      }
+      formData.append('permit', permit);
+      formData.append('insurance', insurance);
 
       axios.defaults.withCredentials = true;
 
@@ -102,6 +229,9 @@ const BusOperatorForm = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
+            {errors.fullName && (
+              <p className="text-red-600">{errors.fullName}</p>
+            )}
           </div>
           <div>
             <label>Email</label>
@@ -111,6 +241,7 @@ const BusOperatorForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {errors.email && <p className="text-red-600">{errors.email}</p>}
           </div>
           <div>
             <label>Phone Number</label>
@@ -120,6 +251,9 @@ const BusOperatorForm = () => {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
+            {errors.phoneNumber && (
+              <p className="text-red-600">{errors.phoneNumber}</p>
+            )}
           </div>
           <div>
             <label>NIC number</label>
@@ -129,6 +263,7 @@ const BusOperatorForm = () => {
               value={nic}
               onChange={(e) => setNic(e.target.value)}
             />
+            {errors.nic && <p className="text-red-600">{errors.nic}</p>}
           </div>
           <div>
             <label>Address</label>
@@ -138,53 +273,77 @@ const BusOperatorForm = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
+            {errors.address && <p className="text-red-600">{errors.address}</p>}
           </div>
         </section>
 
         {/* Bus section */}
         <section>
-          <div>
-            <h2>Buses</h2>
-          </div>
-          <div>
-            <label>Registration Number</label>
-            <input
-              type="text"
-              required
-              value={registrationNumber}
-              onChange={(e) => setRegistrationNumber(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Route Name</label>
-            <input
-              type="text"
-              required
-              value={routeName}
-              onChange={(e) => setRouteName(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Route Number</label>
-            <input
-              type="text"
-              required
-              value={routeNumber}
-              onChange={(e) => setRouteNumber(e.target.value)}
-            />
-          </div>
-          <div>
-            <label>Bus Type</label>
-            <select
-              value={busType}
-              onChange={(e) => setBusType(e.target.value)}
-            >
-              <option value="normal">Normal</option>
-              <option value="semi-luxury">Semi-Luxury</option>
-              <option value="luxury">Luxury</option>
-              <option value="super-luxury">Super-Luxury</option>
-            </select>
-          </div>
+          <h2>Buses</h2>
+          {buses.map((bus, i) => (
+            <div key={i}>
+              <div>
+                <label>Registration Number</label>
+                <input
+                  type="text"
+                  required
+                  value={bus.registrationNumber}
+                  onChange={(e) =>
+                    updateBus(i, 'registrationNumber', e.target.value)
+                  }
+                />
+                {errors.buses[i]?.registrationNumber && (
+                  <p className="text-red-600">
+                    {errors.buses[i].registrationNumber}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label>Route Name</label>
+                <input
+                  type="text"
+                  required
+                  value={bus.routeName}
+                  onChange={(e) => updateBus(i, 'routeName', e.target.value)}
+                />
+                {errors.buses[i]?.routeName && (
+                  <p className="text-red-600">{errors.buses[i].routeName}</p>
+                )}
+              </div>
+              <div>
+                <label>Route Number</label>
+                <input
+                  type="text"
+                  required
+                  value={bus.routeNumber}
+                  onChange={(e) => updateBus(i, 'routeNumber', e.target.value)}
+                />
+                {errors.buses[i]?.routeNumber && (
+                  <p className="text-red-600">{errors.buses[i].routeNumber}</p>
+                )}
+              </div>
+              <div>
+                <label>Bus Type</label>
+                <select
+                  value={bus.busType}
+                  onChange={(e) => updateBus(i, 'busType', e.target.value)}
+                >
+                  <option value="normal">Normal</option>
+                  <option value="semi-luxury">Semi-Luxury</option>
+                  <option value="luxury">Luxury</option>
+                  <option value="super-luxury">Super-Luxury</option>
+                </select>
+              </div>
+              {buses.length > 1 && (
+                <button type="button" onClick={() => removeBus(i)}>
+                  Remove Bus
+                </button>
+              )}
+            </div>
+          ))}
+          <button type="button" onClick={addBus}>
+            Add Bus
+          </button>
         </section>
 
         {/* Documents */}
@@ -194,18 +353,27 @@ const BusOperatorForm = () => {
           </div>
           <div>
             <label>Permit</label>
-            <input type="file" onChange={(e) => setPermit(e.target.files[0])} />
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handleFileChange(setPermit, 'permit')}
+            />
+            {errors.permit && <p className="text-red-600">{errors.permit}</p>}
           </div>
           <div>
             <label>Insurance</label>
             <input
               type="file"
-              onChange={(e) => setInsurance(e.target.files[0])}
+              accept="application/pdf"
+              onChange={handleFileChange(setInsurance, 'insurance')}
             />
+            {errors.insurance && (
+              <p className="text-red-600">{errors.insurance}</p>
+            )}
           </div>
         </section>
 
-        <button>Submit</button>
+        <button type="submit">Submit</button>
       </form>
     </div>
   );
