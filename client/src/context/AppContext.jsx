@@ -22,6 +22,9 @@ export const AppContextProvider = (props) => {
       if (data.success) {
         setIsLoggedIn(true);
         await getUserData();
+      } else {
+        setIsLoggedIn(false);
+        setUserData(null);
       }
     } catch (error) {
       if (error.response?.status !== 401) {
@@ -38,10 +41,18 @@ export const AppContextProvider = (props) => {
     try {
       setGlobalLoading(true);
       const { data } = await axios.get(backendUrl + '/api/user/data');
-      data.success ? setUserData(data.userData) : toast.error(data.message);
+
+      if (data.success) {
+        setUserData(data.userData);
+      } else {
+        setUserData(null);
+      }
     } catch (error) {
-      const message = error.response?.data?.message || 'Something went wrong';
-      toast.error(message);
+      if (error.response?.status !== 401) {
+        const message = error.response?.data?.message || 'Something went wrong';
+        toast.error(message);
+      }
+      setUserData(null);
     } finally {
       setGlobalLoading(false);
     }
