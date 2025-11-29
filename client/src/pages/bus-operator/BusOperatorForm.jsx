@@ -2,9 +2,12 @@ import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AppContext } from '../../context/AppContext';
+import { useNavigate } from 'react-router-dom';
+import { assets } from '../../assets/assets';
 
 const BusOperatorForm = () => {
   const { backendUrl, setGlobalLoading } = useContext(AppContext);
+  const navigate = useNavigate();
 
   const [submitted, setSubmitted] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -206,7 +209,6 @@ const BusOperatorForm = () => {
 
       if (data.success) {
         setSubmitted(true);
-        toast.success('Your account request form has been submitted');
       } else {
         toast.error(data.message);
       }
@@ -219,7 +221,13 @@ const BusOperatorForm = () => {
   };
 
   return (
-    <div>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-yellow-200 to-orange-400 py-20 px-4">
+      <img
+        onClick={() => navigate('/')}
+        src={assets.logo}
+        alt="logo"
+        className="absolute left-5 sm:left-20 top-5 w-32 sm:w-48 cursor-pointer"
+      />
       {submitted ? (
         <div>
           <h2>Request Form Submitted Successfully!</h2>
@@ -229,125 +237,156 @@ const BusOperatorForm = () => {
             and will review it shortly. You will be notified via email once the
             verification process is complete.
           </p>
-          <a href="/">Go back to home page</a>
+          <a href="/">Return to Home page</a>
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={handleSubmit}
+          className="bg-dark-bg p-10 rounded-lg shadow-lg w-full max-w-4xl text-yellow-300 flex flex-col gap-6 "
+        >
+          <h2 className="text-white text-2xl font-semibold text-center mb-6">
+            Bus Operator Request Form
+          </h2>
           {/* Basic info */}
-          <section>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label>Full Name</label>
               <input
                 type="text"
                 required
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                placeholder="Full Name"
+                className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
               />
               {errors.fullName && (
-                <p className="text-red-600">{errors.fullName}</p>
+                <p className="text-red-600 text-sm">{errors.fullName}</p>
               )}
             </div>
             <div>
-              <label>Email</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
               />
-              {errors.email && <p className="text-red-600">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-red-600 text-sm">{errors.email}</p>
+              )}
             </div>
             <div>
-              <label>Phone Number</label>
               <input
                 type="text"
                 required
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Phone Number"
+                className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
               />
               {errors.phoneNumber && (
-                <p className="text-red-600">{errors.phoneNumber}</p>
+                <p className="text-red-600 text-sm">{errors.phoneNumber}</p>
               )}
             </div>
             <div>
-              <label>NIC number</label>
               <input
                 type="text"
                 required
                 value={nic}
                 onChange={(e) => setNic(e.target.value)}
+                placeholder="NIC Number"
+                className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
               />
-              {errors.nic && <p className="text-red-600">{errors.nic}</p>}
+              {errors.nic && (
+                <p className="text-red-600 text-sm">{errors.nic}</p>
+              )}
             </div>
-            <div>
-              <label>Address</label>
+            <div className="sm:col-span-2">
               <input
                 type="text"
                 required
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                placeholder="Address"
+                className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
               />
               {errors.address && (
-                <p className="text-red-600">{errors.address}</p>
+                <p className="text-red-600 text-sm">{errors.address}</p>
               )}
             </div>
-          </section>
+          </div>
+
+          {/* Separator */}
+          <div className="flex items-center my-4">
+            <hr className="flex-grow border-yellow-300" />
+          </div>
 
           {/* Bus section */}
-          <section>
-            <h2>Buses</h2>
+          <div className="flex flex-col gap-4">
+            <h3 className="text-xl text-white">Buses</h3>
             {buses.map((bus, i) => (
-              <div key={i}>
+              <div
+                key={i}
+                className="flex flex-col sm:flex-row gap-4 p-4 items-end"
+              >
                 <div>
-                  <label>Registration Number</label>
                   <input
                     type="text"
+                    placeholder="Registration Number"
                     required
                     value={bus.registrationNumber}
                     onChange={(e) =>
                       updateBus(i, 'registrationNumber', e.target.value)
                     }
+                    className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
                   />
                   {errors.buses[i]?.registrationNumber && (
-                    <p className="text-red-600">
+                    <p className="text-red-600 text-sm">
                       {errors.buses[i].registrationNumber}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label>Route Name</label>
                   <input
                     type="text"
+                    placeholder="Route Name"
                     required
                     value={bus.routeName}
                     onChange={(e) => updateBus(i, 'routeName', e.target.value)}
+                    className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
                   />
                   {errors.buses[i]?.routeName && (
-                    <p className="text-red-600">{errors.buses[i].routeName}</p>
+                    <p className="text-red-600 text-sm">
+                      {errors.buses[i].routeName}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label>Route Number</label>
                   <input
                     type="text"
+                    placeholder="Route Number"
                     required
                     value={bus.routeNumber}
                     onChange={(e) =>
                       updateBus(i, 'routeNumber', e.target.value)
                     }
+                    className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
                   />
                   {errors.buses[i]?.routeNumber && (
-                    <p className="text-red-600">
+                    <p className="text-red-600 text-sm">
                       {errors.buses[i].routeNumber}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label>Bus Type</label>
                   <select
                     value={bus.busType}
                     onChange={(e) => updateBus(i, 'busType', e.target.value)}
+                    className="bg-input-bg w-full px-5 py-2.5 rounded-full mb-1 outline-none"
                   >
+                    <option value="" disabled>
+                      Select Bus Type
+                    </option>
                     <option value="normal">Normal</option>
                     <option value="semi-luxury">Semi-Luxury</option>
                     <option value="luxury">Luxury</option>
@@ -355,45 +394,76 @@ const BusOperatorForm = () => {
                   </select>
                 </div>
                 {buses.length > 1 && (
-                  <button type="button" onClick={() => removeBus(i)}>
-                    Remove Bus
+                  <button
+                    type="button"
+                    onClick={() => removeBus(i)}
+                    className="px-4 py-2 rounded-full bg-red-600  text-white shadow-md 
+                    hover:shadow-red-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+                  >
+                    Remove
                   </button>
                 )}
               </div>
             ))}
-            <button type="button" onClick={addBus}>
+            <button
+              type="button"
+              onClick={addBus}
+              className="px-4 py-2 rounded-full bg-green-600  text-white shadow-md 
+                    hover:shadow-green-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+            >
               Add Bus
             </button>
-          </section>
+          </div>
+
+          {/* Separator */}
+          <div className="flex items-center my-4">
+            <hr className="flex-grow border-yellow-300" />
+          </div>
 
           {/* Documents */}
-          <section>
+          <div className="flex flex-col gap-4">
             <div>
-              <h2>Documents</h2>
+              <h2 className="text-xl text-white">Documents</h2>
             </div>
-            <div>
-              <label>Permit</label>
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={handleFileChange(setPermit, 'permit')}
-              />
-              {errors.permit && <p className="text-red-600">{errors.permit}</p>}
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex flex-col">
+                <label className="text-white">Permit </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange(setPermit, 'permit')}
+                />
+                <span className="text-gray-400 text-sm mt-1">
+                  PDF only, max 5MB
+                </span>
+                {errors.permit && (
+                  <p className="text-red-600 text-sm">{errors.permit}</p>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <label className="text-white">Insurance </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange(setInsurance, 'insurance')}
+                />
+                <span className="text-gray-400 text-sm mt-1">
+                  PDF only, max 5MB
+                </span>
+                {errors.insurance && (
+                  <p className="text-red-600 text-sm">{errors.insurance}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <label>Insurance</label>
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={handleFileChange(setInsurance, 'insurance')}
-              />
-              {errors.insurance && (
-                <p className="text-red-600">{errors.insurance}</p>
-              )}
-            </div>
-          </section>
+          </div>
 
-          <button type="submit">Submit</button>
+          <button
+            type="submit"
+            className="w-full py-2.5 px-3 rounded-full font-medium bg-gradient-to-r from-yellow-600 text-sm to-orange-700 
+          text-white shadow-md hover:shadow-yellow-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+          >
+            Submit
+          </button>
         </form>
       )}
     </div>
