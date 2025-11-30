@@ -98,6 +98,10 @@ const BusOperatorForm = () => {
   const removeBus = (index) => {
     const updatedBuses = buses.filter((bus, i) => i !== index);
     setBuses(updatedBuses);
+
+    const updatedErrors = { ...errors };
+    updatedErrors.buses = updatedErrors.buses.filter((_, i) => i !== index);
+    setBuses(updatedBuses);
   };
 
   const updateBus = (index, field, value) => {

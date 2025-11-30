@@ -163,7 +163,7 @@ model BusOperatorRequest {
   nic          String
   email        String
   number       String
-  address      String?
+  address      String
   buses        Json
   uploadedDocs Json
   status       RequestStatus @default(PENDING)

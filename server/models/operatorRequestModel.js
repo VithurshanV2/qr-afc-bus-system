@@ -25,3 +25,24 @@ export const createOperatorRequest = async ({
     },
   });
 };
+
+// Check for existing pending request for certain email
+export const existingRequestByEmail = async (email) => {
+  return await prisma.busOperatorRequest.findFirst({
+    where: { email, status: 'PENDING' },
+  });
+};
+
+// Check for duplicate registration number of buses
+export const existingRegisteredBus = async (registrationNumbers) => {
+  return await prisma.busOperator.findMany({
+    where: {
+      Bus: {
+        some: {
+          registrationNumber: { in: registrationNumbers },
+        },
+      },
+    },
+    select: { Bus: true },
+  });
+};
