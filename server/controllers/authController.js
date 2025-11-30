@@ -7,6 +7,12 @@ import {
 } from '../models/userModel.js';
 import { sendVerifyOtp } from './otpController.js';
 
+// Email validation
+const isEmailValid = (email) => {
+  const regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gim;
+  return regex.test(email);
+};
+
 // Password policy
 const isPasswordValid = (password) => {
   // Password must be at least 8 characters and include uppercase, lowercase, and a number
@@ -28,6 +34,13 @@ export const register = async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: 'Missing required fields' });
+  }
+
+  if (!isEmailValid(email)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid email address',
+    });
   }
 
   if (!isPhoneNumberValid(number)) {
