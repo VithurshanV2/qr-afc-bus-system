@@ -35,14 +35,10 @@ export const existingRequestByEmail = async (email) => {
 
 // Check for duplicate registration number of buses
 export const existingRegisteredBus = async (registrationNumbers) => {
-  return await prisma.busOperator.findMany({
+  return await prisma.bus.findMany({
     where: {
-      Bus: {
-        some: {
-          registrationNumber: { in: registrationNumbers },
-        },
-      },
+      registrationNumber: { in: registrationNumbers },
     },
-    select: { Bus: true },
+    select: { registrationNumber: true },
   });
 };

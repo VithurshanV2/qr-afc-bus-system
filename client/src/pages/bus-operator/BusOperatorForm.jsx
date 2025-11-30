@@ -359,7 +359,7 @@ const BusOperatorForm = () => {
                   key={i}
                   className="flex flex-col sm:flex-row gap-4 p-4 items-center"
                 >
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-[190px]">
                     <input
                       type="text"
                       placeholder="Registration Number"

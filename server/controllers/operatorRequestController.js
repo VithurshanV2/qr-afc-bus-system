@@ -108,7 +108,7 @@ export const submitOperatorRequest = async (req, res) => {
     if (duplicateBuses.length > 0) {
       return res.status(400).json({
         success: false,
-        message: 'Bus has been already registered to the system',
+        message: `Bus ${duplicateBuses.map((bus) => bus.registrationNumber).join(', ')} has been already registered to the system`,
       });
     }
 
