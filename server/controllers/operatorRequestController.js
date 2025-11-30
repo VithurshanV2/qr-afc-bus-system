@@ -15,7 +15,15 @@ const isNicValid = (nic) => {
 
 // Create a new bus operator request
 export const submitOperatorRequest = async (req, res) => {
-  const { name, nic, email, number, address, buses, uploadedDocs } = req.body;
+  const { name, nic, email, number, address } = req.body;
+  const buses = JSON.parse(req.body.buses || '[]');
+  const permitFile = req.files?.permit?.[0];
+  const insuranceFile = req.files?.insurance?.[0];
+
+  const uploadedDocs = {
+    permit: permitFile.filename,
+    insurance: insuranceFile.filename,
+  };
 
   if (
     !name ||
@@ -23,8 +31,9 @@ export const submitOperatorRequest = async (req, res) => {
     !email ||
     !number ||
     !address ||
-    !buses ||
-    !uploadedDocs
+    buses.length === 0 ||
+    !permitFile ||
+    !insuranceFile
   ) {
     return res
       .status(400)
