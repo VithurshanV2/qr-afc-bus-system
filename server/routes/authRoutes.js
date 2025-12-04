@@ -1,8 +1,9 @@
 import express from 'express';
 import {
   isAuthenticated,
-  login,
+  loginCommuter,
   loginOperator,
+  loginTransportAuthority,
   logout,
   register,
 } from '../controllers/authController.js';
@@ -26,7 +27,12 @@ import {
 const authRouter = express.Router();
 
 authRouter.post('/register', authLimiter, register);
-authRouter.post('/login', authLimiter, login);
+
+// Role specific logins
+authRouter.post('/login', authLimiter, loginCommuter);
+authRouter.post('/login-bus-operator', authLimiter, loginOperator);
+authRouter.post('/login-admin', authLimiter, loginTransportAuthority);
+
 authRouter.post('/logout', logout);
 
 // Verification OTP
@@ -45,8 +51,5 @@ authRouter.post('/verify-reset-otp', otpLimiter, verifyResetOtp);
 authRouter.post('/reset-password', resetPassword);
 
 authRouter.get('/is-auth', userAuth, isAuthenticated);
-
-// Bus operator login
-authRouter.post('/login-bus-operator', authLimiter, loginOperator);
 
 export default authRouter;

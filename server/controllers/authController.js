@@ -217,8 +217,41 @@ export const isAuthenticated = async (req, res) => {
   return res.status(200).json({ success: true });
 };
 
-// Bus operator login
+// Login for commuters
+export const loginCommuter = async (req, res) => {
+  try {
+    req.body.role = 'COMMUTER';
+    await login(req, res);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Login for bus operator
 export const loginOperator = async (req, res) => {
-  req.body.role = 'BUSOPERATOR';
-  await login(req, res);
+  try {
+    req.body.role = 'BUSOPERATOR';
+    await login(req, res);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Login for Transport Authority (admin)
+export const loginTransportAuthority = async (req, res) => {
+  try {
+    req.body.role = 'TRANSPORTAUTHORITY';
+    await login(req, res);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
 };
