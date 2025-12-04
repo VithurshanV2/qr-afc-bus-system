@@ -60,6 +60,7 @@ const App = () => {
 
       {/* BottomNav for commuters */}
       {userData?.role === 'COMMUTER' &&
+        userData?.isAccountVerified &&
         (location.pathname === '/' ||
           location.pathname.startsWith('/commuter')) && <BottomNav />}
     </div>

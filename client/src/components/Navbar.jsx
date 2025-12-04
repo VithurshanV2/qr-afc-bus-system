@@ -46,6 +46,35 @@ const Navbar = () => {
     >
       <img src={assets.logo} alt="logo" className="w-40 sm:w-48" />
 
+      {userData && !userData.isAccountVerified && (
+        <div
+          className="flex justify-center items-center w-8 h-8 rounded-full bg-black text-white relative sm:group cursor-pointer"
+          onClick={toggleDropdown}
+        >
+          {userData.name[0].toUpperCase()}
+          <div
+            className={`absolute ${
+              isDropdownOpen ? 'block' : 'hidden'
+            } sm:group-hover:block top-0 right-0 z-10 text-black rounded pt-10`}
+          >
+            <ul className="list-none m-0 p-2 bg-gray-100 text-sm">
+              <li
+                onClick={() => navigate('/email-verify')}
+                className="py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10 whitespace-nowrap"
+              >
+                Email Verify
+              </li>
+              <li
+                onClick={logout}
+                className="py-1 px-2 hover:bg-gray-200 cursor-pointer pr-10"
+              >
+                Logout
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+
       {userData ? (
         userData.role !== 'COMMUTER' && (
           <div
