@@ -24,6 +24,16 @@ const BusOperatorRequest = () => {
           Become a registered bus operator to provide seamless fare collection
           to commuters through the SmartFare system.
         </p>
+
+        <p className="text-gray-400 text-sm mt-4">
+          Already have an account?{' '}
+          <span
+            onClick={() => navigate('/login-bus-operator')}
+            className="text-orange-300 cursor-pointer underline"
+          >
+            Login here
+          </span>
+        </p>
       </div>
       <div className="sm:w-1/4">
         <motion.button

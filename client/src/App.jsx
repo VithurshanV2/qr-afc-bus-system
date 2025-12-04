@@ -15,6 +15,7 @@ import CommuterLayout from './layouts/CommuterLayout';
 import PrivateRoute from './components/PrivateRoute';
 import BottomNav from './components/BottomNav';
 import BusOperatorForm from './pages/bus-operator/BusOperatorForm';
+import LoginBusOperator from './pages/auth/LoginBusOperator';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -56,6 +57,7 @@ const App = () => {
 
         {/* Bus operator routes */}
         <Route path="bus-operator-request" element={<BusOperatorForm />} />
+        <Route path="login-bus-operator" element={<LoginBusOperator />} />
       </Routes>
 
       {/* BottomNav for commuters */}
