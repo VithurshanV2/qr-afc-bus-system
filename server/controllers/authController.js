@@ -119,7 +119,7 @@ export const register = async (req, res) => {
 
 // User login
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({
@@ -136,6 +136,12 @@ export const login = async (req, res) => {
         success: false,
         message: 'Invalid email',
       });
+    }
+
+    if (role && user.role !== role) {
+      return res
+        .status(403)
+        .json({ success: false, message: 'Invalid email or password' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -209,4 +215,10 @@ export const logout = async (req, res) => {
 // Check if the user is authenticated
 export const isAuthenticated = async (req, res) => {
   return res.status(200).json({ success: true });
+};
+
+// Bus operator login
+export const loginOperator = async (req, res) => {
+  req.body.role = 'BUSOPERATOR';
+  await login(req, res);
 };

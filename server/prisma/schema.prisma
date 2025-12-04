@@ -44,8 +44,8 @@ model User {
 
 enum Role {
   COMMUTER
-  OPERATOR
-  ADMIN
+  BUSOPERATOR
+  TRANSPORTAUTHORITY
 }
 
 model Wallet {

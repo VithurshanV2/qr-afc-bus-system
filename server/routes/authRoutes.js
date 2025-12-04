@@ -2,6 +2,7 @@ import express from 'express';
 import {
   isAuthenticated,
   login,
+  loginOperator,
   logout,
   register,
 } from '../controllers/authController.js';
@@ -44,4 +45,8 @@ authRouter.post('/verify-reset-otp', otpLimiter, verifyResetOtp);
 authRouter.post('/reset-password', resetPassword);
 
 authRouter.get('/is-auth', userAuth, isAuthenticated);
+
+// Bus operator login
+authRouter.post('/login-bus-operator', authLimiter, loginOperator);
+
 export default authRouter;
