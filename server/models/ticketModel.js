@@ -1,4 +1,5 @@
 import { PrismaClient } from '../generated/prisma/index.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
 
@@ -21,6 +22,8 @@ export const createTicketAtBoarding = async ({
   const expiry = 15 * 60 * 1000; // 15 minutes
   const expiresAt = new Date(Date.now() + expiry);
 
+  const barcode = uuidv4();
+
   return await prisma.ticket.create({
     data: {
       commuterId: userId,
@@ -28,6 +31,7 @@ export const createTicketAtBoarding = async ({
       boardingHalt,
       expiresAt,
       status: 'PENDING',
+      barcode,
     },
   });
 };
