@@ -1,7 +1,18 @@
 import React from 'react';
 import { formatIssuedDate } from '../../../utils/date';
+import JsBarcode from 'jsbarcode';
+import { useRef } from 'react';
+import { useEffect } from 'react';
 
 const TicketCard = ({ ticket }) => {
+  const barcodeRef = useRef(null);
+
+  useEffect(() => {
+    if (ticket?.barcode && barcodeRef.current) {
+      JsBarcode(barcodeRef.current, ticket.barcode);
+    }
+  }, [ticket]);
+
   if (!ticket) {
     return null;
   }
@@ -23,7 +34,7 @@ const TicketCard = ({ ticket }) => {
   const bus = trip?.bus;
 
   return (
-    <div className="space-y-5 border-3 border-gray-200 rounded-xl p-5 shadow-lg">
+    <div className="space-y-2 border-3 border-gray-200 rounded-xl p-5 shadow-lg">
       <div className=" border-b border-gray-200 pb-3 mb-3">
         {/* Ticket ID */}
         <div className="text-center text-yellow-600 text-3xl font-semibold mb-2">
@@ -89,8 +100,13 @@ const TicketCard = ({ ticket }) => {
         </div>
       </div>
 
+      {/* Barcode */}
+      <div className="flex justify-center mt-3">
+        <img ref={barcodeRef} />
+      </div>
+
       {/* Total fare */}
-      <div className="text-center mt-2">
+      <div className="text-center">
         <p className="text-gray-600 tracking-wide text-xs leading-tight">
           Total Fare
         </p>
