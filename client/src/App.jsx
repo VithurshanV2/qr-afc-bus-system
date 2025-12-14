@@ -21,6 +21,7 @@ import AdminLayout from './layouts/AdminLayout';
 import ReviewAccountRequest from './pages/transport-authority/ReviewAccountRequest';
 import RouteManagement from './pages/transport-authority/RouteManagement';
 import TicketVerification from './pages/transport-authority/TicketVerification';
+import AdminRoute from './components/AdminRoute';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -66,7 +67,14 @@ const App = () => {
 
         {/* Transport Authority routes */}
         <Route path="login-admin" element={<LoginAdmin />} />
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        >
           <Route
             path="review-account-request"
             element={<ReviewAccountRequest />}
