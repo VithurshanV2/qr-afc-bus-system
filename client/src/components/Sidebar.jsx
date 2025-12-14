@@ -1,12 +1,46 @@
 import React, { createContext, useContext, useState } from 'react';
 import { assets } from '../assets/assets';
 import { ChevronFirst, ChevronLast, MoreVertical } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AppContext } from '../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const SidebarContext = createContext();
 
 const Sidebar = ({ children }) => {
+  const { userData, setIsLoggedIn, setUserData, setGlobalLoading, backendUrl } =
+    useContext(AppContext);
   const [expanded, setExpanded] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const firstLetter = userData?.name?.[0]?.toUpperCase() || '';
+
+  const navigate = useNavigate();
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  const logout = async () => {
+    try {
+      setGlobalLoading(true);
+
+      axios.defaults.withCredentials = true;
+      const { data } = await axios.post(backendUrl + '/api/auth/logout');
+
+      if (data.success) {
+        setIsLoggedIn(false);
+        setUserData(false);
+        navigate('/');
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
   return (
     <aside className="h-screen">
@@ -29,18 +63,34 @@ const Sidebar = ({ children }) => {
           <ul className="flex-1 px-3">{children}</ul>
         </SidebarContext.Provider>
 
-        <div className="border-t flex p-3">
-          <img src="" alt="" className="w-10 h-10 rounded-md" />
+        <div className="relative border-t flex p-3">
+          <div className="flex justify-center items-center w-10 h-10 rounded-full bg-black text-white font-semibold">
+            {firstLetter}
+          </div>
 
           <div
             className={`flex justify-between items-center overflow-hidden transition-all ${expanded ? 'w-52 ml-3' : 'w-0'} `}
           >
             <div className="leading-4">
-              <h4 className="font-semibold">test</h4>
-              <span className="text-xs text-gray-600">test@test.com</span>
+              <h4 className="font-semibold">{userData?.name}</h4>
+              <span className="text-xs text-gray-600">{userData?.email}</span>
             </div>
-            <MoreVertical size={20} />
+
+            <div onClick={toggleDropdown} className="cursor-pointer">
+              <MoreVertical size={20} />
+            </div>
           </div>
+
+          {isDropdownOpen && (
+            <ul className="absolute right-3 bottom-full mb-2 bg-gray-200 rounded shadow-lg text-sm w-36 z-50">
+              <li
+                onClick={logout}
+                className="px-4 py-2 hover:bg-gray-300 cursor-pointer"
+              >
+                Logout
+              </li>
+            </ul>
+          )}
         </div>
       </nav>
     </aside>
