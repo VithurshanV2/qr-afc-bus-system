@@ -7,9 +7,18 @@ const AdminLayout = () => {
   return (
     <div className="flex">
       <Sidebar>
-        <SidebarItem text="Account Requests" icon={<UserPlus size={20} />} />
-        <SidebarItem text="Route Management" icon={<MapPinPlus size={20} />} />
         <SidebarItem
+          to="/admin/review-account-request"
+          text="Account Requests"
+          icon={<UserPlus size={20} />}
+        />
+        <SidebarItem
+          to="/admin/route-management"
+          text="Route Management"
+          icon={<MapPinPlus size={20} />}
+        />
+        <SidebarItem
+          to="/admin/ticket-verification"
           text="Ticket Verification"
           icon={<TicketCheck size={20} />}
         />
