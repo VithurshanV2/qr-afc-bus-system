@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Navigate, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
-const PrivateRoute = ({ children }) => {
+const CommuterRoute = ({ children }) => {
   const { isLoggedIn, userData, authChecked } = useContext(AppContext);
 
   const location = useLocation();
@@ -22,10 +21,12 @@ const PrivateRoute = ({ children }) => {
     return <Navigate to="/email-verify" replace />;
   }
 
+  // Check role
+  if (userData.role !== 'COMMUTER') {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 };
-PrivateRoute.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
-export default PrivateRoute;
+export default CommuterRoute;
