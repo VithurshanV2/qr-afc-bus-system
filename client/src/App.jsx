@@ -17,6 +17,10 @@ import BottomNav from './components/BottomNav';
 import BusOperatorForm from './pages/bus-operator/BusOperatorForm';
 import LoginBusOperator from './pages/auth/LoginBusOperator';
 import LoginAdmin from './pages/auth/LoginAdmin';
+import AdminLayout from './layouts/AdminLayout';
+import ReviewAccountRequest from './pages/transport-authority/ReviewAccountRequest';
+import RouteManagement from './pages/transport-authority/RouteManagement';
+import TicketVerification from './pages/transport-authority/TicketVerification';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -62,6 +66,14 @@ const App = () => {
 
         {/* Transport Authority routes */}
         <Route path="login-admin" element={<LoginAdmin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route
+            path="review-account-request"
+            element={<ReviewAccountRequest />}
+          />
+          <Route path="route-management" element={<RouteManagement />} />
+          <Route path="ticket-verification" element={<TicketVerification />} />
+        </Route>
       </Routes>
 
       {/* BottomNav for commuters */}
