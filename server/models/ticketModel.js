@@ -151,3 +151,14 @@ export const getPastTickets = async (
 
   return await prisma.ticket.findMany(query);
 };
+
+// Fetch ticket by barcode
+export const getTicketByBarcode = async (barcode) => {
+  return await prisma.ticket.findUnique({
+    where: { barcode },
+    include: {
+      trip: { include: { bus: true, route: true } },
+      commuter: true,
+    },
+  });
+};

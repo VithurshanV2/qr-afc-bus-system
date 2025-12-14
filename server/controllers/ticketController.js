@@ -3,6 +3,7 @@ import {
   getActiveTicket,
   getLatestTicket,
   getPastTickets,
+  getTicketByBarcode,
   setCancelTicket,
   setDestinationHalt,
   setPassengerCount,
@@ -385,6 +386,32 @@ export const fetchPastTickets = async (req, res) => {
       tickets,
       nextCursor: tickets.length > 0 ? tickets[tickets.length - 1].id : null,
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Verify ticket by barcode
+export const verifyTicket = async (req, res) => {
+  try {
+    const { barcode } = req.body;
+
+    if (!requireFields(res, { barcode }, ['barcode'])) return;
+
+    const ticket = await getTicketByBarcode(barcode);
+
+    if (!ticket) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: 'Ticket found', ticket });
   } catch (error) {
     console.error(error);
     return res
