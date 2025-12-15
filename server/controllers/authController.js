@@ -82,10 +82,14 @@ export const register = async (req, res) => {
       updateUser = await updateIsFirstLogin(user.id, false);
     }
 
-    // Generate JWT token with user's ID
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
-    });
+    // Generate JWT token with user's ID and role
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '7d',
+      },
+    );
 
     // Set the JWT token as an HTTP-only cookie
     res.cookie('token', token, {
@@ -159,10 +163,14 @@ export const login = async (req, res) => {
       updateUser = await updateIsFirstLogin(user.id, false);
     }
 
-    // Generate JWT token with user's ID
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '7d',
-    });
+    // Generate JWT token with user's ID and role
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '7d',
+      },
+    );
 
     // Set the JWT token as an HTTP-only cookie
     res.cookie('token', token, {

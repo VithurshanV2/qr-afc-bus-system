@@ -394,14 +394,14 @@ export const fetchPastTickets = async (req, res) => {
   }
 };
 
-// Verify ticket by barcode
+// Verify ticket by QR Code
 export const verifyTicket = async (req, res) => {
   try {
-    const { barcode } = req.body;
+    const { qrCode } = req.body;
 
-    if (!requireFields(res, { barcode }, ['barcode'])) return;
+    if (!requireFields(res, { qrCode }, ['qrCode'])) return;
 
-    const ticket = await getTicketByQrCode(barcode);
+    const ticket = await getTicketByQrCode(qrCode);
 
     if (!ticket) {
       return res

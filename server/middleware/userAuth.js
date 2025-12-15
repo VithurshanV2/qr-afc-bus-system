@@ -5,27 +5,27 @@ const userAuth = async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) {
-    return res
-      .status(401)
-      .json({
-        success: false,
-        message: 'Access denied. Please log in to continue',
-      });
+    return res.status(401).json({
+      success: false,
+      message: 'Access denied. Please log in to continue',
+    });
   }
 
   try {
     const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
 
     if (!tokenDecode?.id) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: 'Invalid token. Please log in again',
-        });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token. Please log in again',
+      });
     }
 
     req.userId = tokenDecode.id;
+    req.user = {
+      id: tokenDecode.id,
+      role: tokenDecode.role,
+    };
     next();
   } catch (error) {
     console.error(error);
