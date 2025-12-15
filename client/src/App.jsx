@@ -20,7 +20,7 @@ import LoginAdmin from './pages/auth/LoginAdmin';
 import AdminLayout from './layouts/AdminLayout';
 import ReviewAccountRequest from './pages/transport-authority/ReviewAccountRequest';
 import RouteManagement from './pages/transport-authority/RouteManagement';
-import TicketVerification from './pages/transport-authority/TicketVerification';
+import TicketVerification from './pages/shared/TicketVerification';
 import AdminRoute from './components/AdminRoute';
 import CommuterRoute from './components/CommuterRoute';
 

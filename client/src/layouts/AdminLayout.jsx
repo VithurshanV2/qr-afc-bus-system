@@ -5,7 +5,7 @@ import { MapPinPlus, TicketCheck, UserPlus } from 'lucide-react';
 
 const AdminLayout = () => {
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar>
         <SidebarItem
           to="/admin/review-account-request"
@@ -23,7 +23,10 @@ const AdminLayout = () => {
           icon={<TicketCheck size={20} />}
         />
       </Sidebar>
-      <Outlet />
+
+      <main className="flex-1 overflow-y-auto">
+        <Outlet />
+      </main>
     </div>
   );
 };
