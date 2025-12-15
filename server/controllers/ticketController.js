@@ -3,7 +3,7 @@ import {
   getActiveTicket,
   getLatestTicket,
   getPastTickets,
-  getTicketByBarcode,
+  getTicketByQrCode,
   setCancelTicket,
   setDestinationHalt,
   setPassengerCount,
@@ -401,7 +401,7 @@ export const verifyTicket = async (req, res) => {
 
     if (!requireFields(res, { barcode }, ['barcode'])) return;
 
-    const ticket = await getTicketByBarcode(barcode);
+    const ticket = await getTicketByQrCode(barcode);
 
     if (!ticket) {
       return res

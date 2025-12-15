@@ -34,7 +34,7 @@ ticketRouter.get('/active', userAuth, fetchActiveTicket);
 ticketRouter.get('/latest', userAuth, fetchLatestTicket);
 ticketRouter.get('/past', userAuth, fetchPastTickets);
 
-ticketRouter.get(
+ticketRouter.post(
   '/verify-ticket',
   userAuth,
   requireRole(['BUSOPERATOR', 'TRANSPORTAUTHORITY']),

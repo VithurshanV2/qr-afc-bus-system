@@ -22,7 +22,7 @@ export const createTicketAtBoarding = async ({
   const expiry = 15 * 60 * 1000; // 15 minutes
   const expiresAt = new Date(Date.now() + expiry);
 
-  const barcode = uuidv4();
+  const qrCode = uuidv4();
 
   return await prisma.ticket.create({
     data: {
@@ -31,7 +31,7 @@ export const createTicketAtBoarding = async ({
       boardingHalt,
       expiresAt,
       status: 'PENDING',
-      barcode,
+      qrCode,
     },
   });
 };
@@ -152,10 +152,10 @@ export const getPastTickets = async (
   return await prisma.ticket.findMany(query);
 };
 
-// Fetch ticket by barcode
-export const getTicketByBarcode = async (barcode) => {
+// Fetch ticket by QrCode
+export const getTicketByQrCode = async (qrCode) => {
   return await prisma.ticket.findUnique({
-    where: { barcode },
+    where: { qrCode },
     include: {
       trip: { include: { bus: true, route: true } },
       commuter: true,

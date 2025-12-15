@@ -146,7 +146,7 @@ model Ticket {
   issuedAt        DateTime     @default(now())
   expiresAt       DateTime?
   cancelledAt     DateTime?
-  barcode         String       @unique
+  qrCode          String       @unique
 
   @@index([commuterId, status])
 }
