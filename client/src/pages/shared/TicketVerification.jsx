@@ -6,9 +6,10 @@ import { useRef } from 'react';
 import { toast } from 'react-toastify';
 import { Html5Qrcode } from 'html5-qrcode';
 import { BounceLoader } from 'react-spinners';
+import axios from 'axios';
 
 const TicketVerification = () => {
-  const { _backendUrl } = useContext(AppContext);
+  const { backendUrl } = useContext(AppContext);
   const qrRef = useRef(null);
 
   const [cameraDenied, setCameraDenied] = useState(false);
@@ -51,7 +52,7 @@ const TicketVerification = () => {
       const cameraId = devices[0].id;
       qrRef.current = new Html5Qrcode('reader');
 
-      const config = { fps: 10, qrbox: { width: 300, height: 150 } };
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
       await qrRef.current.start(
         { deviceId: { exact: cameraId } },
@@ -77,7 +78,39 @@ const TicketVerification = () => {
     await startScanner();
   };
 
-  const handleScanSuccess = async () => {};
+  const handleScanSuccess = async (text) => {
+    if (scanning) {
+      return;
+    }
+
+    setScanning(true);
+
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/ticket/verify-ticket',
+        { qrCode: text },
+      );
+
+      if (data.success) {
+        toast.success('Ticket found');
+        setScanError('');
+        await stopScanner();
+      } else {
+        setScanError(data.message || 'Ticket not found');
+        await stopScanner();
+      }
+    } catch (error) {
+      setScanError(
+        error.response?.data?.message || 'Failed to process QR Code',
+      );
+      await stopScanner();
+      await stopScanner();
+    } finally {
+      setScanning(false);
+    }
+  };
 
   return (
     <div>
@@ -96,7 +129,7 @@ const TicketVerification = () => {
               className="w-full rounded-xl bg-gray-100 flex items-center justify-center text-gray-700 aspect-[4/3]"
             ></div>
 
-            {(loading || scanning) && (
+            {scanning && (
               <div className="absolute top-0 left-0 w-full h-full bg-white/70 flex flex-col items-center justify-center z-20 backdrop:blur-sm">
                 <BounceLoader size={60} color="#FFB347" />
                 <p className="mt-4 text-gray-700 font-medium text-center">

@@ -1,18 +1,8 @@
 import React from 'react';
 import { formatIssuedDate } from '../../../utils/date';
-import JsBarcode from 'jsbarcode';
-import { useRef } from 'react';
-import { useEffect } from 'react';
+import QRCode from 'react-qr-code';
 
 const TicketCard = ({ ticket }) => {
-  const barcodeRef = useRef(null);
-
-  useEffect(() => {
-    if (ticket?.barcode && barcodeRef.current) {
-      JsBarcode(barcodeRef.current, ticket.barcode);
-    }
-  }, [ticket]);
-
   if (!ticket) {
     return null;
   }
@@ -100,13 +90,13 @@ const TicketCard = ({ ticket }) => {
         </div>
       </div>
 
-      {/* Barcode */}
-      <div className="flex justify-center mt-3">
-        <img ref={barcodeRef} />
+      {/* QR Code */}
+      <div className="flex justify-center mt-5">
+        <QRCode value={ticket.qrCode || ''} size={150} />
       </div>
 
       {/* Total fare */}
-      <div className="text-center">
+      <div className="text-center mt-5">
         <p className="text-gray-600 tracking-wide text-xs leading-tight">
           Total Fare
         </p>
