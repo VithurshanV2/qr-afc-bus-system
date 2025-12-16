@@ -1,10 +1,12 @@
 import {
+  countRoutes,
   findRouteByNumberBusType,
   getRouteById,
+  getRoutesList,
   insertRoute,
   updateRoute,
-} from '../models/routeModel';
-import { requireFields } from '../utils/validateRequest';
+} from '../models/routeModel.js';
+import { requireFields } from '../utils/validateRequest.js';
 
 // Create a new route as draft
 export const createRoute = async (req, res) => {
@@ -116,6 +118,31 @@ export const updateRouteController = async (req, res) => {
       success: true,
       message: 'Route updated successfully',
       route: updatedRoute,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Search routes
+export const searchRoutes = async (req, res) => {
+  try {
+    const { search = '', page = 1, limit = 10 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const routes = await getRoutesList({ search, skip, take });
+    const total = await countRoutes({ search });
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      routes,
     });
   } catch (error) {
     console.error(error);

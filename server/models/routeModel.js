@@ -50,3 +50,33 @@ export const updateRoute = async ({ routeId, data }) => {
     data,
   });
 };
+
+// Fetch routes for search
+export const getRoutesList = async ({ search = '', skip = 0, take = 10 }) => {
+  return await prisma.route.findMany({
+    where: {
+      OR: [
+        { number: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+      ],
+    },
+    include: {
+      createdBy: { select: { id: true, name: true, email: true } },
+      updatedBy: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+    skip,
+    take,
+  });
+};
+
+export const countRoutes = async ({ search = '' }) => {
+  return await prisma.route.count({
+    where: {
+      OR: [
+        { number: { contains: search, mode: 'insensitive' } },
+        { name: { contains: search, mode: 'insensitive' } },
+      ],
+    },
+  });
+};

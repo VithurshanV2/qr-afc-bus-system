@@ -1,10 +1,11 @@
 import express from 'express';
-import userAuth from '../middleware/userAuth';
-import requireRole from '../middleware/requireRole';
+import userAuth from '../middleware/userAuth.js';
+import requireRole from '../middleware/requireRole.js';
 import {
   createRoute,
+  searchRoutes,
   updateRouteController,
-} from '../controllers/routeController';
+} from '../controllers/routeController.js';
 
 const routeRouter = express.Router();
 
@@ -19,6 +20,12 @@ routeRouter.put(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   updateRouteController,
+);
+routeRouter.get(
+  '/list',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  searchRoutes,
 );
 
 export default routeRouter;
