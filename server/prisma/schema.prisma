@@ -127,7 +127,7 @@ model Route {
   name        String
   busType     BusType
   status      RouteStatus @default(DRAFT)
-  haltsA      Json
+  haltsA      Json?
   haltsB      Json?
   createdBy   User        @relation("RouteCreatedBy", fields: [createdById], references: [id])
   createdById Int
