@@ -1,6 +1,12 @@
-import { findRouteByNumberBusType, insertRoute } from '../models/routeModel';
+import {
+  findRouteByNumberBusType,
+  getRouteById,
+  insertRoute,
+  updateRoute,
+} from '../models/routeModel';
 import { requireFields } from '../utils/validateRequest';
 
+// Create a new route as draft
 export const createRoute = async (req, res) => {
   try {
     const userId = req.userId;
@@ -37,6 +43,80 @@ export const createRoute = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: 'Route created as draft', route });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Update existing route
+export const updateRouteController = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { routeId } = req.params;
+    const { number, busType, name, haltsA, haltsB, status } = req.body;
+
+    if (!requireFields(res, { routeId }, ['routeId'])) {
+      return;
+    }
+
+    const route = await getRouteById(routeId);
+
+    if (!route) {
+      return req
+        .status(404)
+        .json({ success: false, message: 'Route not found' });
+    }
+
+    // Check duplicate if route number or bus type is changed
+    if (
+      (number && number !== route.number) ||
+      (busType && busType !== route.busType)
+    ) {
+      const existingRoute = await findRouteByNumberBusType(number, busType);
+
+      if (existingRoute && existingRoute.id !== route.id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Route already exists for this route number and bus type',
+        });
+      }
+    }
+
+    // Prepare data object for partial update
+    const updateData = {};
+
+    if (number !== undefined) updateData.number = number;
+    if (busType !== undefined) updateData.busType = busType;
+    if (name !== undefined) updateData.name = name;
+    if (haltsA !== undefined) updateData.haltsA = haltsA;
+    if (haltsB !== undefined) updateData.haltsB = haltsB;
+    if (status !== undefined) updateData.status = status;
+    updateData.updatedById = userId;
+
+    if (
+      status === 'ACTIVE' &&
+      (!haltsA || haltsA.length === 0) &&
+      (!haltsB || haltsB.length === 0)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot active route without halt data for both direction',
+      });
+    }
+
+    const updatedRoute = await updateRoute({
+      routeId: Number(routeId),
+      data: updateData,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Route updated successfully',
+      route: updatedRoute,
+    });
   } catch (error) {
     console.error(error);
     return res
