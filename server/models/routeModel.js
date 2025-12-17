@@ -107,11 +107,22 @@ export const getRouteHalts = async (routeId) => {
 };
 
 // Set route to inactive
-export const inactiveRoute = async ({ routeId, userId }) => {
+export const inactivateRoute = async ({ routeId, userId }) => {
   return await prisma.route.update({
     where: { id: routeId },
     data: {
       status: 'INACTIVE',
+      updatedById: userId,
+    },
+  });
+};
+
+// Activate route
+export const activateRoute = async ({ routeId, userId }) => {
+  return await prisma.route.update({
+    where: { id: routeId },
+    data: {
+      status: 'ACTIVE',
       updatedById: userId,
     },
   });

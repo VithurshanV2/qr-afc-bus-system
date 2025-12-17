@@ -2,10 +2,11 @@ import express from 'express';
 import userAuth from '../middleware/userAuth.js';
 import requireRole from '../middleware/requireRole.js';
 import {
+  activateRouteController,
   createRoute,
   deleteRoute,
   fetchRouteHalts,
-  inactiveRouteController,
+  inactivateRouteController,
   searchRoutes,
   updateRouteController,
 } from '../controllers/routeController.js';
@@ -46,7 +47,13 @@ routeRouter.post(
   '/inactive/:routeId',
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
-  inactiveRouteController,
+  inactivateRouteController,
+);
+routeRouter.post(
+  '/activate/:routeId',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  activateRouteController,
 );
 
 export default routeRouter;

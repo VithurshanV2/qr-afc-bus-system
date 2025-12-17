@@ -1,10 +1,11 @@
 import {
+  activateRoute,
   countRoutes,
   findRouteByNumberBusType,
   getRouteById,
   getRouteHalts,
   getRoutesList,
-  inactiveRoute,
+  inactivateRoute,
   insertRoute,
   softDeleteRoute,
   updateRoute,
@@ -238,7 +239,7 @@ export const fetchRouteHalts = async (req, res) => {
 };
 
 // Set route to inactive
-export const inactiveRouteController = async (req, res) => {
+export const inactivateRouteController = async (req, res) => {
   try {
     const { routeId } = req.params;
     const userId = req.userId;
@@ -258,11 +259,66 @@ export const inactiveRouteController = async (req, res) => {
       });
     }
 
-    const updatedRoute = await inactiveRoute({ routeId, userId });
+    const updatedRoute = await inactivateRoute({ routeId, userId });
 
     return res.status(200).json({
       success: true,
       message: 'Route set to inactive successfully',
+      route: updatedRoute,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Set route to active
+export const activateRouteController = async (req, res) => {
+  try {
+    const { routeId } = req.params;
+    const userId = req.userId;
+
+    const route = await getRouteById(routeId);
+
+    if (!route) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Route not found' });
+    }
+
+    if (route.status === 'ACTIVE') {
+      return res.status(400).json({
+        success: false,
+        message: 'Route is already active',
+      });
+    }
+
+    if (route.status === 'DELETED') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot activate a deleted route',
+      });
+    }
+
+    if (
+      !route.haltsA ||
+      route.haltsA.length === 0 ||
+      !route.haltsB ||
+      route.haltsB.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot active route without halt data for both directions',
+      });
+    }
+
+    const updatedRoute = await activateRoute({ routeId, userId });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Route activated successfully',
       route: updatedRoute,
     });
   } catch (error) {
