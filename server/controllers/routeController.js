@@ -73,6 +73,12 @@ export const updateRouteController = async (req, res) => {
         .json({ success: false, message: 'Route not found' });
     }
 
+    if (route.status === 'DELETED') {
+      return req
+        .status(400)
+        .json({ success: false, message: 'Cannot modify a deleted route' });
+    }
+
     // Check duplicate if route number or bus type is changed
     if (
       (number && number !== route.number) ||
@@ -88,6 +94,22 @@ export const updateRouteController = async (req, res) => {
       }
     }
 
+    if (status === 'ACTIVE') {
+      if (number !== undefined || busType !== undefined) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cannot change route number or bus type after activation',
+        });
+      }
+    }
+
+    if (haltsA !== undefined || haltsB !== undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot modify halts after activation',
+      });
+    }
+
     // Prepare data object for partial update
     const updateData = {};
 
@@ -99,14 +121,19 @@ export const updateRouteController = async (req, res) => {
     if (status !== undefined) updateData.status = status;
     updateData.updatedById = userId;
 
-    if (
-      status === 'ACTIVE' &&
-      (!haltsA || haltsA.length === 0) &&
-      (!haltsB || haltsB.length === 0)
-    ) {
+    if (status === 'ACTIVE') {
+      if (route.status !== 'DRAFT') {
+        return res.status(400).json({
+          success: false,
+          message: 'Only draft routes can be activated',
+        });
+      }
+    }
+
+    if (!haltsA || haltsA.length === 0 || !haltsB || haltsB.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Cannot active route without halt data for both direction',
+        message: 'Cannot active route without halt data for both directions',
       });
     }
 
