@@ -91,3 +91,17 @@ export const softDeleteRoute = async ({ routeId, userId }) => {
     },
   });
 };
+
+// Fetch halts of a route by ID
+export const getRouteHalts = async (routeId) => {
+  return await prisma.route.findUnique({
+    where: { id: routeId },
+    select: {
+      id: true,
+      number: true,
+      name: true,
+      haltsA: true,
+      haltsB: true,
+    },
+  });
+};

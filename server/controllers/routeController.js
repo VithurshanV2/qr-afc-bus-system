@@ -2,6 +2,7 @@ import {
   countRoutes,
   findRouteByNumberBusType,
   getRouteById,
+  getRouteHalts,
   getRoutesList,
   insertRoute,
   softDeleteRoute,
@@ -205,6 +206,28 @@ export const deleteRoute = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: 'Route deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Get halts of a route
+export const fetchRouteHalts = async (req, res) => {
+  try {
+    const { routeId } = req.params;
+
+    const route = getRouteHalts(Number(routeId));
+
+    if (!route) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Route not found' });
+    }
+
+    return res.status(200).json({ success: true, route });
   } catch (error) {
     console.error(error);
     return res

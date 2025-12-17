@@ -4,6 +4,7 @@ import requireRole from '../middleware/requireRole.js';
 import {
   createRoute,
   deleteRoute,
+  fetchRouteHalts,
   searchRoutes,
   updateRouteController,
 } from '../controllers/routeController.js';
@@ -33,6 +34,12 @@ routeRouter.delete(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   deleteRoute,
+);
+routeRouter.get(
+  '/halts/:routeId',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  fetchRouteHalts,
 );
 
 export default routeRouter;
