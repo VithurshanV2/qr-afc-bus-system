@@ -4,6 +4,7 @@ import {
   getRouteById,
   getRoutesList,
   insertRoute,
+  softDeleteRoute,
   updateRoute,
 } from '../models/routeModel.js';
 import { requireFields } from '../utils/validateRequest.js';
@@ -144,6 +145,39 @@ export const searchRoutes = async (req, res) => {
       limit: Number(limit),
       routes,
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Soft delete route
+export const deleteRoute = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { routeId } = req.params;
+
+    const route = await getRouteById(routeId);
+
+    if (!route) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Route not found' });
+    }
+
+    if (route.status === 'DELETED') {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Route already deleted' });
+    }
+
+    await softDeleteRoute({ routeId, userId });
+
+    return res
+      .status(200)
+      .json({ success: true, message: 'Route deleted successfully' });
   } catch (error) {
     console.error(error);
     return res

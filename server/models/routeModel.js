@@ -80,3 +80,14 @@ export const countRoutes = async ({ search = '' }) => {
     },
   });
 };
+
+// Soft delete route
+export const softDeleteRoute = async ({ routeId, userId }) => {
+  return await prisma.route.update({
+    where: { id: routeId },
+    data: {
+      status: 'DELETED',
+      updatedById: userId,
+    },
+  });
+};

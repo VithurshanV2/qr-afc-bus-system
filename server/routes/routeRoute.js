@@ -3,6 +3,7 @@ import userAuth from '../middleware/userAuth.js';
 import requireRole from '../middleware/requireRole.js';
 import {
   createRoute,
+  deleteRoute,
   searchRoutes,
   updateRouteController,
 } from '../controllers/routeController.js';
@@ -26,6 +27,12 @@ routeRouter.get(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   searchRoutes,
+);
+routeRouter.delete(
+  '/delete-route/:routeId',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  deleteRoute,
 );
 
 export default routeRouter;
