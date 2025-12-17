@@ -14,22 +14,26 @@ const RouteManagement = () => {
   const [search, setSearch] = useState('');
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
-  const fetchRoutes = async () => {
+  const limit = 10; // routes per page
+
+  const totalPages = Math.ceil(total / limit);
+
+  const fetchRoutes = async (page = 1) => {
     try {
       setLoading(true);
       axios.defaults.withCredentials = true;
 
       const { data } = await axios.get(backendUrl + '/api/route/list', {
-        params: {
-          search,
-          page: 1,
-          limit: 10,
-        },
+        params: { search, page, limit },
       });
 
       if (data.success) {
         setRoutes(data.routes);
+        setTotal(data.total);
+        setCurrentPage(page);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
@@ -56,13 +60,13 @@ const RouteManagement = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search routes by route number or name"
-          className="w-full flex-2/3 border border-gray-300 rounded-xl px-4 py-2 
+          className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
           focus:outline-none focus:ring-2 focus:ring-yellow-400"
         />
 
         <button
-          onClick={fetchRoutes}
-          className="w-full flex-1/3 bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
+          onClick={() => fetchRoutes(1)}
+          className="w-full flex-1/4 bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
           transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
         >
           Search
@@ -71,11 +75,20 @@ const RouteManagement = () => {
 
       {/* Route list */}
       <div className="mx-10">
-        <h3 className="text-gray-900 font-semibold mb-3 text-2xl">
-          Route List
-        </h3>
+        <div className="flex justify-between">
+          <h3 className="text-gray-900 font-semibold mb-3 text-2xl">
+            Route List
+          </h3>
 
-        <div>
+          <button
+            className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
+            transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
+          >
+            Add Route
+          </button>
+        </div>
+
+        <div className="border border-gray-200 rounded-xl overflow-hidden">
           <table className="min-w-full">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
@@ -143,6 +156,29 @@ const RouteManagement = () => {
                 ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center items-center gap-4 mt-4">
+          <button
+            onClick={() => fetchRoutes(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <button
+            onClick={() => fetchRoutes(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
