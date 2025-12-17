@@ -4,6 +4,7 @@ import {
   getRouteById,
   getRouteHalts,
   getRoutesList,
+  inactiveRoute,
   insertRoute,
   softDeleteRoute,
   updateRoute,
@@ -219,7 +220,7 @@ export const fetchRouteHalts = async (req, res) => {
   try {
     const { routeId } = req.params;
 
-    const route = getRouteHalts(Number(routeId));
+    const route = await getRouteHalts(Number(routeId));
 
     if (!route) {
       return res
@@ -228,6 +229,42 @@ export const fetchRouteHalts = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, route });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Set route to inactive
+export const inactiveRouteController = async (req, res) => {
+  try {
+    const { routeId } = req.params;
+    const userId = req.userId;
+
+    const route = await getRouteById(routeId);
+
+    if (!route) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Route not found' });
+    }
+
+    if (route.status !== 'ACTIVE') {
+      return res.status(404).json({
+        success: false,
+        message: 'Only active routes can be set to inactive',
+      });
+    }
+
+    const updatedRoute = await inactiveRoute({ routeId, userId });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Route set to inactive successfully',
+      route: updatedRoute,
+    });
   } catch (error) {
     console.error(error);
     return res

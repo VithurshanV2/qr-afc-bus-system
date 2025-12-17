@@ -5,6 +5,7 @@ import {
   createRoute,
   deleteRoute,
   fetchRouteHalts,
+  inactiveRouteController,
   searchRoutes,
   updateRouteController,
 } from '../controllers/routeController.js';
@@ -40,6 +41,12 @@ routeRouter.get(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   fetchRouteHalts,
+);
+routeRouter.post(
+  '/inactive/:routeId',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  inactiveRouteController,
 );
 
 export default routeRouter;

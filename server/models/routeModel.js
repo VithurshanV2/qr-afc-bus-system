@@ -105,3 +105,14 @@ export const getRouteHalts = async (routeId) => {
     },
   });
 };
+
+// Set route to inactive
+export const inactiveRoute = async ({ routeId, userId }) => {
+  return await prisma.route.update({
+    where: { id: routeId },
+    data: {
+      status: 'INACTIVE',
+      updatedById: userId,
+    },
+  });
+};
