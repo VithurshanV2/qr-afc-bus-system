@@ -1,10 +1,103 @@
 import React from 'react';
 import { useState } from 'react';
 
+const createEmptyHalt = (id) => ({
+  id: id,
+  englishName: '',
+  latitude: '',
+  longitude: '',
+  fare: '',
+});
+
 export const RouteForm = ({ route = null }) => {
   const [number, setNumber] = useState(route?.number || '');
   const [name, setName] = useState(route?.name || '');
   const [busType, setBusType] = useState(route?.busType || '');
+  const [haltsA, setHaltsA] = useState(
+    route?.haltsA || [createEmptyHalt(0), createEmptyHalt(1)],
+  );
+  const [haltsB, setHaltsB] = useState(
+    route?.haltsB || [createEmptyHalt(0), createEmptyHalt(1)],
+  );
+  const [activeDirection, setActiveDirection] = useState('A');
+
+  const getCurrentHalts = () => {
+    return activeDirection === 'A' ? haltsA : haltsB;
+  };
+
+  const setCurrentHalts = (halts) => {
+    if (activeDirection === 'A') {
+      setHaltsA(halts);
+    } else {
+      setHaltsB(halts);
+    }
+  };
+
+  const updateHaltField = (index, field, value) => {
+    const halts = getCurrentHalts();
+    const updatedHalts = [];
+
+    for (let i = 0; i < halts.length; i++) {
+      if (i === index) {
+        const updatedHalt = {
+          id: halts[i].id,
+          englishName: halts[i].englishName,
+          latitude: halts[i].latitude,
+          longitude: halts[i].longitude,
+          fare: halts[i].fare,
+        };
+
+        if (field === 'englishName') updatedHalt.englishName = value;
+        if (field === 'latitude') updatedHalt.latitude = value;
+        if (field === 'longitude') updatedHalt.longitude = value;
+        if (field === 'fare') updatedHalt.fare = value;
+
+        updatedHalts.push(updatedHalt);
+      } else {
+        updatedHalts.push(halts[i]);
+      }
+    }
+    setCurrentHalts(updatedHalts);
+  };
+
+  const removeHalt = (index) => {
+    const halts = getCurrentHalts();
+    const updatedHalts = [];
+
+    for (let i = 0; i < halts.length; i++) {
+      if (i !== index) {
+        const halt = {
+          id: updatedHalts.length,
+          englishName: halts[i].englishName,
+          latitude: halts[i].latitude,
+          longitude: halts[i].longitude,
+          fare: halts[i].fare,
+        };
+        updatedHalts.push(halt);
+      }
+    }
+    setCurrentHalts(updatedHalts);
+  };
+
+  const addHalt = () => {
+    const halts = getCurrentHalts();
+    const newHalt = {
+      id: halts.length,
+      englishName: '',
+      latitude: '',
+      longitude: '',
+      fare: '',
+    };
+
+    const updatedHalts = [];
+
+    for (let i = 0; i < halts.length; i++) {
+      updatedHalts.push(halts[i]);
+    }
+    updatedHalts.push(newHalt);
+
+    setCurrentHalts(updatedHalts);
+  };
 
   return (
     <div className="mx-10 mb-10">
@@ -63,55 +156,88 @@ export const RouteForm = ({ route = null }) => {
         {/* Direction toggle */}
         <div className="flex gap-2 mb-6">
           <button
-            className="px-5 py-2 rounded-full bg-yellow-200 hover:bg-yellow-300 shadow-md 
-            hover:shadow-yellow-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+            onClick={() => setActiveDirection('A')}
+            className={`px-5 py-2 rounded-full  shadow-md 
+            hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform ${
+              activeDirection === 'A'
+                ? 'bg-yellow-200 hover:bg-yellow-300 hover:shadow-yellow-800'
+                : 'bg-gray-200 hover:bg-gray-300 hover:shadow-gray-800'
+            }`}
           >
             Direction A
           </button>
           <button
-            className="px-5 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
-            hover:shadow-gray-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+            onClick={() => setActiveDirection('B')}
+            className={`px-5 py-2 rounded-full  shadow-md 
+            hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform ${
+              activeDirection === 'B'
+                ? 'bg-yellow-200 hover:bg-yellow-300 hover:shadow-yellow-800'
+                : 'bg-gray-200 hover:bg-gray-300 hover:shadow-gray-800'
+            }`}
           >
             Direction B
           </button>
         </div>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-center">
-            <input
-              placeholder="Halt Name"
-              className="border border-gray-300 rounded-xl px-4 py-2 
-            focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-
-            <input
-              placeholder="Latitude"
-              className="border border-gray-300 rounded-xl px-4 py-2 
-            focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-
-            <input
-              placeholder="Longitude"
-              className="border border-gray-300 rounded-xl px-4 py-2 
-            focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-
-            <input
-              placeholder="Fare"
-              className="border border-gray-300 rounded-xl px-4 py-2 
-            focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-
-            <button
-              type="button"
-              className="px-4 py-2 rounded-full bg-red-600  text-white shadow-md 
-            hover:shadow-red-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+          {getCurrentHalts().map((halt, id) => (
+            <div
+              key={halt.id}
+              className="grid grid-cols-1 md:grid-cols-5 gap-3 items-center"
             >
-              Remove
-            </button>
-          </div>
+              <input
+                value={halt.englishName}
+                onChange={(e) =>
+                  updateHaltField(id, 'englishName', e.target.value)
+                }
+                placeholder="Halt Name"
+                className="border border-gray-300 rounded-xl px-4 py-2 
+            focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+
+              <input
+                value={halt.latitude}
+                onChange={(e) =>
+                  updateHaltField(id, 'latitude', parseFloat(e.target.value))
+                }
+                placeholder="Latitude"
+                className="border border-gray-300 rounded-xl px-4 py-2 
+            focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+
+              <input
+                value={halt.longitude}
+                onChange={(e) =>
+                  updateHaltField(id, 'longitude', parseFloat(e.target.value))
+                }
+                placeholder="Longitude"
+                className="border border-gray-300 rounded-xl px-4 py-2 
+            focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+
+              <input
+                value={halt.fare}
+                onChange={(e) =>
+                  updateHaltField(id, 'fare', Number(e.target.value))
+                }
+                placeholder="Fare"
+                className="border border-gray-300 rounded-xl px-4 py-2 
+            focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+
+              <button
+                onClick={() => removeHalt(id)}
+                type="button"
+                className="px-4 py-2 rounded-full bg-red-600  text-white shadow-md 
+            hover:shadow-red-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
 
           <button
+            onClick={() => addHalt()}
             type="button"
             className="px-4 py-2 rounded-full bg-green-600  text-white shadow-md 
           hover:shadow-green-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
