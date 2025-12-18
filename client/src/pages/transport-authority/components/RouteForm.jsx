@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useState } from 'react';
+import { AppContext } from '../../../context/AppContext';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const createEmptyHalt = (id) => ({
   id: id,
@@ -10,6 +14,10 @@ const createEmptyHalt = (id) => ({
 });
 
 export const RouteForm = ({ route = null }) => {
+  const { backendUrl, globalLoading, setGlobalLoading } =
+    useContext(AppContext);
+
+  const [modalType, setModalType] = useState(null);
   const [number, setNumber] = useState(route?.number || '');
   const [name, setName] = useState(route?.name || '');
   const [busType, setBusType] = useState(route?.busType || '');
@@ -20,6 +28,7 @@ export const RouteForm = ({ route = null }) => {
     route?.haltsB || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [activeDirection, setActiveDirection] = useState('A');
+  const [errors, setErrors] = useState({ number: '', name: '', busType: '' });
 
   const getCurrentHalts = () => {
     return activeDirection === 'A' ? haltsA : haltsB;
@@ -99,6 +108,107 @@ export const RouteForm = ({ route = null }) => {
     setCurrentHalts(updatedHalts);
   };
 
+  const buildPayload = () => {
+    const convertHalts = (halts) => {
+      const result = [];
+
+      for (let i = 0; i < halts.length; i++) {
+        const halt = {
+          id: halts[i].id,
+          englishName: halts[i].englishName,
+          latitude:
+            halts[i].latitude === '' ? null : parseFloat(halts[i].latitude),
+          longitude:
+            halts[i].longitude === '' ? null : parseFloat(halts[i].longitude),
+          fare: halts[i].fare === '' ? null : Number(halts[i].fare),
+        };
+        result.push(halt);
+      }
+      return result;
+    };
+
+    return {
+      number: number,
+      name: name,
+      busType: busType,
+      haltsA: convertHalts(haltsA),
+      haltsB: convertHalts(haltsB),
+    };
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newErrors = { number: '', name: '', busType: '' };
+
+    let hasError = false;
+
+    if (!number) {
+      newErrors.number = 'Route number is required';
+      hasError = true;
+    }
+
+    if (!name) {
+      newErrors.name = 'Route name is required';
+      hasError = true;
+    }
+
+    if (!busType) {
+      newErrors.busType = 'Bus type is required';
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      setGlobalLoading(true);
+
+      const payload = buildPayload();
+
+      axios.defaults.withCredentials = true;
+
+      let response;
+
+      if (route) {
+        response = await axios.put(
+          backendUrl + '/api/route/update-route/' + route.id,
+          payload,
+        );
+      } else {
+        response = await axios.post(
+          backendUrl + '/api/route/create-route',
+          payload,
+        );
+      }
+
+      const { data } = response;
+
+      if (data.success) {
+        toast.success(
+          route ? 'Route updated successfully' : 'Route created successfully',
+        );
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    window.history.back();
+  };
+
+  // Open cancel modal
+  const handleConfirmCancel = () => {
+    setModalType('cancelRoute');
+  };
+
   return (
     <div className="mx-10 mb-10">
       <div className="mb-6">
@@ -113,37 +223,53 @@ export const RouteForm = ({ route = null }) => {
         </h4>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            placeholder="Route Number"
-            className="border border-gray-300 rounded-xl px-4 py-2 
+          <div>
+            <input
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              placeholder="Route Number"
+              className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            required
-          />
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Route Name"
-            className="border border-gray-300 rounded-xl px-4 py-2 
+              required
+            />
+            {errors.number && (
+              <p className="text-red-600 text-sm ml-5">{errors.number}</p>
+            )}
+          </div>
+          <div>
+            {' '}
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Route Name"
+              className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            required
-          />
-          <select
-            value={busType}
-            onChange={(e) => setBusType(e.target.value)}
-            className="border border-gray-300 rounded-xl px-4 py-2 
+              required
+            />
+            {errors.name && (
+              <p className="text-red-600 text-sm ml-5">{errors.name}</p>
+            )}
+          </div>
+          <div>
+            <select
+              value={busType}
+              onChange={(e) => setBusType(e.target.value)}
+              className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            required
-          >
-            <option value="" disabled>
-              Select Bus Type
-            </option>
-            <option value="NORMAL">Normal</option>
-            <option value="SEMILUXURY">Semi-Luxury</option>
-            <option value="LUXURY">Luxury</option>
-            <option value="SUPERLUXURY">Super-Luxury</option>
-          </select>{' '}
+              required
+            >
+              <option value="" disabled>
+                Select Bus Type
+              </option>
+              <option value="NORMAL">Normal</option>
+              <option value="SEMILUXURY">Semi-Luxury</option>
+              <option value="LUXURY">Luxury</option>
+              <option value="SUPERLUXURY">Super-Luxury</option>
+            </select>
+            {errors.busType && (
+              <p className="text-red-600 text-sm ml-5">{errors.busType}</p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -198,7 +324,7 @@ export const RouteForm = ({ route = null }) => {
               <input
                 value={halt.latitude}
                 onChange={(e) =>
-                  updateHaltField(id, 'latitude', parseFloat(e.target.value))
+                  updateHaltField(id, 'latitude', e.target.value)
                 }
                 placeholder="Latitude"
                 className="border border-gray-300 rounded-xl px-4 py-2 
@@ -208,7 +334,7 @@ export const RouteForm = ({ route = null }) => {
               <input
                 value={halt.longitude}
                 onChange={(e) =>
-                  updateHaltField(id, 'longitude', parseFloat(e.target.value))
+                  updateHaltField(id, 'longitude', e.target.value)
                 }
                 placeholder="Longitude"
                 className="border border-gray-300 rounded-xl px-4 py-2 
@@ -217,9 +343,7 @@ export const RouteForm = ({ route = null }) => {
 
               <input
                 value={halt.fare}
-                onChange={(e) =>
-                  updateHaltField(id, 'fare', Number(e.target.value))
-                }
+                onChange={(e) => updateHaltField(id, 'fare', e.target.value)}
                 placeholder="Fare"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
@@ -249,18 +373,35 @@ export const RouteForm = ({ route = null }) => {
 
       <div className="flex justify-end gap-4 mt-6">
         <button
+          onClick={handleConfirmCancel}
           className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
             hover:shadow-gray-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
         >
           Cancel
         </button>
         <button
+          onClick={handleSubmit}
+          disabled={globalLoading}
           className="px-6 py-2 rounded-full bg-yellow-200 hover:bg-yellow-300 shadow-md 
             hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
         >
           {route ? 'Update Route' : 'Create Route'}
         </button>
       </div>
+
+      {/* Confirm modal for cancel ticket */}
+      <ConfirmModal
+        isOpen={modalType === 'cancelRoute'}
+        title="Discard changes?"
+        message="All unsaved changes will be lost"
+        confirmText="Discard"
+        cancelText="Continue Editing"
+        onConfirm={() => {
+          setModalType(null);
+          handleCancel();
+        }}
+        onCancel={() => setModalType(null)}
+      />
     </div>
   );
 };
