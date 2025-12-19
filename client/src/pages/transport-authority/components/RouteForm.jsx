@@ -71,6 +71,11 @@ export const RouteForm = ({ route = null }) => {
 
   const removeHalt = (index) => {
     const halts = getCurrentHalts();
+
+    if (halts.length <= 2) {
+      return;
+    }
+
     const updatedHalts = [];
 
     for (let i = 0; i < halts.length; i++) {
@@ -158,6 +163,30 @@ export const RouteForm = ({ route = null }) => {
       hasError = true;
     }
 
+    const allHalts = [...haltsA, ...haltsB];
+
+    for (let i = 0; i < allHalts.length; i++) {
+      const halt = allHalts[i];
+
+      if (halt.latitude && isNaN(Number(halt.latitude))) {
+        newErrors.halts = 'Latitude must be a number';
+        hasError = true;
+        break;
+      }
+
+      if (halt.longitude && isNaN(Number(halt.longitude))) {
+        newErrors.halts = 'Longitude must be a number';
+        hasError = true;
+        break;
+      }
+
+      if (halt.fare && isNaN(Number(halt.fare))) {
+        newErrors.halts = 'Fare must be a number (in cents)';
+        hasError = true;
+        break;
+      }
+    }
+
     if (hasError) {
       setErrors(newErrors);
       return;
@@ -222,6 +251,10 @@ export const RouteForm = ({ route = null }) => {
           Route Details
         </h4>
 
+        <div className="mb-2 text-gray-700 text-sm">
+          Route name format: Kandy - Dambulla
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <input
@@ -237,7 +270,6 @@ export const RouteForm = ({ route = null }) => {
             )}
           </div>
           <div>
-            {' '}
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -306,6 +338,9 @@ export const RouteForm = ({ route = null }) => {
         </div>
 
         <div className="space-y-4">
+          {errors.halts && (
+            <p className="text-red-600 text-sm ml-5">{errors.halts}</p>
+          )}
           {getCurrentHalts().map((halt, id) => (
             <div
               key={halt.id}
@@ -344,19 +379,21 @@ export const RouteForm = ({ route = null }) => {
               <input
                 value={halt.fare}
                 onChange={(e) => updateHaltField(id, 'fare', e.target.value)}
-                placeholder="Fare"
+                placeholder="Fare (cents)"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
 
-              <button
-                onClick={() => removeHalt(id)}
-                type="button"
-                className="px-4 py-2 rounded-full bg-red-600  text-white shadow-md 
+              {getCurrentHalts().length > 2 && (
+                <button
+                  onClick={() => removeHalt(id)}
+                  type="button"
+                  className="px-4 py-2 rounded-full bg-red-600  text-white shadow-md 
             hover:shadow-red-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-              >
-                Remove
-              </button>
+                >
+                  Remove
+                </button>
+              )}
             </div>
           ))}
 
