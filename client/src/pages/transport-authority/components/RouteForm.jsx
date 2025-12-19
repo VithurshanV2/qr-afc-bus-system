@@ -126,7 +126,7 @@ export const RouteForm = ({ route = null, onClose }) => {
         englishName: halt.englishName,
         latitude: halt.latitude === '' ? null : parseFloat(halt.latitude),
         longitude: halt.longitude === '' ? null : parseFloat(halt.longitude),
-        fare: halt.fare === '' ? null : Number(halt.fare),
+        fare: halt.fare === '' ? null : Math.round(parseFloat(halt.fare) * 100),
       }));
     };
 
@@ -411,9 +411,9 @@ export const RouteForm = ({ route = null, onClose }) => {
               />
 
               <input
-                value={halt.fare}
+                value={halt.fare !== null ? (halt.fare / 100).toFixed(2) : ''}
                 onChange={(e) => updateHaltField(id, 'fare', e.target.value)}
-                placeholder="Fare (cents)"
+                placeholder="Fare"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
