@@ -22,10 +22,16 @@ export const RouteForm = ({ route = null, onClose }) => {
   const [name, setName] = useState(route?.name || '');
   const [busType, setBusType] = useState(route?.busType || '');
   const [haltsA, setHaltsA] = useState(
-    route?.haltsA?.halts || [createEmptyHalt(0), createEmptyHalt(1)],
+    route?.haltsA?.halts.map((halt) => ({
+      ...halt,
+      fare: halt.fare !== null ? halt.fare / 100 : '',
+    })) || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [haltsB, setHaltsB] = useState(
-    route?.haltsB?.halts || [createEmptyHalt(0), createEmptyHalt(1)],
+    route?.haltsB?.halts.map((halt) => ({
+      ...halt,
+      fare: halt.fare !== null ? halt.fare / 100 : '',
+    })) || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [activeDirection, setActiveDirection] = useState('A');
   const [directionAName, setDirectionAName] = useState(
@@ -65,7 +71,8 @@ export const RouteForm = ({ route = null, onClose }) => {
         if (field === 'englishName') updatedHalt.englishName = value;
         if (field === 'latitude') updatedHalt.latitude = value;
         if (field === 'longitude') updatedHalt.longitude = value;
-        if (field === 'fare') updatedHalt.fare = value;
+        if (field === 'fare')
+          updatedHalt.fare = value === '' ? '' : parseFloat(value);
 
         updatedHalts.push(updatedHalt);
       } else {
@@ -126,7 +133,7 @@ export const RouteForm = ({ route = null, onClose }) => {
         englishName: halt.englishName,
         latitude: halt.latitude === '' ? null : parseFloat(halt.latitude),
         longitude: halt.longitude === '' ? null : parseFloat(halt.longitude),
-        fare: halt.fare === '' ? null : Math.round(parseFloat(halt.fare) * 100),
+        fare: halt.fare === '' ? null : Math.round(Number(halt.fare) * 100),
       }));
     };
 
@@ -192,7 +199,7 @@ export const RouteForm = ({ route = null, onClose }) => {
       }
 
       if (halt.fare && isNaN(Number(halt.fare))) {
-        newErrors.halts = 'Fare must be a number (in cents)';
+        newErrors.halts = 'Fare must be a number';
         hasError = true;
         break;
       }
@@ -253,6 +260,40 @@ export const RouteForm = ({ route = null, onClose }) => {
   // Open cancel modal
   const handleConfirmCancel = () => {
     setModalType('cancelRoute');
+  };
+
+  // Flip halts data to the other direction
+  const flipDirection = () => {
+    const sourceHalts = activeDirection === 'A' ? haltsA : haltsB;
+
+    const newHalts = [];
+    const sourceLength = sourceHalts.length;
+
+    for (let i = 0; i < sourceLength; i++) {
+      const sourceIndex = sourceLength - 1 - i;
+      const halt = {
+        id: i,
+        englishName: sourceHalts[sourceIndex].englishName,
+        latitude: sourceHalts[sourceIndex].latitude,
+        longitude: sourceHalts[sourceIndex].longitude,
+        fare: sourceHalts[i].fare,
+      };
+      newHalts.push(halt);
+    }
+
+    if (activeDirection === 'A') {
+      setHaltsB(newHalts);
+    } else {
+      setHaltsA(newHalts);
+    }
+
+    toast.success('Direction flipped successfully');
+    setModalType(null);
+  };
+
+  // Open direction flip modal
+  const handleConfirmFlipDirection = () => {
+    setModalType('flipDirection');
   };
 
   return (
@@ -352,6 +393,15 @@ export const RouteForm = ({ route = null, onClose }) => {
           >
             Direction B
           </button>
+
+          <button
+            type="button"
+            onClick={handleConfirmFlipDirection}
+            className="px-5 py-2 rounded-full  shadow-md bg-blue-200 hover:bg-blue-300 hover:shadow-blue-800
+            hover:scale-105 active:scale-100 transition-all duration-300 transform"
+          >
+            Flip Direction Data
+          </button>
         </div>
 
         <div className="mb-4">
@@ -411,7 +461,7 @@ export const RouteForm = ({ route = null, onClose }) => {
               />
 
               <input
-                value={halt.fare !== null ? (halt.fare / 100).toFixed(2) : ''}
+                value={halt.fare !== '' ? halt.fare.toFixed(2) : ''}
                 onChange={(e) => updateHaltField(id, 'fare', e.target.value)}
                 placeholder="Fare"
                 className="border border-gray-300 rounded-xl px-4 py-2 
@@ -471,6 +521,17 @@ export const RouteForm = ({ route = null, onClose }) => {
           setModalType(null);
           handleCancel();
         }}
+        onCancel={() => setModalType(null)}
+      />
+
+      {/* Confirm modal for flip direction data */}
+      <ConfirmModal
+        isOpen={modalType === 'flipDirection'}
+        title="Flip Direction Data?"
+        message="All data in the target direction will be removed and replaced with flipped data. Are you sure?"
+        confirmText="Yes"
+        cancelText="Cancel"
+        onConfirm={flipDirection}
         onCancel={() => setModalType(null)}
       />
     </div>
