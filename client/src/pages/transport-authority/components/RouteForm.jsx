@@ -22,12 +22,18 @@ export const RouteForm = ({ route = null, onClose }) => {
   const [name, setName] = useState(route?.name || '');
   const [busType, setBusType] = useState(route?.busType || '');
   const [haltsA, setHaltsA] = useState(
-    route?.haltsA || [createEmptyHalt(0), createEmptyHalt(1)],
+    route?.haltsA?.halts || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [haltsB, setHaltsB] = useState(
-    route?.haltsB || [createEmptyHalt(0), createEmptyHalt(1)],
+    route?.haltsB?.halts || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [activeDirection, setActiveDirection] = useState('A');
+  const [directionAName, setDirectionAName] = useState(
+    route?.haltsA?.directionName || '',
+  );
+  const [directionBName, setDirectionBName] = useState(
+    route?.haltsB?.directionName || '',
+  );
   const [errors, setErrors] = useState({ number: '', name: '', busType: '' });
 
   const getCurrentHalts = () => {
@@ -115,29 +121,29 @@ export const RouteForm = ({ route = null, onClose }) => {
 
   const buildPayload = () => {
     const convertHalts = (halts) => {
-      const result = [];
-
-      for (let i = 0; i < halts.length; i++) {
-        const halt = {
-          id: halts[i].id,
-          englishName: halts[i].englishName,
-          latitude:
-            halts[i].latitude === '' ? null : parseFloat(halts[i].latitude),
-          longitude:
-            halts[i].longitude === '' ? null : parseFloat(halts[i].longitude),
-          fare: halts[i].fare === '' ? null : Number(halts[i].fare),
-        };
-        result.push(halt);
-      }
-      return result;
+      return halts.map((halt) => ({
+        id: halt.id,
+        englishName: halt.englishName,
+        latitude: halt.latitude === '' ? null : parseFloat(halt.latitude),
+        longitude: halt.longitude === '' ? null : parseFloat(halt.longitude),
+        fare: halt.fare === '' ? null : Number(halt.fare),
+      }));
     };
 
     return {
       number: number,
       name: name,
       busType: busType,
-      haltsA: convertHalts(haltsA),
-      haltsB: convertHalts(haltsB),
+      haltsA: {
+        routeNumber: number,
+        directionName: directionAName,
+        halts: convertHalts(haltsA),
+      },
+      haltsB: {
+        routeNumber: number,
+        directionName: directionBName,
+        halts: convertHalts(haltsB),
+      },
     };
   };
 
@@ -160,6 +166,11 @@ export const RouteForm = ({ route = null, onClose }) => {
 
     if (!busType) {
       newErrors.busType = 'Bus type is required';
+      hasError = true;
+    }
+
+    if (!directionAName || !directionBName) {
+      newErrors.directionName = 'Both direction names are required';
       hasError = true;
     }
 
@@ -343,13 +354,30 @@ export const RouteForm = ({ route = null, onClose }) => {
           </button>
         </div>
 
+        <div className="mb-4">
+          <input
+            value={activeDirection === 'A' ? directionAName : directionBName}
+            onChange={(e) =>
+              activeDirection === 'A'
+                ? setDirectionAName(e.target.value)
+                : setDirectionBName(e.target.value)
+            }
+            placeholder="Direction Name (Origin - Destination)"
+            className="border border-gray-300 rounded-xl px-4 py-2 w-2/3
+            focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          />
+          {errors.directionName && (
+            <p className="text-red-600 text-sm ml-5">{errors.directionName}</p>
+          )}
+        </div>
+
         <div className="space-y-4">
           {errors.halts && (
             <p className="text-red-600 text-sm ml-5">{errors.halts}</p>
           )}
           {getCurrentHalts().map((halt, id) => (
             <div
-              key={halt.id}
+              key={`${activeDirection}-${halt.id}`}
               className="grid grid-cols-1 md:grid-cols-5 gap-3 items-center"
             >
               <input
