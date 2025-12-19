@@ -217,11 +217,23 @@ const RouteManagement = () => {
                           {formatIssuedDate(route.updatedAt)}
                         </td>
 
-                        <td className="px-4 py-3">{route.status}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`${
+                              route.status === 'ACTIVE'
+                                ? 'text-green-600'
+                                : route.status === 'INACTIVE'
+                                  ? 'text-red-600'
+                                  : 'text-gray-900'
+                            }`}
+                          >
+                            {route.status}
+                          </span>
+                        </td>
 
                         <td className="px-4 py-3 flex gap-2">
                           {(route.status === 'DRAFT' ||
-                            route.status === 'DEACTIVATED') && (
+                            route.status === 'INACTIVE') && (
                             <button
                               onClick={() => setSelectedRoute(route)}
                               className="px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
@@ -230,7 +242,8 @@ const RouteManagement = () => {
                             </button>
                           )}
 
-                          {route.status === 'DRAFT' && (
+                          {(route.status === 'DRAFT' ||
+                            route.status === 'INACTIVE') && (
                             <button
                               onClick={() => openModal('activate', route)}
                               className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white"

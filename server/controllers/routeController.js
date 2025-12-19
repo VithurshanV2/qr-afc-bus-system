@@ -263,7 +263,10 @@ export const inactivateRouteController = async (req, res) => {
       });
     }
 
-    const updatedRoute = await inactivateRoute({ routeId, userId });
+    const updatedRoute = await inactivateRoute({
+      routeId: Number(routeId),
+      userId,
+    });
 
     return res.status(200).json({
       success: true,
@@ -318,7 +321,10 @@ export const activateRouteController = async (req, res) => {
       });
     }
 
-    const updatedRoute = await activateRoute({ routeId, userId });
+    const updatedRoute = await activateRoute({
+      routeId: Number(routeId),
+      userId,
+    });
 
     return res.status(200).json({
       success: true,
