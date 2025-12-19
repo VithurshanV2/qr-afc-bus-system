@@ -13,7 +13,7 @@ const createEmptyHalt = (id) => ({
   fare: '',
 });
 
-export const RouteForm = ({ route = null }) => {
+export const RouteForm = ({ route = null, onClose }) => {
   const { backendUrl, globalLoading, setGlobalLoading } =
     useContext(AppContext);
 
@@ -219,6 +219,10 @@ export const RouteForm = ({ route = null }) => {
         toast.success(
           route ? 'Route updated successfully' : 'Route created successfully',
         );
+
+        if (onClose) {
+          onClose();
+        }
       } else {
         toast.error(data.message);
       }
@@ -230,7 +234,9 @@ export const RouteForm = ({ route = null }) => {
   };
 
   const handleCancel = () => {
-    window.history.back();
+    if (onClose) {
+      onClose();
+    }
   };
 
   // Open cancel modal

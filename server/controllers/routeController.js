@@ -68,7 +68,7 @@ export const updateRouteController = async (req, res) => {
       return;
     }
 
-    const route = await getRouteById(routeId);
+    const route = await getRouteById(Number(routeId));
 
     if (!route) {
       return req
@@ -97,16 +97,20 @@ export const updateRouteController = async (req, res) => {
       }
     }
 
-    if (status === 'ACTIVE') {
-      if (number !== undefined || busType !== undefined) {
-        return res.status(400).json({
-          success: false,
-          message: 'Cannot change route number or bus type after activation',
-        });
-      }
+    if (
+      route.status === 'ACTIVE' &&
+      (number !== undefined || busType !== undefined)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot change route number or bus type after activation',
+      });
     }
 
-    if (haltsA !== undefined || haltsB !== undefined) {
+    if (
+      route.status === 'ACTIVE' &&
+      (haltsA !== undefined || haltsB !== undefined)
+    ) {
       return res.status(400).json({
         success: false,
         message: 'Cannot modify halts after activation',
@@ -189,7 +193,7 @@ export const deleteRoute = async (req, res) => {
     const userId = req.userId;
     const { routeId } = req.params;
 
-    const route = await getRouteById(routeId);
+    const route = await getRouteById(Number(routeId));
 
     if (!route) {
       return res
@@ -244,7 +248,7 @@ export const inactivateRouteController = async (req, res) => {
     const { routeId } = req.params;
     const userId = req.userId;
 
-    const route = await getRouteById(routeId);
+    const route = await getRouteById(Number(routeId));
 
     if (!route) {
       return res
@@ -280,7 +284,7 @@ export const activateRouteController = async (req, res) => {
     const { routeId } = req.params;
     const userId = req.userId;
 
-    const route = await getRouteById(routeId);
+    const route = await getRouteById(Number(routeId));
 
     if (!route) {
       return res
