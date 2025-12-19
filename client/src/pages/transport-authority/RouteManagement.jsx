@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { BounceLoader } from 'react-spinners';
 import { formatIssuedDate } from '../../utils/date';
 import RouteForm from './components/RouteForm';
+import ConfirmModel from '../../components/ConfirmModal';
 
 const RouteManagement = () => {
   const { backendUrl } = useContext(AppContext);
@@ -19,6 +20,8 @@ const RouteManagement = () => {
   const [total, setTotal] = useState(0);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [createRoute, setCreateRoute] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [modalRoute, setModalRoute] = useState(null);
 
   const limit = 10; // routes per page
 
@@ -53,6 +56,68 @@ const RouteManagement = () => {
     setSelectedRoute(null);
     setCreateRoute(false);
     fetchRoutes(currentPage);
+  };
+
+  // Activate route
+  const handleActivate = async (routeId) => {
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/route/activate/' + routeId,
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        fetchRoutes(currentPage);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    }
+  };
+
+  // Deactivate route
+  const handleDeactivate = async (routeId) => {
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/route/inactive/' + routeId,
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        fetchRoutes(currentPage);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    }
+  };
+
+  const openModal = (type, route) => {
+    setModalType(type);
+    setModalRoute(route);
+  };
+
+  const handleConfirm = async () => {
+    if (!modalRoute || !modalType) {
+      return;
+    }
+
+    if (modalType === 'activate') {
+      await handleActivate(modalRoute.id);
+    }
+
+    if (modalType === 'deactivate') {
+      await handleDeactivate(modalRoute.id);
+    }
+
+    setModalType(null);
+    setModalRoute(null);
   };
 
   return (
@@ -166,13 +231,19 @@ const RouteManagement = () => {
                           )}
 
                           {route.status === 'DRAFT' && (
-                            <button className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white">
+                            <button
+                              onClick={() => openModal('activate', route)}
+                              className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                            >
                               Activate
                             </button>
                           )}
 
                           {route.status === 'ACTIVE' && (
-                            <button className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white">
+                            <button
+                              onClick={() => openModal('deactivate', route)}
+                              className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                            >
                               Deactivate
                             </button>
                           )}
@@ -208,6 +279,21 @@ const RouteManagement = () => {
           </div>
         </div>
       )}
+
+      {/* Confirm modal for cancel ticket */}
+      <ConfirmModel
+        isOpen={modalType === 'activate' || modalType === 'deactivate'}
+        title={
+          modalType === 'activate' ? 'Activate Route?' : 'Deactivate Route?'
+        }
+        message={`Are you sure you want to ${
+          modalType === 'activate' ? 'activate' : 'deactivate'
+        } route ${modalRoute?.number}?`}
+        confirmText="Yes"
+        cancelText="Cancel"
+        onConfirm={handleConfirm}
+        onCancel={() => setModalType(null)}
+      />
     </div>
   );
 };
