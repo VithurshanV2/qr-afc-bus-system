@@ -42,3 +42,54 @@ export const existingRegisteredBus = async (registrationNumbers) => {
     select: { registrationNumber: true },
   });
 };
+
+// Fetch operator account requests list
+export const getOperatorRequestList = async ({
+  search = '',
+  status,
+  skip = 0,
+  take = 10,
+}) => {
+  return await prisma.busOperatorRequest.findMany({
+    where: {
+      AND: [
+        status ? { status } : {},
+        {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { nic: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+      ],
+    },
+    include: {
+      createdBy: { select: { id: true, name: true, email: true } },
+      updatedBy: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { updatedAt: 'desc' },
+    skip,
+    take,
+  });
+};
+
+export const countOperatorRequests = async ({ search = '', status }) => {
+  return await prisma.busOperatorRequest.count({
+    where: {
+      AND: [
+        status ? { status } : {},
+        {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { nic: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+      ],
+    },
+  });
+};
+
+export const getOperatorRequestById = async (id) => {
+  return await prisma.busOperatorRequest.findUnique({
+    where: { id },
+  });
+};

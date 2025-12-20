@@ -1,8 +1,10 @@
 import { sendOperatorRequestReceived } from '../emails/index.js';
 import {
+  countOperatorRequests,
   createOperatorRequest,
   existingRegisteredBus,
   existingRequestByEmail,
+  getOperatorRequestList,
 } from '../models/operatorRequestModel.js';
 
 // Email validation
@@ -128,6 +130,36 @@ export const submitOperatorRequest = async (req, res) => {
       success: true,
       message: 'Request form submitted successfully',
       request,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Search operator requests form
+export const searchOperatorRequests = async (req, res) => {
+  try {
+    const { search = '', status, page = 1, limit = 10 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const requests = await getOperatorRequestList({
+      search,
+      status,
+      skip,
+      take,
+    });
+    const total = await countOperatorRequests({ search, status });
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      requests,
     });
   } catch (error) {
     console.error(error);
