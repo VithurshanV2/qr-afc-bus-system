@@ -120,6 +120,32 @@ const RouteManagement = () => {
     setModalRoute(null);
   };
 
+  // Soft delete routes
+  const handleDelete = async (routeId) => {
+    try {
+      setLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.delete(
+        backendUrl + '/api/route/delete-route/' + routeId,
+      );
+
+      if (data.success) {
+        toast.success('Route deleted successfully');
+        fetchRoutes(currentPage);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+      setModalType(null);
+      setModalRoute(null);
+    }
+  };
+
   return (
     <div>
       <div className="p-6">
@@ -234,22 +260,28 @@ const RouteManagement = () => {
                         <td className="px-4 py-3 flex gap-2">
                           {(route.status === 'DRAFT' ||
                             route.status === 'INACTIVE') && (
-                            <button
-                              onClick={() => setSelectedRoute(route)}
-                              className="px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
-                            >
-                              Edit
-                            </button>
-                          )}
+                            <>
+                              <button
+                                onClick={() => setSelectedRoute(route)}
+                                className="px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                              >
+                                Edit
+                              </button>
 
-                          {(route.status === 'DRAFT' ||
-                            route.status === 'INACTIVE') && (
-                            <button
-                              onClick={() => openModal('activate', route)}
-                              className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
-                            >
-                              Activate
-                            </button>
+                              <button
+                                onClick={() => openModal('activate', route)}
+                                className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                              >
+                                Activate
+                              </button>
+
+                              <button
+                                onClick={() => openModal('delete', route)}
+                                className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                              >
+                                Delete
+                              </button>
+                            </>
                           )}
 
                           {route.status === 'ACTIVE' && (
@@ -305,6 +337,17 @@ const RouteManagement = () => {
         confirmText="Yes"
         cancelText="Cancel"
         onConfirm={handleConfirm}
+        onCancel={() => setModalType(null)}
+      />
+
+      {/* Confirm modal for deleting ticket */}
+      <ConfirmModel
+        isOpen={modalType === 'delete'}
+        title="Delete Route?"
+        message={`This action cannot be undone. Are you sure you want to delete route ${modalRoute?.number}?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={() => handleDelete(modalRoute.id)}
         onCancel={() => setModalType(null)}
       />
     </div>
