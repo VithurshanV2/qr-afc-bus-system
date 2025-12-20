@@ -71,13 +71,13 @@ export const updateRouteController = async (req, res) => {
     const route = await getRouteById(Number(routeId));
 
     if (!route) {
-      return req
+      return res
         .status(404)
         .json({ success: false, message: 'Route not found' });
     }
 
     if (route.status === 'DELETED') {
-      return req
+      return res
         .status(400)
         .json({ success: false, message: 'Cannot modify a deleted route' });
     }
@@ -137,11 +137,14 @@ export const updateRouteController = async (req, res) => {
       }
     }
 
-    if (!haltsA || haltsA.length === 0 || !haltsB || haltsB.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Cannot active route without halt data for both directions',
-      });
+    if (status === 'ACTIVE') {
+      if (!haltsA || haltsA.length === 0 || !haltsB || haltsB.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Cannot activate route without halt data for both directions',
+        });
+      }
     }
 
     const updatedRoute = await updateRoute({
@@ -207,11 +210,44 @@ export const deleteRoute = async (req, res) => {
         .json({ success: false, message: 'Route already deleted' });
     }
 
-    await softDeleteRoute({ routeId, userId });
+    if (route.status === 'ACTIVE') {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Active routes cannot be deleted' });
+    }
+
+    if (route.status === 'DRAFT') {
+      await softDeleteRoute({ routeId: Number(routeId), userId });
+      return res
+        .status(200)
+        .json({ success: true, message: 'Route deleted successfully' });
+    }
+
+    if (route.status === 'INACTIVE') {
+      const MS_IN_DAY = 1000 * 60 * 60 * 24;
+
+      const differenceInDays = Math.floor(
+        (Date.now() - new Date(route.updatedAt).getTime()) / MS_IN_DAY,
+      );
+
+      if (differenceInDays < 7) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Inactive routes can only be deleted after 7 days of inactivation',
+        });
+      }
+
+      await softDeleteRoute({ routeId: Number(routeId), userId });
+
+      return res
+        .status(200)
+        .json({ success: true, message: 'Route deleted successfully' });
+    }
 
     return res
-      .status(200)
-      .json({ success: true, message: 'Route deleted successfully' });
+      .status(400)
+      .json({ success: false, message: 'Invalid route status for deletion' });
   } catch (error) {
     console.error(error);
     return res
@@ -257,7 +293,7 @@ export const inactivateRouteController = async (req, res) => {
     }
 
     if (route.status !== 'ACTIVE') {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
         message: 'Only active routes can be set to inactive',
       });

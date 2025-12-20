@@ -55,6 +55,7 @@ export const updateRoute = async ({ routeId, data }) => {
 export const getRoutesList = async ({ search = '', skip = 0, take = 10 }) => {
   return await prisma.route.findMany({
     where: {
+      status: { not: 'DELETED' },
       OR: [
         { number: { contains: search, mode: 'insensitive' } },
         { name: { contains: search, mode: 'insensitive' } },
@@ -73,6 +74,7 @@ export const getRoutesList = async ({ search = '', skip = 0, take = 10 }) => {
 export const countRoutes = async ({ search = '' }) => {
   return await prisma.route.count({
     where: {
+      status: { not: 'DELETED' },
       OR: [
         { number: { contains: search, mode: 'insensitive' } },
         { name: { contains: search, mode: 'insensitive' } },
