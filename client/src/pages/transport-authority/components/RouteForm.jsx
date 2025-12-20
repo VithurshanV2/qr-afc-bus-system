@@ -24,13 +24,13 @@ export const RouteForm = ({ route = null, onClose }) => {
   const [haltsA, setHaltsA] = useState(
     route?.haltsA?.halts.map((halt) => ({
       ...halt,
-      fare: halt.fare !== null ? halt.fare / 100 : '',
+      fare: halt.fare !== null ? (halt.fare / 100).toFixed(2) : '',
     })) || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [haltsB, setHaltsB] = useState(
     route?.haltsB?.halts.map((halt) => ({
       ...halt,
-      fare: halt.fare !== null ? halt.fare / 100 : '',
+      fare: halt.fare !== null ? (halt.fare / 100).toFixed(2) : '',
     })) || [createEmptyHalt(0), createEmptyHalt(1)],
   );
   const [activeDirection, setActiveDirection] = useState('A');
@@ -71,8 +71,7 @@ export const RouteForm = ({ route = null, onClose }) => {
         if (field === 'englishName') updatedHalt.englishName = value;
         if (field === 'latitude') updatedHalt.latitude = value;
         if (field === 'longitude') updatedHalt.longitude = value;
-        if (field === 'fare')
-          updatedHalt.fare = value === '' ? '' : parseFloat(value);
+        if (field === 'fare') updatedHalt.fare = value;
 
         updatedHalts.push(updatedHalt);
       } else {
@@ -461,9 +460,10 @@ export const RouteForm = ({ route = null, onClose }) => {
               />
 
               <input
-                value={halt.fare !== '' ? halt.fare.toFixed(2) : ''}
+                value={halt.fare}
                 onChange={(e) => updateHaltField(id, 'fare', e.target.value)}
                 placeholder="Fare"
+                inputMode="decimal"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
