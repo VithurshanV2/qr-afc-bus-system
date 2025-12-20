@@ -13,7 +13,7 @@ const createEmptyHalt = (id) => ({
   fare: '',
 });
 
-export const RouteForm = ({ route = null, onClose }) => {
+export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
   const { backendUrl, globalLoading, setGlobalLoading } =
     useContext(AppContext);
 
@@ -299,7 +299,7 @@ export const RouteForm = ({ route = null, onClose }) => {
     <div className="mx-10 mb-10">
       <div className="mb-6">
         <h3 className="text-2xl font-semibold text-gray-900">
-          {route ? 'Edit Route' : 'Add Route'}
+          {viewMode ? 'View Route' : route ? 'Edit Route' : 'Add Route'}
         </h3>
       </div>
 
@@ -318,6 +318,7 @@ export const RouteForm = ({ route = null, onClose }) => {
               value={number}
               onChange={(e) => setNumber(e.target.value)}
               placeholder="Route Number"
+              readOnly={viewMode}
               className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
@@ -331,6 +332,7 @@ export const RouteForm = ({ route = null, onClose }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Route Name"
+              readOnly={viewMode}
               className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
@@ -343,6 +345,7 @@ export const RouteForm = ({ route = null, onClose }) => {
             <select
               value={busType}
               onChange={(e) => setBusType(e.target.value)}
+              disabled={viewMode}
               className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
@@ -393,14 +396,16 @@ export const RouteForm = ({ route = null, onClose }) => {
             Direction B
           </button>
 
-          <button
-            type="button"
-            onClick={handleConfirmFlipDirection}
-            className="px-5 py-2 rounded-full  shadow-md bg-blue-200 hover:bg-blue-300 hover:shadow-blue-800
+          {!viewMode && (
+            <button
+              type="button"
+              onClick={handleConfirmFlipDirection}
+              className="px-5 py-2 rounded-full  shadow-md bg-blue-200 hover:bg-blue-300 hover:shadow-blue-800
             hover:scale-105 active:scale-100 transition-all duration-300 transform"
-          >
-            Flip Direction Data
-          </button>
+            >
+              Flip Direction Data
+            </button>
+          )}
         </div>
 
         <div className="mb-4">
@@ -411,6 +416,7 @@ export const RouteForm = ({ route = null, onClose }) => {
                 ? setDirectionAName(e.target.value)
                 : setDirectionBName(e.target.value)
             }
+            readOnly={viewMode}
             placeholder="Direction Name (Origin - Destination)"
             className="border border-gray-300 rounded-xl px-4 py-2 w-2/3
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
@@ -434,6 +440,7 @@ export const RouteForm = ({ route = null, onClose }) => {
                 onChange={(e) =>
                   updateHaltField(id, 'englishName', e.target.value)
                 }
+                readOnly={viewMode}
                 placeholder="Halt Name"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
@@ -444,6 +451,7 @@ export const RouteForm = ({ route = null, onClose }) => {
                 onChange={(e) =>
                   updateHaltField(id, 'latitude', e.target.value)
                 }
+                readOnly={viewMode}
                 placeholder="Latitude"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
@@ -454,6 +462,7 @@ export const RouteForm = ({ route = null, onClose }) => {
                 onChange={(e) =>
                   updateHaltField(id, 'longitude', e.target.value)
                 }
+                readOnly={viewMode}
                 placeholder="Longitude"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
@@ -463,12 +472,13 @@ export const RouteForm = ({ route = null, onClose }) => {
                 value={halt.fare}
                 onChange={(e) => updateHaltField(id, 'fare', e.target.value)}
                 placeholder="Fare"
+                readOnly={viewMode}
                 inputMode="decimal"
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
 
-              {getCurrentHalts().length > 2 && (
+              {getCurrentHalts().length > 2 && !viewMode && (
                 <button
                   onClick={() => removeHalt(id)}
                   type="button"
@@ -481,33 +491,48 @@ export const RouteForm = ({ route = null, onClose }) => {
             </div>
           ))}
 
-          <button
-            onClick={() => addHalt()}
-            type="button"
-            className="px-4 py-2 rounded-full bg-green-600  text-white shadow-md 
+          {!viewMode && (
+            <button
+              onClick={() => addHalt()}
+              type="button"
+              className="px-4 py-2 rounded-full bg-green-600  text-white shadow-md 
           hover:shadow-green-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-          >
-            Add Halt
-          </button>
+            >
+              Add Halt
+            </button>
+          )}
         </div>
       </div>
 
       <div className="flex justify-end gap-4 mt-6">
-        <button
-          onClick={handleConfirmCancel}
-          className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
+        {!viewMode && (
+          <button
+            onClick={handleConfirmCancel}
+            className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
             hover:shadow-gray-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleSubmit}
-          disabled={globalLoading}
-          className="px-6 py-2 rounded-full bg-yellow-200 hover:bg-yellow-300 shadow-md 
+          >
+            Cancel
+          </button>
+        )}
+        {!viewMode && (
+          <button
+            onClick={handleSubmit}
+            disabled={globalLoading}
+            className="px-6 py-2 rounded-full bg-yellow-200 hover:bg-yellow-300 shadow-md 
             hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-        >
-          {route ? 'Update Route' : 'Create Route'}
-        </button>
+          >
+            {route ? 'Update Route' : 'Create Route'}
+          </button>
+        )}
+        {viewMode && (
+          <button
+            onClick={handleCancel}
+            className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
+            hover:shadow-gray-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+          >
+            Close
+          </button>
+        )}
       </div>
 
       {/* Confirm modal for cancel ticket */}

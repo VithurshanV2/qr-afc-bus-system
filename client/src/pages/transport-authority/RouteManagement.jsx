@@ -20,6 +20,7 @@ const RouteManagement = () => {
   const [total, setTotal] = useState(0);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [createRoute, setCreateRoute] = useState(false);
+  const [editingRoute, setEditingRoute] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [modalRoute, setModalRoute] = useState(null);
 
@@ -157,7 +158,11 @@ const RouteManagement = () => {
       {/* Render route form */}
       {(createRoute || selectedRoute) && (
         <div>
-          <RouteForm route={selectedRoute || null} onClose={closeForm} />
+          <RouteForm
+            route={selectedRoute || null}
+            onClose={closeForm}
+            viewMode={!editingRoute}
+          />
         </div>
       )}
 
@@ -190,7 +195,10 @@ const RouteManagement = () => {
               </h3>
 
               <button
-                onClick={() => setCreateRoute(true)}
+                onClick={() => {
+                  setCreateRoute(true);
+                  setEditingRoute(true);
+                }}
                 className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
             transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
               >
@@ -258,11 +266,24 @@ const RouteManagement = () => {
                         </td>
 
                         <td className="px-4 py-3 flex gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedRoute(route);
+                              setEditingRoute(false);
+                            }}
+                            className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                          >
+                            View
+                          </button>
+
                           {(route.status === 'DRAFT' ||
                             route.status === 'INACTIVE') && (
                             <>
                               <button
-                                onClick={() => setSelectedRoute(route)}
+                                onClick={() => {
+                                  setSelectedRoute(route);
+                                  setEditingRoute(true);
+                                }}
                                 className="px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
                               >
                                 Edit
