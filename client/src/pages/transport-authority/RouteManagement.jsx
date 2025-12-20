@@ -248,7 +248,10 @@ const RouteManagement = () => {
                         <td className="px-4 py-3">{route.busType}</td>
 
                         <td className="px-4 py-3">
-                          {formatIssuedDate(route.updatedAt)}
+                          <div>{formatIssuedDate(route.updatedAt)}</div>
+                          <div className="text-sm text-gray-600">
+                            {route.updatedBy.name} ({route.updatedBy.email})
+                          </div>
                         </td>
 
                         <td className="px-4 py-3">
