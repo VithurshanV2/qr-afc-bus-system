@@ -2,7 +2,10 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {
   createUser,
+  deleteActivationTokens,
+  getOperatorByActivationToken,
   getUserByEmail,
+  setOperatorPassword,
   updateIsFirstLogin,
 } from '../models/userModel.js';
 import { sendVerifyOtp } from './otpController.js';
@@ -256,6 +259,51 @@ export const loginTransportAuthority = async (req, res) => {
   try {
     req.body.role = 'TRANSPORTAUTHORITY';
     await login(req, res);
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// activate bus operator account
+export const activateOperatorAccount = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Token and password required' });
+    }
+
+    if (!isPasswordValid(password)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'Password must be at least 8 characters and include uppercase, lowercase, and a number',
+      });
+    }
+
+    const tokenRecord = await getOperatorByActivationToken(token);
+
+    if (!tokenRecord) {
+      return res.status(400).json({ success: false, message: 'Invalid token' });
+    }
+
+    if (tokenRecord.expiresAt < new Date()) {
+      return res.status(400).json({ success: false, message: 'Expired token' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await setOperatorPassword(tokenRecord.userId, hashedPassword);
+    await deleteActivationTokens(tokenRecord.userId);
+
+    return res
+      .status(200)
+      .json({ success: true, message: 'Account activated successfully' });
   } catch (error) {
     console.error(error);
     return res
