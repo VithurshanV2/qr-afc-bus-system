@@ -1,11 +1,20 @@
-import { sendOperatorRequestReceived } from '../emails/index.js';
 import {
+  sendOperatorAccountApproved,
+  sendOperatorRequestReceived,
+} from '../emails/index.js';
+import {
+  approveRequest,
   countOperatorRequests,
+  createActivationToken,
+  createBusesForOperator,
+  createBusOperator,
   createOperatorRequest,
+  createUser,
   existingRegisteredBus,
   existingRequestByEmail,
   getOperatorRequestList,
 } from '../models/operatorRequestModel.js';
+import { v4 as uuidv4 } from 'uuid';
 
 // Email validation
 const isEmailValid = (email) => {
@@ -160,6 +169,55 @@ export const searchOperatorRequests = async (req, res) => {
       page: Number(page),
       limit: Number(limit),
       requests,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Approve operator account requests
+export const approveOperatorRequest = async (req, res) => {
+  try {
+    const { requestId, remarks } = req.body;
+
+    const request = await approveRequest({ requestId, remarks });
+
+    // create user account
+    const newUser = await createUser({
+      name: request.name,
+      email: request.email,
+      role: 'BUSOPERATOR',
+    });
+
+    // create BusOperator account
+    const operator = await createBusOperator({ userId: newUser.id });
+
+    // Add buses to bus model
+    await createBusesForOperator({
+      operatorId: operator.id,
+      buses: request.buses,
+    });
+
+    const token = uuidv4();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await createActivationToken({ userId: newUser.id, token, expiresAt });
+
+    const activationLink = `${process.env.FRONTEND_URL}/activate-account?token=${token}`;
+
+    await sendOperatorAccountApproved({
+      to: newUser.email,
+      name: newUser.name,
+      activationLink,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Request approved and activation link sent to email',
+      request,
     });
   } catch (error) {
     console.error(error);

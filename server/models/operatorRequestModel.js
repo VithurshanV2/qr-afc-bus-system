@@ -1,4 +1,5 @@
 import { PrismaClient } from '../generated/prisma/index.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
 
@@ -92,4 +93,46 @@ export const getOperatorRequestById = async (id) => {
   return await prisma.busOperatorRequest.findUnique({
     where: { id },
   });
+};
+
+// Approve request
+export const approveRequest = async ({ requestId, remarks = null }) => {
+  return await prisma.busOperatorRequest.update({
+    where: { id: requestId },
+    data: { status: 'APPROVED', remarks },
+  });
+};
+
+// Create activation token
+export const createActivationToken = async ({ userId, token, expiresAt }) => {
+  return await prisma.accountActivationToken.create({
+    data: { userId, token, expiresAt },
+  });
+};
+
+// Create bus operator user account
+export const createUser = async ({ name, email, role }) => {
+  return await prisma.user.create({
+    data: { name, email, role, isAccountVerified: false },
+  });
+};
+
+// Create a new BusOperator linked to a user
+export const createBusOperator = async ({ userId }) => {
+  return await prisma.busOperator.create({ data: { userId } });
+};
+
+// Add buses for bus operator
+export const createBusesForOperator = async ({ operatorId, buses }) => {
+  return await Promise.all(
+    buses.map((bus) =>
+      prisma.bus.create({
+        data: {
+          registrationNumber: bus.registrationNumber.toUpperCase(),
+          operatorId,
+          qrCode: uuidv4(),
+        },
+      }),
+    ),
+  );
 };
