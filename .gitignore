@@ -147,3 +147,6 @@ client/dist/
 client/.vite/
 client/.env
 client/.env.local
+
+# faker seed script
+server/scripts/

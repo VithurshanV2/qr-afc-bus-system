@@ -64,10 +64,9 @@ export const getOperatorRequestList = async ({
       ],
     },
     include: {
-      createdBy: { select: { id: true, name: true, email: true } },
-      updatedBy: { select: { id: true, name: true, email: true } },
+      reviewedBy: { select: { id: true, name: true, email: true } },
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { createdAt: 'desc' },
     skip,
     take,
   });
