@@ -136,3 +136,11 @@ export const createBusesForOperator = async ({ operatorId, buses }) => {
     ),
   );
 };
+
+// Reject request
+export const rejectRequest = async ({ requestId, remarks = null }) => {
+  return await prisma.busOperatorRequest.update({
+    where: { id: requestId },
+    data: { status: 'REJECTED', remarks },
+  });
+};

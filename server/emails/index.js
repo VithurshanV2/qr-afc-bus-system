@@ -4,6 +4,7 @@ import verifyOtpTemplate from './templates/verifyOtp.js';
 import resetPasswordOtpTemplate from './templates/resetPasswordOtp.js';
 import operatorRequestReceivedTemplate from './templates/operatorRequestReceived.js';
 import operatorAccountApproved from './templates/operatorAccountApproved.js';
+import operatorAccountReject from './templates/operatorAccountReject.js';
 
 const logoUrl = process.env.EMAIL_LOGO_URL;
 
@@ -109,6 +110,27 @@ export async function sendOperatorAccountApproved({
     ${activationLink}
 
     This activation link is valid for 24 hours.
+
+    Safe travels,
+    The SmartFare Team`,
+    html,
+  });
+}
+
+export async function sendOperatorAccountReject({ to, name, remarks }) {
+  const html = operatorAccountReject({ name, logoUrl, remarks });
+
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Bus Operator Account Request Rejected',
+    text: `Hello, ${name},
+
+    We regret to inform you that your bus operator account request has been rejected by the National Transport Commission (NTC).
+
+    ${remarks ? `Remarks:\n${remarks}\n` : 'If you need further clarification, please reply to this email.'}
+
+    You may submit a new request after addressing the above concerns.
 
     Safe travels,
     The SmartFare Team`,

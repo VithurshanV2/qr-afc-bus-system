@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   approveOperatorRequest,
+  rejectOperatorRequest,
   searchOperatorRequests,
   submitOperatorRequest,
 } from '../controllers/operatorRequestController.js';
@@ -29,6 +30,12 @@ operatorRequestRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   approveOperatorRequest,
+);
+operatorRequestRouter.post(
+  '/reject',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  rejectOperatorRequest,
 );
 
 export default operatorRequestRouter;

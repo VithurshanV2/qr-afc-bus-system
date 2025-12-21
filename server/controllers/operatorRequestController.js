@@ -1,5 +1,6 @@
 import {
   sendOperatorAccountApproved,
+  sendOperatorAccountReject,
   sendOperatorRequestReceived,
 } from '../emails/index.js';
 import {
@@ -13,6 +14,7 @@ import {
   existingRegisteredBus,
   existingRequestByEmail,
   getOperatorRequestList,
+  rejectRequest,
 } from '../models/operatorRequestModel.js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -81,7 +83,7 @@ export const submitOperatorRequest = async (req, res) => {
   if (!Array.isArray(buses) || buses.length === 0) {
     return res
       .status(400)
-      .json({ success: false, menubar: 'At least one bus must be provided' });
+      .json({ success: false, message: 'At least one bus must be provided' });
   }
 
   for (let i = 0; i < buses.length; i++) {
@@ -217,6 +219,32 @@ export const approveOperatorRequest = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Request approved and activation link sent to email',
+      request,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Reject operator account requests
+export const rejectOperatorRequest = async (req, res) => {
+  try {
+    const { requestId, remarks } = req.body;
+
+    const request = await rejectRequest({ requestId, remarks });
+
+    await sendOperatorAccountReject({
+      to: request.email,
+      name: request.name,
+      remarks,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Request rejected successfully',
       request,
     });
   } catch (error) {
