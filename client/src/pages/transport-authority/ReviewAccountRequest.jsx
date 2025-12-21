@@ -194,7 +194,7 @@ const ReviewAccountRequest = () => {
                         <td className="px-4 py-3 flex-col gap-2">
                           <button
                             onClick={() => setSelectedRequest(request)}
-                            className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                            className="px-5 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
                           >
                             {request.status === 'PENDING' ? 'Review' : 'View'}
                           </button>
