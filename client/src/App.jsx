@@ -23,6 +23,7 @@ import RouteManagement from './pages/transport-authority/RouteManagement';
 import TicketVerification from './pages/shared/TicketVerification';
 import AdminRoute from './components/AdminRoute';
 import CommuterRoute from './components/CommuterRoute';
+import PublicRoute from './components/PublicRoute';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -35,9 +36,30 @@ const App = () => {
 
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Home />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
         <Route
           path="/email-verify"
           element={

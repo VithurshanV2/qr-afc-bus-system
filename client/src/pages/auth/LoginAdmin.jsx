@@ -37,7 +37,7 @@ const LoginBusOperator = () => {
       if (data.success) {
         setIsLoggedIn(true);
         await getUserData();
-        navigate('/admin/dashboard');
+        navigate('/admin/review-account-request');
       } else {
         toast.error(data.message);
       }
