@@ -11,6 +11,8 @@ import walletRouter from './routes/walletRoutes.js';
 import ticketRouter from './routes/ticketRoutes.js';
 import operatorRequestRouter from './routes/operatorRequestRoutes.js';
 import routeRouter from './routes/routeRoute.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -39,5 +41,14 @@ app.use('/api/wallet', walletRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/operator-requests', operatorRequestRouter);
 app.use('/api/route', routeRouter);
+
+// Uploaded files
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = path.dirname(_filename);
+
+app.use(
+  '/uploads',
+  express.static(path.join(_dirname, 'uploads/operator-docs')),
+);
 
 app.listen(port, () => console.log(`Server started on PORT: ${port}`));

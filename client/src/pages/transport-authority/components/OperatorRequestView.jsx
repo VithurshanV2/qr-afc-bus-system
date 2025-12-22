@@ -1,6 +1,12 @@
 import React from 'react';
+import { useContext } from 'react';
+import { AppContext } from '../../../context/AppContext';
 
 const OperatorRequestView = ({ request }) => {
+  const { backendUrl } = useContext(AppContext);
+
+  const FILE_BASE_URL = backendUrl + '/uploads';
+
   const infoRow = (label, value) => (
     <div className="flex gap-4 mb-2">
       <span className="font-semibold text-gray-700 w-48">{label}</span>
@@ -46,9 +52,9 @@ const OperatorRequestView = ({ request }) => {
         <div className="border border-gray-200 rounded-xl p-6 mb-6">
           <h4 className="text-xl font-semibold mb-4">Documents</h4>
           {request.uploadedDocs?.permit && (
-            <div>
+            <div className="mb-1">
               <a
-                href={request.uploadedDocs?.permit}
+                href={`${FILE_BASE_URL}/${request.uploadedDocs.permit}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 underline"
@@ -60,7 +66,7 @@ const OperatorRequestView = ({ request }) => {
           {request.uploadedDocs?.insurance && (
             <div>
               <a
-                href={request.uploadedDocs?.insurance}
+                href={`${FILE_BASE_URL}/${request.uploadedDocs.insurance}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 underline"
