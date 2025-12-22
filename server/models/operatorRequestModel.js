@@ -65,6 +65,7 @@ export const getOperatorRequestList = async ({
     },
     include: {
       reviewedBy: { select: { id: true, name: true, email: true } },
+      user: { select: { id: true, isAccountVerified: true } },
     },
     orderBy: { createdAt: 'desc' },
     skip,
@@ -125,6 +126,14 @@ export const createUser = async ({ name, email, role }) => {
   });
 };
 
+// Link BusOperatorRequest to the created user
+export const linkRequestToUser = async ({ requestId, userId }) => {
+  return await prisma.busOperatorRequest.update({
+    where: { id: requestId },
+    data: { userId },
+  });
+};
+
 // Create a new BusOperator linked to a user
 export const createBusOperator = async ({ userId }) => {
   return await prisma.busOperator.create({ data: { userId } });
@@ -163,25 +172,20 @@ export const rejectRequest = async ({
 };
 
 // Fetch approved operator with user linked
-export const getApprovedRequestUser = async ({ requestId }) => {
+export const getApprovedRequestUser = async (requestId) => {
   return await prisma.busOperatorRequest.findFirst({
     where: { id: requestId, status: 'APPROVED' },
     include: {
-      reviewedBy: true,
+      user: {
+        select: { id: true, isAccountVerified: true, email: true, name: true },
+      },
     },
-  });
-};
-
-// Find the approved user by email
-export const getApprovedUserByEmail = async ({ email }) => {
-  return await prisma.user.findUnique({
-    where: { email },
   });
 };
 
 // Delete existing activation token
 export const deleteActivationToken = async ({ userId }) => {
   return await prisma.accountActivationToken.deleteMany({
-    where: { id: userId },
+    where: { userId },
   });
 };

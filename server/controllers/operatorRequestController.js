@@ -15,8 +15,8 @@ import {
   existingRegisteredBus,
   existingRequestByEmail,
   getApprovedRequestUser,
-  getApprovedUserByEmail,
   getOperatorRequestList,
+  linkRequestToUser,
   rejectRequest,
 } from '../models/operatorRequestModel.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -202,6 +202,8 @@ export const approveOperatorRequest = async (req, res) => {
       role: 'BUSOPERATOR',
     });
 
+    await linkRequestToUser({ requestId, userId: newUser.id });
+
     // create BusOperator account
     const operator = await createBusOperator({ userId: newUser.id });
 
@@ -287,7 +289,7 @@ export const resendActivationLink = async (req, res) => {
         .json({ success: false, message: 'Approved request not found' });
     }
 
-    const user = await getApprovedUserByEmail(request.email);
+    const user = request.user;
 
     if (!user) {
       return res

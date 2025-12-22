@@ -41,10 +41,11 @@ model User {
   BusOperator BusOperator?
   Ticket      Ticket[]
 
-  createdRoutes           Route[]                  @relation("RouteCreatedBy")
-  updatedRoutes           Route[]                  @relation("RouteUpdatedBy")
-  busOperatorRequests     BusOperatorRequest[]
-  accountActivationTokens AccountActivationToken[]
+  createdRoutes               Route[]                  @relation("RouteCreatedBy")
+  updatedRoutes               Route[]                  @relation("RouteUpdatedBy")
+  accountActivationTokens     AccountActivationToken[]
+  requestBusOperatorRequests  BusOperatorRequest[]     @relation("RequestedByUser")
+  reviewedBusOperatorRequests BusOperatorRequest[]     @relation("ReviewedByUser")
 }
 
 enum Role {
@@ -196,9 +197,11 @@ model BusOperatorRequest {
   uploadedDocs Json
   status       RequestStatus @default(PENDING)
   remarks      String?
-  reviewedBy   User?         @relation(fields: [reviewedById], references: [id])
+  reviewedBy   User?         @relation("ReviewedByUser", fields: [reviewedById], references: [id])
   reviewedById Int?
   reviewedAt   DateTime?
+  user         User?         @relation("RequestedByUser", fields: [userId], references: [id])
+  userId       Int?          @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
