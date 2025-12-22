@@ -213,7 +213,7 @@ export const approveOperatorRequest = async (req, res) => {
 
     await createActivationToken({ userId: newUser.id, token, expiresAt });
 
-    const activationLink = `${process.env.FRONTEND_URL}/activate-account?token=${token}`;
+    const activationLink = `${process.env.CLIENT_URL}/activate-account?token=${token}`;
 
     await sendOperatorAccountApproved({
       to: newUser.email,
