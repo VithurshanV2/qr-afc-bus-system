@@ -11,8 +11,10 @@ const OperatorRequestView = ({ request, onClose }) => {
 
   const FILE_BASE_URL = backendUrl + '/uploads';
 
-  const [remarks, setRemarks] = useState('');
+  const [remarks, setRemarks] = useState(request.remarks || '');
   const [modalType, setModalType] = useState(null);
+
+  const isReadOnly = request.status !== 'PENDING';
 
   const handleReject = async () => {
     try {
@@ -154,6 +156,7 @@ const OperatorRequestView = ({ request, onClose }) => {
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
+              readOnly={isReadOnly}
               name="remarks"
               id="remarks"
               placeholder="Enter your remarks here..."
@@ -165,20 +168,24 @@ const OperatorRequestView = ({ request, onClose }) => {
 
         {/* Actions */}
         <div className="flex justify-end gap-4 mt-6">
-          <button
-            onClick={handleConfirmReject}
-            className="px-6 py-2 rounded-full bg-red-500 hover:bg-red-600 shadow-md text-white
+          {!isReadOnly && (
+            <>
+              <button
+                onClick={handleConfirmReject}
+                className="px-6 py-2 rounded-full bg-red-500 hover:bg-red-600 shadow-md text-white
             hover:shadow-red-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-          >
-            Reject
-          </button>
-          <button
-            onClick={handleConfirmApprove}
-            className="px-6 py-2 rounded-full bg-green-500 hover:bg-green-600 shadow-md text-white
+              >
+                Reject
+              </button>
+              <button
+                onClick={handleConfirmApprove}
+                className="px-6 py-2 rounded-full bg-green-500 hover:bg-green-600 shadow-md text-white
             hover:shadow-green-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-          >
-            Approve
-          </button>
+              >
+                Approve
+              </button>
+            </>
+          )}
           <button
             onClick={onClose}
             className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
