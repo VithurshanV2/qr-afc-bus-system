@@ -184,8 +184,13 @@ export const searchOperatorRequests = async (req, res) => {
 export const approveOperatorRequest = async (req, res) => {
   try {
     const { requestId, remarks } = req.body;
+    const userId = req.userId;
 
-    const request = await approveRequest({ requestId, remarks });
+    const request = await approveRequest({
+      requestId,
+      remarks,
+      reviewerId: userId,
+    });
 
     // create user account
     const newUser = await createUser({
@@ -233,8 +238,13 @@ export const approveOperatorRequest = async (req, res) => {
 export const rejectOperatorRequest = async (req, res) => {
   try {
     const { requestId, remarks } = req.body;
+    const userId = req.userId;
 
-    const request = await rejectRequest({ requestId, remarks });
+    const request = await rejectRequest({
+      requestId,
+      remarks,
+      reviewerId: userId,
+    });
 
     await sendOperatorAccountReject({
       to: request.email,

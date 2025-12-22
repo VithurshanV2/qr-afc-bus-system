@@ -95,10 +95,19 @@ export const getOperatorRequestById = async (id) => {
 };
 
 // Approve request
-export const approveRequest = async ({ requestId, remarks = null }) => {
+export const approveRequest = async ({
+  requestId,
+  remarks = null,
+  reviewerId,
+}) => {
   return await prisma.busOperatorRequest.update({
     where: { id: requestId },
-    data: { status: 'APPROVED', remarks },
+    data: {
+      status: 'APPROVED',
+      remarks,
+      reviewedById: reviewerId,
+      reviewedAt: new Date(),
+    },
   });
 };
 
@@ -137,9 +146,18 @@ export const createBusesForOperator = async ({ operatorId, buses }) => {
 };
 
 // Reject request
-export const rejectRequest = async ({ requestId, remarks = null }) => {
+export const rejectRequest = async ({
+  requestId,
+  remarks = null,
+  reviewerId,
+}) => {
   return await prisma.busOperatorRequest.update({
     where: { id: requestId },
-    data: { status: 'REJECTED', remarks },
+    data: {
+      status: 'REJECTED',
+      remarks,
+      reviewedById: reviewerId,
+      reviewedAt: new Date(),
+    },
   });
 };
