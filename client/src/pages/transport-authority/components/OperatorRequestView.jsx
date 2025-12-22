@@ -1,11 +1,47 @@
 import React from 'react';
 import { useContext } from 'react';
 import { AppContext } from '../../../context/AppContext';
+import ConfirmModal from '../../../components/ConfirmModal';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
-const OperatorRequestView = ({ request }) => {
-  const { backendUrl } = useContext(AppContext);
+const OperatorRequestView = ({ request, onClose }) => {
+  const { backendUrl, setGlobalLoading } = useContext(AppContext);
 
   const FILE_BASE_URL = backendUrl + '/uploads';
+
+  const [remarks, setRemarks] = useState('');
+  const [modalType, setModalType] = useState(null);
+
+  const handleReject = async () => {
+    try {
+      setGlobalLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/operator-requests/reject',
+        { requestId: request.id, remarks },
+      );
+
+      if (data.success) {
+        toast.success('Request rejected successfully');
+        onClose();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
+  // Confirm model for reject request
+  const handleConfirmReject = () => {
+    setModalType('rejectRequest');
+  };
 
   const infoRow = (label, value) => (
     <div className="flex gap-4 mb-2">
@@ -40,6 +76,10 @@ const OperatorRequestView = ({ request }) => {
                 key={i}
                 className="border border-gray-300 rounded-xl p-4 mb-4"
               >
+                <h5 className="font-semibold text-lg text-gray-700 mb-2">
+                  Bus {i + 1}
+                </h5>
+
                 {infoRow('Registration Number', bus.registrationNumber)}
                 {infoRow('Route Name', bus.routeName)}
                 {infoRow('Route Number', bus.routeNumber)}
@@ -82,13 +122,22 @@ const OperatorRequestView = ({ request }) => {
           <h4 className="text-xl font-semibold mb-4">Remarks</h4>
 
           <div>
-            <textarea name="" id="" />
+            <textarea
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+              name="remarks"
+              id="remarks"
+              placeholder="Enter your remarks here..."
+              className="w-full min-h-[120px] p-4 rounded-lg border border-gray-300 
+              focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            />
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex justify-end gap-4 mt-6">
           <button
+            onClick={handleConfirmReject}
             className="px-6 py-2 rounded-full bg-red-500 hover:bg-red-600 shadow-md text-white
             hover:shadow-red-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
           >
@@ -101,6 +150,7 @@ const OperatorRequestView = ({ request }) => {
             Approve
           </button>
           <button
+            onClick={onClose}
             className="px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md 
             hover:shadow-gray-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
           >
@@ -108,6 +158,17 @@ const OperatorRequestView = ({ request }) => {
           </button>
         </div>
       </div>
+
+      {/* Confirm modal for rejecting request */}
+      <ConfirmModal
+        isOpen={modalType === 'rejectRequest'}
+        title="Reject Account Request?"
+        message="Are you sure you want to reject this request?"
+        confirmText="Yes"
+        cancelText="Cancel"
+        onConfirm={handleReject}
+        onCancel={() => setModalType(null)}
+      />
     </div>
   );
 };
