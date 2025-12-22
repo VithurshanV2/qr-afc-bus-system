@@ -2,6 +2,7 @@ import express from 'express';
 import {
   approveOperatorRequest,
   rejectOperatorRequest,
+  resendActivationLink,
   searchOperatorRequests,
   submitOperatorRequest,
 } from '../controllers/operatorRequestController.js';
@@ -36,6 +37,12 @@ operatorRequestRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   rejectOperatorRequest,
+);
+operatorRequestRouter.post(
+  '/resend-activation',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  resendActivationLink,
 );
 
 export default operatorRequestRouter;

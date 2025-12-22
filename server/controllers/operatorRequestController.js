@@ -11,8 +11,11 @@ import {
   createBusOperator,
   createOperatorRequest,
   createUser,
+  deleteActivationToken,
   existingRegisteredBus,
   existingRequestByEmail,
+  getApprovedRequestUser,
+  getApprovedUserByEmail,
   getOperatorRequestList,
   rejectRequest,
 } from '../models/operatorRequestModel.js';
@@ -255,6 +258,67 @@ export const rejectOperatorRequest = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Request rejected successfully',
+      request,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Resend activation link
+export const resendActivationLink = async (req, res) => {
+  try {
+    const { requestId } = req.body;
+
+    if (!requestId) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Request ID is required' });
+    }
+
+    const request = await getApprovedRequestUser(Number(requestId));
+
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Approved request not found' });
+    }
+
+    const user = await getApprovedUserByEmail(request.email);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'User account not found' });
+    }
+
+    if (user.isAccountVerified) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Account is already activated' });
+    }
+
+    await deleteActivationToken(user.id);
+
+    const token = uuidv4();
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await createActivationToken({ userId: user.id, token, expiresAt });
+
+    const activationLink = `${process.env.CLIENT_URL}/activate-account?token=${token}`;
+
+    await sendOperatorAccountApproved({
+      to: user.email,
+      name: user.name,
+      activationLink,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Activation link resent successfully',
       request,
     });
   } catch (error) {

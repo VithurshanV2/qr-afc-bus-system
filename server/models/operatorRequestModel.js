@@ -161,3 +161,27 @@ export const rejectRequest = async ({
     },
   });
 };
+
+// Fetch approved operator with user linked
+export const getApprovedRequestUser = async ({ requestId }) => {
+  return await prisma.busOperatorRequest.findFirst({
+    where: { id: requestId, status: 'APPROVED' },
+    include: {
+      reviewedBy: true,
+    },
+  });
+};
+
+// Find the approved user by email
+export const getApprovedUserByEmail = async ({ email }) => {
+  return await prisma.user.findUnique({
+    where: { email },
+  });
+};
+
+// Delete existing activation token
+export const deleteActivationToken = async ({ userId }) => {
+  return await prisma.accountActivationToken.deleteMany({
+    where: { id: userId },
+  });
+};
