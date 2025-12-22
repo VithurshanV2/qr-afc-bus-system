@@ -38,9 +38,38 @@ const OperatorRequestView = ({ request, onClose }) => {
     }
   };
 
+  const handleApprove = async () => {
+    try {
+      setGlobalLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/operator-requests/approve',
+        { requestId: request.id, remarks },
+      );
+
+      if (data.success) {
+        toast.success('Request approved successfully');
+        onClose();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
   // Confirm model for reject request
   const handleConfirmReject = () => {
     setModalType('rejectRequest');
+  };
+
+  // Confirm model for approve request
+  const handleConfirmApprove = () => {
+    setModalType('approveRequest');
   };
 
   const infoRow = (label, value) => (
@@ -144,6 +173,7 @@ const OperatorRequestView = ({ request, onClose }) => {
             Reject
           </button>
           <button
+            onClick={handleConfirmApprove}
             className="px-6 py-2 rounded-full bg-green-500 hover:bg-green-600 shadow-md text-white
             hover:shadow-green-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
           >
@@ -167,6 +197,17 @@ const OperatorRequestView = ({ request, onClose }) => {
         confirmText="Yes"
         cancelText="Cancel"
         onConfirm={handleReject}
+        onCancel={() => setModalType(null)}
+      />
+
+      {/* Confirm modal for approving request */}
+      <ConfirmModal
+        isOpen={modalType === 'approveRequest'}
+        title="Approve Account Request?"
+        message="Are you sure you want to approve this request?"
+        confirmText="Yes"
+        cancelText="Cancel"
+        onConfirm={handleApprove}
         onCancel={() => setModalType(null)}
       />
     </div>
