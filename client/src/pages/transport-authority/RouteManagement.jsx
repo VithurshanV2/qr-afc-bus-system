@@ -206,7 +206,7 @@ const RouteManagement = () => {
               </button>
             </div>
 
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
+            <div className="border border-gray-200 rounded-xl overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-100 text-gray-700">
                   <tr>
@@ -324,7 +324,7 @@ const RouteManagement = () => {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 mt-4">
+            <div className="flex justify-center items-center gap-4 mt-4 mb-6">
               <button
                 onClick={() => fetchRoutes(currentPage - 1)}
                 disabled={currentPage === 1}

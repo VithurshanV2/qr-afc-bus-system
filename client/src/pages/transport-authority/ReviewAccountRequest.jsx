@@ -109,7 +109,7 @@ const ReviewAccountRequest = () => {
               Request List
             </h3>
 
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
+            <div className="border border-gray-200 rounded-xl overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-100 text-gray-700">
                   <tr>
@@ -206,7 +206,7 @@ const ReviewAccountRequest = () => {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 mt-4">
+            <div className="flex justify-center items-center gap-4 mt-4 mb-6">
               <button
                 onClick={() => fetchRequests(currentPage - 1)}
                 disabled={currentPage === 1}
