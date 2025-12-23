@@ -29,6 +29,7 @@ model User {
   verifyOtp         String?
   verifyOtpExpireAt DateTime?
   isAccountVerified Boolean   @default(false)
+  isActive          Boolean   @default(true)
   resetOtp          String?
   resetOtpExpireAt  DateTime?
 

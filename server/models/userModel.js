@@ -187,3 +187,48 @@ export const deleteActivationTokens = async (userId) => {
     where: { userId },
   });
 };
+
+// Fetch operators with assigned and unassigned routes
+export const getOperatorList = async ({
+  search = '',
+  isActive,
+  skip = 0,
+  take = 10,
+}) => {
+  return await prisma.user.findMany({
+    where: {
+      role: 'BUSOPERATOR',
+      AND: [
+        isActive !== undefined ? { isActive } : {},
+        {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+      ],
+    },
+    include: {
+      BusOperator: { include: { Bus: { include: { route: true } } } },
+    },
+    orderBy: { createdAt: 'desc' },
+    skip,
+    take,
+  });
+};
+
+export const countOperator = async ({ search = '', isActive }) => {
+  return await prisma.user.count({
+    where: {
+      AND: [
+        isActive !== undefined ? { isActive } : {},
+        {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { email: { contains: search, mode: 'insensitive' } },
+          ],
+        },
+      ],
+    },
+  });
+};
