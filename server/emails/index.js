@@ -5,6 +5,7 @@ import resetPasswordOtpTemplate from './templates/resetPasswordOtp.js';
 import operatorRequestReceivedTemplate from './templates/operatorRequestReceived.js';
 import operatorAccountApproved from './templates/operatorAccountApproved.js';
 import operatorAccountReject from './templates/operatorAccountReject.js';
+import operatorAccountActivated from './templates/operatorAccountActivated.js';
 
 const logoUrl = process.env.EMAIL_LOGO_URL;
 
@@ -131,6 +132,23 @@ export async function sendOperatorAccountReject({ to, name, remarks }) {
     ${remarks ? `Remarks:\n${remarks}\n` : 'If you need further clarification, please reply to this email.'}
 
     You may submit a new request after addressing the above concerns.
+
+    Safe travels,
+    The SmartFare Team`,
+    html,
+  });
+}
+
+export async function sendOperatorAccountActivation({ to, name }) {
+  const html = operatorAccountActivated({ name, logoUrl });
+
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Bus Operator Account Activated',
+    text: `Hello, ${name},
+
+    Your bus operator account request has been activated back by the National Transport Commission (NTC).
 
     Safe travels,
     The SmartFare Team`,

@@ -11,6 +11,7 @@ import walletRouter from './routes/walletRoutes.js';
 import ticketRouter from './routes/ticketRoutes.js';
 import operatorRequestRouter from './routes/operatorRequestRoutes.js';
 import routeRouter from './routes/routeRoute.js';
+import operatorAssignmentRouter from './routes/operatorAssignmentRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -41,6 +42,7 @@ app.use('/api/wallet', walletRouter);
 app.use('/api/ticket', ticketRouter);
 app.use('/api/operator-requests', operatorRequestRouter);
 app.use('/api/route', routeRouter);
+app.use('/api/operator-assignment', operatorAssignmentRouter);
 
 // Uploaded files
 const _filename = fileURLToPath(import.meta.url);

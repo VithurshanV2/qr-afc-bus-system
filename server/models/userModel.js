@@ -232,3 +232,22 @@ export const countOperator = async ({ search = '', isActive }) => {
     },
   });
 };
+
+// Activate and Deactivate operator account
+export const setOperatorActiveStatus = async (userId, isActive) => {
+  return await prisma.user.update({
+    where: { id: userId },
+    data: { isActive },
+    select: { id: true, name: true, email: true, isActive: true },
+  });
+};
+
+// Fetch operator to get linked userId
+export const getLinkedOperatorAccount = async (operatorId) => {
+  return await prisma.busOperator.findUnique({
+    where: { id: operatorId },
+    select: {
+      user: { select: { id: true, name: true, email: true, isActive: true } },
+    },
+  });
+};
