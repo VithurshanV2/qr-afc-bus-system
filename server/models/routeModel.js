@@ -144,3 +144,19 @@ export const getAssignableRoutes = async () => {
     orderBy: { number: 'asc' },
   });
 };
+
+// Fetch bus by ID
+export const getBusById = async (busId) => {
+  return await prisma.bus.findUnique({
+    where: { id: busId },
+    include: { operator: { select: { id: true, isActive: true } } },
+  });
+};
+
+// Assign route to bus
+export const assignRouteToBus = async (busId, routeId) => {
+  return await prisma.bus.update({
+    where: { id: busId },
+    data: { routeId },
+  });
+};

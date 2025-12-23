@@ -3,6 +3,7 @@ import userAuth from '../middleware/userAuth.js';
 import requireRole from '../middleware/requireRole.js';
 import {
   activateOperatorAccount,
+  assignRoute,
   deactivateOperatorAccount,
   fetchRoutesDropdown,
   searchOperator,
@@ -33,6 +34,12 @@ operatorAssignmentRouter.get(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   fetchRoutesDropdown,
+);
+operatorAssignmentRouter.post(
+  '/assign-route',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  assignRoute,
 );
 
 export default operatorAssignmentRouter;

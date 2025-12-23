@@ -2,7 +2,11 @@ import {
   sendOperatorAccountActivation,
   sendOperatorAccountDeactivation,
 } from '../emails/index.js';
-import { getAssignableRoutes } from '../models/routeModel.js';
+import {
+  assignRouteToBus,
+  getAssignableRoutes,
+  getBusById,
+} from '../models/routeModel.js';
 import {
   countOperator,
   getLinkedOperatorAccount,
@@ -124,6 +128,38 @@ export const fetchRoutesDropdown = async (req, res) => {
     const routes = await getAssignableRoutes();
 
     return res.status(200).json({ success: true, routes });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Assign route to bus
+export const assignRoute = async (req, res) => {
+  try {
+    const { busId, routeId } = req.body;
+
+    const bus = await getBusById(busId);
+
+    if (!bus) {
+      return res.status(404).json({ success: false, message: 'Bus not found' });
+    }
+
+    if (bus.routeId) {
+      return res.status(400).json({
+        success: false,
+        message: `Bus ${bus.registrationNumber} already has a route assigned`,
+      });
+    }
+
+    await assignRouteToBus(busId, routeId);
+
+    return res.status(200).json({
+      success: true,
+      message: `Route successfully assigned to Bus ${bus.registrationNumber}`,
+    });
   } catch (error) {
     console.error(error);
     return res
