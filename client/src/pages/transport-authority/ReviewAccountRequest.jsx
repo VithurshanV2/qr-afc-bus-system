@@ -10,7 +10,7 @@ import { BounceLoader } from 'react-spinners';
 import { formatIssuedDate } from '../../utils/date';
 
 const ReviewAccountRequest = () => {
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, setGlobalLoading } = useContext(AppContext);
 
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('PENDING');
@@ -51,6 +51,29 @@ const ReviewAccountRequest = () => {
   useEffect(() => {
     fetchRequests();
   }, []);
+
+  // Resend activation link to email
+  const handleResendActivation = async (requestId) => {
+    try {
+      setGlobalLoading(true);
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/operator-requests/resend-activation',
+        { requestId },
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -194,10 +217,21 @@ const ReviewAccountRequest = () => {
                         <td className="px-4 py-3 flex-col gap-2">
                           <button
                             onClick={() => setSelectedRequest(request)}
-                            className="px-5 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                            className="px-4 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
                           >
                             {request.status === 'PENDING' ? 'Review' : 'View'}
                           </button>
+                          {request.status === 'APPROVED' &&
+                            !request.user?.isAccountVerified && (
+                              <button
+                                onClick={() =>
+                                  handleResendActivation(request.id)
+                                }
+                                className="px-4 py-1 rounded-full bg-blue-100 hover:bg-blue-200 mt-2 ml-2"
+                              >
+                                Resend Token
+                              </button>
+                            )}
                         </td>
                       </tr>
                     ))}
