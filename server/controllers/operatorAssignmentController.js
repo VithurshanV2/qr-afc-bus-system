@@ -167,3 +167,35 @@ export const assignRoute = async (req, res) => {
       .json({ success: false, message: 'Internal server error' });
   }
 };
+
+// Reassign route to bus
+export const reassignRoute = async (req, res) => {
+  try {
+    const { busId, routeId } = req.body;
+
+    const bus = await getBusById(busId);
+
+    if (!bus) {
+      return res.status(404).json({ success: false, message: 'Bus not found' });
+    }
+
+    if (bus.routeId === routeId) {
+      return res.status(400).json({
+        success: false,
+        message: `Bus ${bus.registrationNumber} already assigned to this route`,
+      });
+    }
+
+    await assignRouteToBus(busId, routeId);
+
+    return res.status(200).json({
+      success: true,
+      message: `Route reassigned successfully`,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};

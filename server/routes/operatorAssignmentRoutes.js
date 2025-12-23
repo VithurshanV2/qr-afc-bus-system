@@ -6,6 +6,7 @@ import {
   assignRoute,
   deactivateOperatorAccount,
   fetchRoutesDropdown,
+  reassignRoute,
   searchOperator,
 } from '../controllers/operatorAssignmentController.js';
 
@@ -40,6 +41,12 @@ operatorAssignmentRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   assignRoute,
+);
+operatorAssignmentRouter.post(
+  '/reassign-route',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  reassignRoute,
 );
 
 export default operatorAssignmentRouter;
