@@ -4,6 +4,7 @@ import requireRole from '../middleware/requireRole.js';
 import {
   activateOperatorAccount,
   deactivateOperatorAccount,
+  fetchRoutesDropdown,
   searchOperator,
 } from '../controllers/operatorAssignmentController.js';
 
@@ -26,6 +27,12 @@ operatorAssignmentRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   deactivateOperatorAccount,
+);
+operatorAssignmentRouter.get(
+  '/assignable-routes',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  fetchRoutesDropdown,
 );
 
 export default operatorAssignmentRouter;

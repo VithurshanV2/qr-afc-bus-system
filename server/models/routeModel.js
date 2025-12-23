@@ -129,3 +129,18 @@ export const activateRoute = async ({ routeId, userId }) => {
     },
   });
 };
+
+// Fetch routes available for assignment to buses
+export const getAssignableRoutes = async () => {
+  return await prisma.route.findMany({
+    where: { status: { in: ['ACTIVE', 'INACTIVE'] } },
+    select: {
+      id: true,
+      number: true,
+      name: true,
+      busType: true,
+      status: true,
+    },
+    orderBy: { number: 'asc' },
+  });
+};

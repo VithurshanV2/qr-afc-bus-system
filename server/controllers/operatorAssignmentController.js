@@ -2,6 +2,7 @@ import {
   sendOperatorAccountActivation,
   sendOperatorAccountDeactivation,
 } from '../emails/index.js';
+import { getAssignableRoutes } from '../models/routeModel.js';
 import {
   countOperator,
   getLinkedOperatorAccount,
@@ -109,6 +110,20 @@ export const deactivateOperatorAccount = async (req, res) => {
       success: true,
       message: 'Operator account Deactivated',
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Dropdown to show assignable routes
+export const fetchRoutesDropdown = async (req, res) => {
+  try {
+    const routes = await getAssignableRoutes();
+
+    return res.status(200).json({ success: true, routes });
   } catch (error) {
     console.error(error);
     return res
