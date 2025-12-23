@@ -3,6 +3,7 @@ import userAuth from '../middleware/userAuth.js';
 import requireRole from '../middleware/requireRole.js';
 import {
   activateOperatorAccount,
+  deactivateOperatorAccount,
   searchOperator,
 } from '../controllers/operatorAssignmentController.js';
 
@@ -19,6 +20,12 @@ operatorAssignmentRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   activateOperatorAccount,
+);
+operatorAssignmentRouter.post(
+  '/deactivate/:operatorId',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  deactivateOperatorAccount,
 );
 
 export default operatorAssignmentRouter;

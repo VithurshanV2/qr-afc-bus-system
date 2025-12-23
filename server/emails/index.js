@@ -6,6 +6,7 @@ import operatorRequestReceivedTemplate from './templates/operatorRequestReceived
 import operatorAccountApproved from './templates/operatorAccountApproved.js';
 import operatorAccountReject from './templates/operatorAccountReject.js';
 import operatorAccountActivated from './templates/operatorAccountActivated.js';
+import operatorAccountDeactivated from './templates/operatorAccountDeactivated.js';
 
 const logoUrl = process.env.EMAIL_LOGO_URL;
 
@@ -148,7 +149,26 @@ export async function sendOperatorAccountActivation({ to, name }) {
     subject: 'SmartFare - Bus Operator Account Activated',
     text: `Hello, ${name},
 
-    Your bus operator account request has been activated back by the National Transport Commission (NTC).
+    Your bus operator account has been activated back by the National Transport Commission (NTC).
+
+    Safe travels,
+    The SmartFare Team`,
+    html,
+  });
+}
+
+export async function sendOperatorAccountDeactivation({ to, name }) {
+  const html = operatorAccountDeactivated({ name, logoUrl });
+
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Bus Operator Account Deactivated',
+    text: `Hello, ${name},
+
+    Your bus operator account has been deactivated temporarily.
+
+    For any inquiries or clarifications, please contact the National Transport Commission (NTC).
 
     Safe travels,
     The SmartFare Team`,

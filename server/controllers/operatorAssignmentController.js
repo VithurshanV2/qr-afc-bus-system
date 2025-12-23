@@ -1,4 +1,7 @@
-import { sendOperatorAccountActivation } from '../emails/index.js';
+import {
+  sendOperatorAccountActivation,
+  sendOperatorAccountDeactivation,
+} from '../emails/index.js';
 import {
   countOperator,
   getLinkedOperatorAccount,
@@ -66,6 +69,45 @@ export const activateOperatorAccount = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Operator account activated',
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Operator account deactivation
+export const deactivateOperatorAccount = async (req, res) => {
+  try {
+    const { operatorId } = req.params;
+
+    const operator = await getLinkedOperatorAccount(Number(operatorId));
+
+    if (!operator || !operator.user) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Operator not found' });
+    }
+
+    if (!operator.user.isActive) {
+      return res.status(400).json({
+        success: false,
+        message: 'Operator account is already deactivated',
+      });
+    }
+
+    await setOperatorActiveStatus(operator.user.id, false);
+
+    await sendOperatorAccountDeactivation({
+      to: operator.user.email,
+      name: operator.user.name,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Operator account Deactivated',
     });
   } catch (error) {
     console.error(error);
