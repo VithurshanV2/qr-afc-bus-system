@@ -3,11 +3,11 @@ import { useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import OperatorRequestView from './components/OperatorRequestView';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { BounceLoader } from 'react-spinners';
 import ConfirmModel from '../../components/ConfirmModal';
+import AssignRouteForm from './components/AssignRouteForm';
 
 const RouteAssignment = () => {
   const { backendUrl, setGlobalLoading } = useContext(AppContext);
@@ -129,7 +129,7 @@ const RouteAssignment = () => {
 
       {/* View request */}
       {showAssignForm && selectedOperator && (
-        <OperatorRequestView
+        <AssignRouteForm
           operator={selectedOperator}
           onClose={() => {
             setShowAssignForm(false);
