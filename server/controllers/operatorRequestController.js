@@ -199,13 +199,18 @@ export const approveOperatorRequest = async (req, res) => {
     const newUser = await createUser({
       name: request.name,
       email: request.email,
+      number: request.number,
       role: 'BUSOPERATOR',
     });
 
     await linkRequestToUser({ requestId, userId: newUser.id });
 
     // create BusOperator account
-    const operator = await createBusOperator({ userId: newUser.id });
+    const operator = await createBusOperator({
+      userId: newUser.id,
+      nic: request.nic,
+      address: request.address,
+    });
 
     // Add buses to bus model
     await createBusesForOperator({

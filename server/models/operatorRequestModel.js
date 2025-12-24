@@ -120,9 +120,9 @@ export const createActivationToken = async ({ userId, token, expiresAt }) => {
 };
 
 // Create bus operator user account
-export const createUser = async ({ name, email, role }) => {
+export const createUser = async ({ name, email, number, role }) => {
   return await prisma.user.create({
-    data: { name, email, role, isAccountVerified: false },
+    data: { name, email, number, role, isAccountVerified: false },
   });
 };
 
@@ -135,8 +135,8 @@ export const linkRequestToUser = async ({ requestId, userId }) => {
 };
 
 // Create a new BusOperator linked to a user
-export const createBusOperator = async ({ userId }) => {
-  return await prisma.busOperator.create({ data: { userId } });
+export const createBusOperator = async ({ userId, nic, address }) => {
+  return await prisma.busOperator.create({ data: { userId, nic, address } });
 };
 
 // Add buses for bus operator
