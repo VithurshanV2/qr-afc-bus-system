@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar, { SidebarItem } from '../components/Sidebar';
-import { MapPinPlus, TicketCheck, UserPlus } from 'lucide-react';
+import { MapPinPlus, Route, TicketCheck, UserPlus } from 'lucide-react';
 
 const AdminLayout = () => {
   return (
@@ -16,6 +16,11 @@ const AdminLayout = () => {
           to="/admin/route-management"
           text="Route Management"
           icon={<MapPinPlus size={20} />}
+        />
+        <SidebarItem
+          to="/admin/route-assignment"
+          text="Route Assignment"
+          icon={<Route size={20} />}
         />
         <SidebarItem
           to="/admin/ticket-verification"

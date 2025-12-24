@@ -21,13 +21,23 @@ export const searchOperator = async (req, res) => {
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
 
+    let isActiveBool;
+
+    if (isActive === 'true') {
+      isActiveBool = true;
+    } else if (isActive === 'false') {
+      isActiveBool = false;
+    } else {
+      isActiveBool = undefined;
+    }
+
     const operators = await getOperatorList({
       search,
-      isActive,
+      isActive: isActiveBool,
       skip,
       take,
     });
-    const total = await countOperator({ search, isActive });
+    const total = await countOperator({ search, isActive: isActiveBool });
 
     return res.status(200).json({
       success: true,

@@ -243,9 +243,9 @@ export const setOperatorActiveStatus = async (userId, isActive) => {
 };
 
 // Fetch operator to get linked userId
-export const getLinkedOperatorAccount = async (operatorId) => {
+export const getLinkedOperatorAccount = async (userId) => {
   return await prisma.busOperator.findUnique({
-    where: { id: operatorId },
+    where: { userId },
     select: {
       user: { select: { id: true, name: true, email: true, isActive: true } },
     },

@@ -20,6 +20,7 @@ import LoginBusOperator from './pages/auth/LoginBusOperator';
 import LoginAdmin from './pages/auth/LoginAdmin';
 import AdminLayout from './layouts/AdminLayout';
 import ReviewAccountRequest from './pages/transport-authority/ReviewAccountRequest';
+import RouteAssignment from './pages/transport-authority/RouteAssignment';
 import RouteManagement from './pages/transport-authority/RouteManagement';
 import TicketVerification from './pages/shared/TicketVerification';
 import AdminRoute from './components/AdminRoute';
@@ -105,6 +106,7 @@ const App = () => {
             element={<ReviewAccountRequest />}
           />
           <Route path="route-management" element={<RouteManagement />} />
+          <Route path="route-assignment" element={<RouteAssignment />} />
           <Route path="ticket-verification" element={<TicketVerification />} />
         </Route>
       </Routes>
