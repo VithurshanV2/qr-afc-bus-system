@@ -149,7 +149,9 @@ export const getAssignableRoutes = async () => {
 export const getBusById = async (busId) => {
   return await prisma.bus.findUnique({
     where: { id: busId },
-    include: { operator: { select: { id: true, isActive: true } } },
+    include: {
+      operator: { include: { user: { select: { id: true, isActive: true } } } },
+    },
   });
 };
 

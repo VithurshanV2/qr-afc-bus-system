@@ -133,6 +133,7 @@ const RouteAssignment = () => {
           operator={selectedOperator}
           onClose={() => {
             setShowAssignForm(false);
+            setSelectedOperator(null);
             fetchOperators(currentPage);
           }}
         />
