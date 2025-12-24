@@ -96,16 +96,19 @@ model BusOperator {
 }
 
 model Bus {
-  id                 Int         @id @default(autoincrement())
-  registrationNumber String      @unique
-  operator           BusOperator @relation(fields: [operatorId], references: [id])
-  operatorId         Int
-  route              Route?      @relation(fields: [routeId], references: [id])
-  routeId            Int?
-  qrCode             String      @unique
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
-  Trip               Trip[]
+  id                   Int         @id @default(autoincrement())
+  registrationNumber   String      @unique
+  operator             BusOperator @relation(fields: [operatorId], references: [id])
+  operatorId           Int
+  route                Route?      @relation(fields: [routeId], references: [id])
+  routeId              Int?
+  qrCode               String      @unique
+  requestedRouteName   String?
+  requestedRouteNumber String?
+  requestedBusType     BusType?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  Trip                 Trip[]
 }
 
 model Trip {
