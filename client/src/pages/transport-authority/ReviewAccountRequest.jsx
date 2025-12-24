@@ -50,7 +50,7 @@ const ReviewAccountRequest = () => {
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [search, status]);
 
   // Resend activation link to email
   const handleResendActivation = async (requestId) => {

@@ -51,7 +51,7 @@ const RouteManagement = () => {
 
   useEffect(() => {
     fetchRoutes();
-  }, []);
+  }, [search]);
 
   const closeForm = () => {
     setSelectedRoute(null);
