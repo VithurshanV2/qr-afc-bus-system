@@ -3,6 +3,7 @@ import {
   getActiveTicket,
   getLatestTicket,
   getPastTickets,
+  getTicketById,
   getTicketByQrCode,
   setCancelTicket,
   setDestinationHalt,
@@ -470,6 +471,34 @@ export const searchTickets = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, total, page, limit, tripLogs });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch ticket for viewing by transport authority
+export const viewTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+
+    if (!ticketId) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Ticket ID is required' });
+    }
+
+    const ticket = await getTicketById(Number(ticketId));
+
+    if (!ticket) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Ticket not found' });
+    }
+
+    return res.status(200).json({ success: true, ticket });
   } catch (error) {
     console.error(error);
     return res

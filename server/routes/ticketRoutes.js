@@ -13,6 +13,7 @@ import {
   selectDestinationHalt,
   setAccompanyingPassengers,
   verifyTicket,
+  viewTicket,
 } from '../controllers/ticketController.js';
 
 const ticketRouter = express.Router();
@@ -46,6 +47,12 @@ ticketRouter.get(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   searchTickets,
+);
+ticketRouter.get(
+  '/ticket/:ticketId',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  viewTicket,
 );
 
 export default ticketRouter;
