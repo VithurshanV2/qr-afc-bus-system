@@ -31,35 +31,49 @@ export const getTripById = async (tripId) => {
 export const getTripLogs = async ({
   from,
   to,
-  name = '',
-  email = '',
-  number = '',
-  busRegistration = '',
+  search = '',
   skip = 0,
   take = 50,
 }) => {
   return await prisma.ticket.findMany({
     where: {
       status: 'CONFIRMED',
-      issuedAt: {
-        gte: new Date(from),
-        lte: new Date(to),
-      },
-      commuter: {
-        OR: [
-          { name: { contains: name || '', mode: 'insensitive' } },
-          { email: { contains: email || '', mode: 'insensitive' } },
-          { number: { contains: number || '', mode: 'insensitive' } },
-        ],
-      },
 
-      trip: {
-        bus: {
-          registrationNumber: busRegistration
-            ? { contains: busRegistration, mode: 'insensitive' }
-            : undefined,
-        },
-      },
+      ...(from &&
+        to && {
+          issuedAt: {
+            gte: new Date(from),
+            lte: new Date(to),
+          },
+        }),
+
+      ...(search && {
+        OR: [
+          {
+            commuter: { name: { contains: search, mode: 'insensitive' } },
+          },
+          {
+            commuter: {
+              email: { contains: search, mode: 'insensitive' },
+            },
+          },
+          {
+            commuter: {
+              number: { contains: search, mode: 'insensitive' },
+            },
+          },
+          {
+            trip: {
+              bus: {
+                registrationNumber: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
+      }),
     },
     select: {
       id: true,
@@ -90,36 +104,45 @@ export const getTripLogs = async ({
   });
 };
 
-export const countTripLogs = async ({
-  from,
-  to,
-  name = '',
-  email = '',
-  number = '',
-  busRegistration = '',
-}) => {
+export const countTripLogs = async ({ from, to, search = '' }) => {
   return await prisma.ticket.count({
     where: {
       status: 'CONFIRMED',
-      issuedAt: {
-        gte: new Date(from),
-        lte: new Date(to),
-      },
-      commuter: {
-        OR: [
-          { name: { contains: name || '', mode: 'insensitive' } },
-          { email: { contains: email || '', mode: 'insensitive' } },
-          { number: { contains: number || '', mode: 'insensitive' } },
-        ],
-      },
 
-      trip: {
-        bus: {
-          registrationNumber: busRegistration
-            ? { contains: busRegistration, mode: 'insensitive' }
-            : undefined,
-        },
-      },
+      ...(from &&
+        to && {
+          issuedAt: {
+            gte: new Date(from),
+            lte: new Date(to),
+          },
+        }),
+      ...(search && {
+        OR: [
+          {
+            commuter: { name: { contains: search, mode: 'insensitive' } },
+          },
+          {
+            commuter: {
+              email: { contains: search, mode: 'insensitive' },
+            },
+          },
+          {
+            commuter: {
+              number: { contains: search, mode: 'insensitive' },
+            },
+          },
+          {
+            trip: {
+              bus: {
+                registrationNumber: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
+      }),
     },
   });
 };

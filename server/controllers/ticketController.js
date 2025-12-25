@@ -428,22 +428,9 @@ export const verifyTicket = async (req, res) => {
 // Fetch trip logs for transport authority
 export const searchTickets = async (req, res) => {
   try {
-    const {
-      from,
-      to,
-      name = '',
-      email = '',
-      number = '',
-      busRegistration = '',
-      page = 1,
-      limit = 50,
-    } = req.query;
+    let { from, to, search, page = 1, limit = 50 } = req.query;
 
-    if (!from || !to) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'From and to dates are required' });
-    }
+    search = search?.trim();
 
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
@@ -451,10 +438,7 @@ export const searchTickets = async (req, res) => {
     const tripLogs = await getTripLogs({
       from,
       to,
-      name,
-      email,
-      number,
-      busRegistration,
+      search,
       skip,
       take,
     });
@@ -462,10 +446,7 @@ export const searchTickets = async (req, res) => {
     const total = await countTripLogs({
       from,
       to,
-      name,
-      email,
-      number,
-      busRegistration,
+      search,
     });
 
     return res

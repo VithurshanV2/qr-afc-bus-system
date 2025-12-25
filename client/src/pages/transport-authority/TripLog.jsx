@@ -33,10 +33,7 @@ const TripLogs = () => {
       const params = {
         from: fromDate,
         to: toDate,
-        name: search,
-        email: search,
-        number: search,
-        busRegistration: search,
+        search,
         page,
         limit,
       };
@@ -58,14 +55,20 @@ const TripLogs = () => {
   };
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      fetchTickets();
-    }
+    fetchTickets(1);
   }, [search, fromDate, toDate]);
 
   const closeForm = () => {
     setSelectedTicket(null);
     fetchTickets(currentPage);
+  };
+
+  const clearFilters = () => {
+    setSearch('');
+    setFromDate('');
+    setToDate('');
+    setCurrentPage(1);
+    fetchTickets(1);
   };
 
   return (
@@ -107,13 +110,22 @@ const TripLogs = () => {
           focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
 
-            <button
-              onClick={() => fetchTickets(1)}
-              className="w-full flex-1/4 bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
-          transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-            >
-              Search
-            </button>
+            <div className="flex gap-2 flex-1/4">
+              <button
+                onClick={() => fetchTickets(1)}
+                className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
+              transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
+              >
+                Search
+              </button>
+              <button
+                onClick={clearFilters}
+                className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-full
+              transition-all duration-200 transform hover:bg-gray-300 active:scale-95 active:shadow-lg"
+              >
+                Clear
+              </button>
+            </div>
           </div>
 
           {/* Ticket list */}
