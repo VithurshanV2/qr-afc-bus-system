@@ -40,20 +40,17 @@ export const getTripLogs = async ({
 }) => {
   return await prisma.ticket.findMany({
     where: {
+      status: 'CONFIRMED',
       issuedAt: {
         gte: new Date(from),
         lte: new Date(to),
       },
       commuter: {
         OR: [
-          name ? { name: { contains: name, mode: 'insensitive' } } : undefined,
-          email
-            ? { email: { contains: email, mode: 'insensitive' } }
-            : undefined,
-          number
-            ? { number: { contains: number, mode: 'insensitive' } }
-            : undefined,
-        ].filter(Boolean),
+          { name: { contains: name || '', mode: 'insensitive' } },
+          { email: { contains: email || '', mode: 'insensitive' } },
+          { number: { contains: number || '', mode: 'insensitive' } },
+        ],
       },
 
       trip: {
@@ -67,6 +64,7 @@ export const getTripLogs = async ({
     select: {
       id: true,
       issuedAt: true,
+      status: true,
 
       commuter: {
         select: { name: true, email: true, number: true },
@@ -81,7 +79,7 @@ export const getTripLogs = async ({
       trip: {
         select: {
           route: { select: { name: true, number: true, busType: true } },
-          bus: { select: { registrationNumber: true } },
+          bus: { select: { registrationNumber: true, requestedBusType: true } },
         },
       },
     },
@@ -102,20 +100,17 @@ export const countTripLogs = async ({
 }) => {
   return await prisma.ticket.count({
     where: {
+      status: 'CONFIRMED',
       issuedAt: {
         gte: new Date(from),
         lte: new Date(to),
       },
       commuter: {
         OR: [
-          name ? { name: { contains: name, mode: 'insensitive' } } : undefined,
-          email
-            ? { email: { contains: email, mode: 'insensitive' } }
-            : undefined,
-          number
-            ? { number: { contains: number, mode: 'insensitive' } }
-            : undefined,
-        ].filter(Boolean),
+          { name: { contains: name || '', mode: 'insensitive' } },
+          { email: { contains: email || '', mode: 'insensitive' } },
+          { number: { contains: number || '', mode: 'insensitive' } },
+        ],
       },
 
       trip: {

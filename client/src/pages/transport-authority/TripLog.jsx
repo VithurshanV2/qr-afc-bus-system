@@ -161,35 +161,36 @@ const TripLogs = () => {
                       <tr key={ticket.id} className="font-medium text-gray-900">
                         {/* Commuter */}
                         <td className="px-4 py-3">
-                          <div>{ticket.commuter.name}</div>
+                          <div>{ticket.commuter?.name}</div>
                           <div className="text-sm text-gray-700">
-                            {ticket.commuter.email}
+                            {ticket.commuter?.email}
                           </div>
                           <div className="text-sm text-gray-700">
-                            {ticket.commuter.number}
+                            {ticket.commuter?.number}
                           </div>
                         </td>
 
                         {/* Bus */}
                         <td className="px-4 py-3">
-                          <div>{ticket.trip.bus.registrationNumber}</div>
+                          <div>{ticket.trip?.bus?.registrationNumber}</div>
                           <div className="text-sm text-gray-700">
-                            {ticket.trip.bus.requestedBusType}
+                            {ticket.trip?.bus?.requestedBusType || '-'}
                           </div>
                         </td>
 
                         {/* Ticket */}
                         <td className="px-4 py-3">
                           <div>
-                            {ticket.boardingHalt} -{' '}
-                            {ticket.destinationHalt || '-'}
+                            {ticket.boardingHalt?.englishName} -{' '}
+                            {ticket.destinationHalt?.englishName || '-'}
                           </div>
                           <div className="text-sm text-gray-700">
                             Adults: {ticket.adultCount} | Children:{' '}
                             {ticket.childCount}
                           </div>
                           <div className="text-sm text-gray-700">
-                            Total Fare: {ticket.totalFare}
+                            Total Fare: {(ticket.totalFare / 100).toFixed(2)}{' '}
+                            LKR
                           </div>
                         </td>
 
