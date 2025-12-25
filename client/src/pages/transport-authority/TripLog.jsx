@@ -10,7 +10,7 @@ import { formatIssuedDate } from '../../utils/date';
 import TicketCard from '../commuter/components/TicketCard';
 
 const TripLogs = () => {
-  const { backendUrl } = useContext(AppContext);
+  const { backendUrl, setGlobalLoading } = useContext(AppContext);
 
   const [search, setSearch] = useState('');
   const [tickets, setTickets] = useState([]);
@@ -71,6 +71,26 @@ const TripLogs = () => {
     fetchTickets(1);
   };
 
+  const viewTicket = async (ticketId) => {
+    try {
+      setGlobalLoading(true);
+
+      const { data } = await axios.get(
+        backendUrl + '/api/ticket/ticket/' + ticketId,
+      );
+
+      if (data.success) {
+        setSelectedTicket(data.ticket);
+      } else {
+        toast.error(data.message || 'Failed to fetch ticket');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
   return (
     <div>
       <div className="p-6">
@@ -78,9 +98,21 @@ const TripLogs = () => {
       </div>
 
       {/* Render ticket */}
-      <div>
-        <TicketCard ticket={selectedTicket || null} onClose={closeForm} />
-      </div>
+      {selectedTicket && (
+        <div className="flex justify-center mb-4">
+          <div className="max-w-4xl border border-gray-200 p-4 rounded-xl shadow-lg">
+            <button
+              onClick={closeForm}
+              className="top-2 right-2 px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md mb-3
+            hover:shadow-gray-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+            >
+              Back
+            </button>
+
+            <TicketCard ticket={selectedTicket || null} onClose={closeForm} />
+          </div>
+        </div>
+      )}
 
       {/* Search tickets */}
       {!selectedTicket && (
@@ -213,7 +245,10 @@ const TripLogs = () => {
 
                         {/* Actions */}
                         <td className="px-4 py-3 flex gap-2">
-                          <button className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200">
+                          <button
+                            onClick={() => viewTicket(ticket.id)}
+                            className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                          >
                             View Ticket
                           </button>
                         </td>
