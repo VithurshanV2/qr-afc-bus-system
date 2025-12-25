@@ -8,7 +8,11 @@ import {
   setDestinationHalt,
   setPassengerCount,
 } from '../models/ticketModel.js';
-import { getActiveTripByBusQrCode } from '../models/tripModel.js';
+import {
+  countTripLogs,
+  getActiveTripByBusQrCode,
+  getTripLogs,
+} from '../models/tripModel.js';
 import {
   calculateFare,
   getNearestBoardingHalt,
@@ -412,6 +416,60 @@ export const verifyTicket = async (req, res) => {
     return res
       .status(200)
       .json({ success: true, message: 'Ticket found', ticket });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch trip logs for transport authority
+export const searchTickets = async (req, res) => {
+  try {
+    const {
+      from,
+      to,
+      name = '',
+      email = '',
+      number = '',
+      busRegistration = '',
+      page = 1,
+      limit = 50,
+    } = req.query;
+
+    if (!from || !to) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'From and to dates are required' });
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const tripLogs = await getTripLogs({
+      from,
+      to,
+      name,
+      email,
+      number,
+      busRegistration,
+      skip,
+      take,
+    });
+
+    const total = await countTripLogs({
+      from,
+      to,
+      name,
+      email,
+      number,
+      busRegistration,
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, total, page, limit, tripLogs });
   } catch (error) {
     console.error(error);
     return res

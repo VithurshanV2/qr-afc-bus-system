@@ -26,3 +26,105 @@ export const getTripById = async (tripId) => {
     },
   });
 };
+
+// Fetch trip logs for transport authority
+export const getTripLogs = async ({
+  from,
+  to,
+  name = '',
+  email = '',
+  number = '',
+  busRegistration = '',
+  skip = 0,
+  take = 50,
+}) => {
+  return await prisma.ticket.findMany({
+    where: {
+      issuedAt: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
+      commuter: {
+        OR: [
+          name ? { name: { contains: name, mode: 'insensitive' } } : undefined,
+          email
+            ? { email: { contains: email, mode: 'insensitive' } }
+            : undefined,
+          number
+            ? { number: { contains: number, mode: 'insensitive' } }
+            : undefined,
+        ].filter(Boolean),
+      },
+
+      trip: {
+        bus: {
+          registrationNumber: busRegistration
+            ? { contains: busRegistration, mode: 'insensitive' }
+            : undefined,
+        },
+      },
+    },
+    select: {
+      id: true,
+      issuedAt: true,
+
+      commuter: {
+        select: { name: true, email: true, number: true },
+      },
+
+      boardingHalt: true,
+      destinationHalt: true,
+      adultCount: true,
+      childCount: true,
+      totalFare: true,
+
+      trip: {
+        select: {
+          route: { select: { name: true, number: true, busType: true } },
+          bus: { select: { registrationNumber: true } },
+        },
+      },
+    },
+
+    orderBy: { issuedAt: 'desc' },
+    skip,
+    take,
+  });
+};
+
+export const countTripLogs = async ({
+  from,
+  to,
+  name = '',
+  email = '',
+  number = '',
+  busRegistration = '',
+}) => {
+  return await prisma.ticket.count({
+    where: {
+      issuedAt: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
+      commuter: {
+        OR: [
+          name ? { name: { contains: name, mode: 'insensitive' } } : undefined,
+          email
+            ? { email: { contains: email, mode: 'insensitive' } }
+            : undefined,
+          number
+            ? { number: { contains: number, mode: 'insensitive' } }
+            : undefined,
+        ].filter(Boolean),
+      },
+
+      trip: {
+        bus: {
+          registrationNumber: busRegistration
+            ? { contains: busRegistration, mode: 'insensitive' }
+            : undefined,
+        },
+      },
+    },
+  });
+};

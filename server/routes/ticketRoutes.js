@@ -9,6 +9,7 @@ import {
   getFares,
   getUpcomingHalts,
   scanQrBoarding,
+  searchTickets,
   selectDestinationHalt,
   setAccompanyingPassengers,
   verifyTicket,
@@ -39,6 +40,12 @@ ticketRouter.post(
   userAuth,
   requireRole(['BUSOPERATOR', 'TRANSPORTAUTHORITY']),
   verifyTicket,
+);
+ticketRouter.get(
+  '/trip-logs',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  searchTickets,
 );
 
 export default ticketRouter;
