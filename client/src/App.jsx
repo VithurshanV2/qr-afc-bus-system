@@ -22,6 +22,7 @@ import AdminLayout from './layouts/AdminLayout';
 import ReviewAccountRequest from './pages/transport-authority/ReviewAccountRequest';
 import RouteAssignment from './pages/transport-authority/RouteAssignment';
 import RouteManagement from './pages/transport-authority/RouteManagement';
+import TripLog from './pages/transport-authority/TripLog';
 import TicketVerification from './pages/shared/TicketVerification';
 import AdminRoute from './components/AdminRoute';
 import CommuterRoute from './components/CommuterRoute';
@@ -108,6 +109,7 @@ const App = () => {
           <Route path="route-management" element={<RouteManagement />} />
           <Route path="route-assignment" element={<RouteAssignment />} />
           <Route path="ticket-verification" element={<TicketVerification />} />
+          <Route path="trip-log" element={<TripLog />} />
         </Route>
       </Routes>
 
