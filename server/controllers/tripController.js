@@ -1,6 +1,7 @@
 import {
   endTripById,
   getActiveTripByBusId,
+  getBusesForOperator,
   getBusRouteOperator,
   startNewTrip,
 } from '../models/tripModel';
@@ -90,6 +91,22 @@ export const endTrip = async (req, res) => {
     });
 
     return res.status(200).json({ success: true, trip });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch all buses of operators
+export const getOperatorBuses = async (req, res) => {
+  try {
+    const operatorId = Number(req.userId);
+
+    const buses = await getBusesForOperator({ operatorId });
+
+    return res.status(200).json({ success: true, buses });
   } catch (error) {
     console.error(error);
     return res

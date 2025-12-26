@@ -195,3 +195,19 @@ export const endTripById = async ({ tripId }) => {
     },
   });
 };
+
+// Fetch all buses for operator with current active trip
+export const getBusesForOperator = async ({ operatorId }) => {
+  return await prisma.bus.findMany({
+    where: {
+      operatorId,
+    },
+    include: {
+      route: true,
+      Trip: {
+        where: { isActive: true },
+        take: 1,
+      },
+    },
+  });
+};
