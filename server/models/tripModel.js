@@ -182,3 +182,16 @@ export const startNewTrip = async ({ busId, routeId, direction }) => {
     },
   });
 };
+
+// End a trip
+export const endTripById = async ({ tripId }) => {
+  return await prisma.trip.update({
+    where: {
+      id: tripId,
+    },
+    data: {
+      isActive: false,
+      endTime: new Date(),
+    },
+  });
+};

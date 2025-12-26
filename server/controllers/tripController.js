@@ -1,4 +1,5 @@
 import {
+  endTripById,
   getActiveTripByBusId,
   getBusRouteOperator,
   startNewTrip,
@@ -52,6 +53,40 @@ export const startTrip = async (req, res) => {
       busId: busIdNum,
       routeId: bus.route.id,
       direction,
+    });
+
+    return res.status(200).json({ success: true, trip });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// End a trip
+export const endTrip = async (req, res) => {
+  try {
+    const { busId } = req.body;
+
+    if (!busId) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'BusID is required' });
+    }
+    const busIdNum = Number(busId);
+
+    const activeTrip = await getActiveTripByBusId({ busId: busIdNum });
+
+    if (!activeTrip) {
+      return res.status(400).json({
+        success: false,
+        message: 'No active trip found for this bus',
+      });
+    }
+
+    const trip = await endTripById({
+      tripId: activeTrip.id,
     });
 
     return res.status(200).json({ success: true, trip });
