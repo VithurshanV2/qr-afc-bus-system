@@ -146,3 +146,39 @@ export const countTripLogs = async ({ from, to, search = '' }) => {
     },
   });
 };
+
+// Fetch active trip by bus ID
+export const getActiveTripByBusId = async ({ busId }) => {
+  return await prisma.trip.findFirst({
+    where: {
+      busId,
+      isActive: true,
+    },
+  });
+};
+
+// Fetch bus with route and operator
+export const getBusRouteOperator = async ({ busId, operatorId }) => {
+  return await prisma.bus.findFirst({
+    where: {
+      id: busId,
+      operator: {
+        userId: operatorId,
+      },
+    },
+    include: {
+      route: true,
+    },
+  });
+};
+
+// Create a new trip
+export const startNewTrip = async ({ busId, routeId, direction }) => {
+  return await prisma.trip.create({
+    data: {
+      busId,
+      routeId,
+      direction,
+    },
+  });
+};

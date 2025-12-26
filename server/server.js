@@ -14,6 +14,7 @@ import routeRouter from './routes/routeRoute.js';
 import operatorAssignmentRouter from './routes/operatorAssignmentRoutes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import tripRouter from './routes/tripRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -43,6 +44,7 @@ app.use('/api/ticket', ticketRouter);
 app.use('/api/operator-requests', operatorRequestRouter);
 app.use('/api/route', routeRouter);
 app.use('/api/operator-assignment', operatorAssignmentRouter);
+app.use('/api/trip', tripRouter);
 
 // Uploaded files
 const _filename = fileURLToPath(import.meta.url);
