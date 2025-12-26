@@ -40,7 +40,7 @@ const LoginBusOperator = () => {
       if (data.success) {
         setIsLoggedIn(true);
         await getUserData();
-        navigate('/operator/dashboard');
+        navigate('/bus-operator/trip-management');
       } else {
         toast.error(data.message);
       }

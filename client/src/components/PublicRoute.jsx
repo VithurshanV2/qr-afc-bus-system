@@ -10,7 +10,7 @@ const getPathByRole = (role) => {
     case 'COMMUTER':
       return '/commuter/scan';
     case 'BUSOPERATOR':
-      return '/bus-operator/';
+      return '/bus-operator/trip-management';
     default:
       return '/';
   }
