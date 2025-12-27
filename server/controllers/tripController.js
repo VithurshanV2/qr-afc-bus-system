@@ -4,7 +4,7 @@ import {
   getBusesForOperator,
   getBusRouteOperator,
   startNewTrip,
-} from '../models/tripModel';
+} from '../models/tripModel.js';
 
 // Start a trip
 export const startTrip = async (req, res) => {
