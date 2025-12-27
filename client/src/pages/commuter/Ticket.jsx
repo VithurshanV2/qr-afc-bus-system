@@ -120,7 +120,14 @@ const Ticket = () => {
                 </h2>
 
                 {/* Latest ticket */}
-                <TicketCard ticket={ticket} />
+                {ticket ? (
+                  <TicketCard ticket={ticket} />
+                ) : (
+                  <div className="text-gray-600 text-center py-3">
+                    No current ticket available
+                  </div>
+                )}
+
                 <button
                   onClick={() => setViewPastTickets(true)}
                   disabled={loading}
@@ -189,7 +196,9 @@ const Ticket = () => {
                           )}
                         </p>
                         <p className="text-gray-700">
-                          {formatIssuedDate(tx.issuedAt)}
+                          {tx.issuedAt
+                            ? formatIssuedDate(tx.issuedAt)
+                            : 'Unknown date'}
                         </p>
                         <p className="text-gray-700">Ticket #{tx.id}</p>
                       </div>

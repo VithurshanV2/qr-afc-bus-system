@@ -84,7 +84,7 @@ const TicketCard = ({ ticket }) => {
           <div className="flex justify-between">
             <span className="text-gray-600">Issued</span>
             <span className="text-gray-900 font-medium">
-              {formatIssuedDate(issuedAt)}
+              {issuedAt ? formatIssuedDate(issuedAt) : 'N/A'}
             </span>
           </div>
         </div>
