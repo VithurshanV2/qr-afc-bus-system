@@ -11,7 +11,7 @@ const tripRouter = express.Router();
 
 tripRouter.post('/start', userAuth, requireRole(['BUSOPERATOR']), startTrip);
 tripRouter.post('/end', userAuth, requireRole(['BUSOPERATOR']), endTrip);
-tripRouter.post(
+tripRouter.get(
   '/operator-buses',
   userAuth,
   requireRole(['BUSOPERATOR']),

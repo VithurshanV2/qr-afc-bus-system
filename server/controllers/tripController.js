@@ -15,7 +15,7 @@ export const startTrip = async (req, res) => {
     if (!busId || !direction) {
       return res
         .status(400)
-        .json({ success: false, message: 'BusID and direction are required' });
+        .json({ success: false, message: 'Direction is required' });
     }
     const busIdNum = Number(busId);
     const operatorIdNum = Number(operatorId);
