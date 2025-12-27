@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { useEffect } from 'react';
 import QRCode from 'react-qr-code';
+import QrCodeDownload from '../../components/QrCodeDownload';
 
 const TripManagement = () => {
   const { backendUrl, setGlobalLoading, globalLoading } =
@@ -181,8 +182,12 @@ const TripManagement = () => {
 
                 <div className="hidden lg:block w-px bg-gray-300 self-stretch" />
 
-                <div className="flex justify-center lg:justify-end">
-                  <QRCode value={bus.qrCode || ''} size={100} />
+                <div className="flex flex-col items-center lg:justify-end">
+                  <QRCode value={bus.qrCode || ''} size={150} />
+                  <QrCodeDownload
+                    value={bus.qrCode}
+                    fileName={`${bus.registrationNumber}_qr.png`}
+                  />
                 </div>
               </div>
             </div>
