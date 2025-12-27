@@ -7,8 +7,6 @@ const getPathByRole = (role) => {
   switch (role) {
     case 'TRANSPORTAUTHORITY':
       return '/admin/review-account-request';
-    case 'COMMUTER':
-      return '/commuter/scan';
     case 'BUSOPERATOR':
       return '/bus-operator/trip-management';
     default:
@@ -21,7 +19,10 @@ const PublicRoute = ({ children }) => {
 
   if (userData) {
     const path = getPathByRole(userData.role);
-    return <Navigate to={path} replace />;
+
+    if (window.location.pathname !== path) {
+      return <Navigate to={path} replace />;
+    }
   }
 
   return children;
