@@ -24,6 +24,7 @@ import {
   getAuthorizedTicket,
 } from '../utils/ticketUtils.js';
 import { requireFields } from '../utils/validateRequest.js';
+import crypto from 'crypto';
 
 // Commuter scans QR, determine the boarding halt
 export const scanQrBoarding = async (req, res) => {
@@ -406,6 +407,28 @@ export const verifyTicket = async (req, res) => {
 
     if (!requireFields(res, { qrCode }, ['qrCode'])) return;
 
+    // Verify signature
+    const parts = qrCode.split('.');
+    const data = parts[0];
+    const signature = parts[1];
+
+    if (!data || !signature) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid QR code' });
+    }
+
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.TICKET_SECRET)
+      .update(data)
+      .digest('hex');
+
+    if (signature !== expectedSignature) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid ticket signature' });
+    }
+
     const ticket = await getTicketByQrCode(qrCode);
 
     if (!ticket) {
@@ -416,7 +439,7 @@ export const verifyTicket = async (req, res) => {
 
     return res
       .status(200)
-      .json({ success: true, message: 'Ticket found', ticket });
+      .json({ success: true, message: 'Ticket Verified', ticket });
   } catch (error) {
     console.error(error);
     return res

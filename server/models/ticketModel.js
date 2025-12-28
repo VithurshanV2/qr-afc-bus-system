@@ -1,5 +1,5 @@
 import { PrismaClient } from '../generated/prisma/index.js';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -22,17 +22,29 @@ export const createTicketAtBoarding = async ({
   const expiry = 15 * 60 * 1000; // 15 minutes
   const expiresAt = new Date(Date.now() + expiry);
 
-  const qrCode = uuidv4();
-
-  return await prisma.ticket.create({
+  const ticket = await prisma.ticket.create({
     data: {
       commuterId: userId,
       tripId,
       boardingHalt,
       expiresAt,
       status: 'PENDING',
-      qrCode,
+      qrCode: 'temp',
     },
+  });
+
+  // Generate signed QR code
+  const data = `${ticket.id}:${userId}:${tripId}:${Date.now()}`;
+  const signature = crypto
+    .createHmac('sha256', process.env.TICKET_SECRET)
+    .update(data)
+    .digest('hex');
+
+  const qrCode = `${data}.${signature}`;
+
+  return await prisma.ticket.update({
+    where: { id: ticket.id },
+    data: { qrCode },
   });
 };
 
