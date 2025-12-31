@@ -123,6 +123,7 @@ model Trip {
   direction TripDirection
   createdAt DateTime      @default(now())
   Ticket    Ticket[]
+  revenue   Revenue?
 }
 
 enum TripDirection {
@@ -225,4 +226,15 @@ model AccountActivationToken {
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model Revenue {
+  id          Int      @id @default(autoincrement())
+  trip        Trip     @relation(fields: [tripId], references: [id])
+  tripId      Int      @unique
+  ticketCount Int      @default(0)
+  totalAmount Int      @default(0)
+  isComplete  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
