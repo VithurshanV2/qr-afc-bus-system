@@ -1,6 +1,8 @@
 import {
+  countOperatorsRevenue,
   getDailyRevenueForOperator,
   getMonthlyRevenueForOperator,
+  getOperatorsRevenueList,
   getRevenueByTripId,
 } from '../models/revenueModel.js';
 
@@ -124,6 +126,51 @@ export const getMonthlyRevenue = async (req, res) => {
     return res.status(200).json({
       success: true,
       totalTrips,
+      totalTickets,
+      totalRevenue,
+      revenues,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Search operators revenue for transport authority
+export const searchOperatorsRevenue = async (req, res) => {
+  try {
+    let { from, to, search, page = 1, limit = 50 } = req.query;
+
+    search = search?.trim();
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const revenues = await getOperatorsRevenueList({
+      from,
+      to,
+      search,
+      skip,
+      take,
+    });
+
+    const total = await countOperatorsRevenue({ from, to, search });
+
+    let totalTickets = 0;
+    let totalRevenue = 0;
+
+    for (let i = 0; i < revenues.length; i++) {
+      totalTickets += revenues[i].ticketCount;
+      totalRevenue += revenues[i].totalAmount;
+    }
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
       totalTickets,
       totalRevenue,
       revenues,

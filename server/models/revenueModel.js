@@ -85,3 +85,147 @@ export const getMonthlyRevenueForOperator = async ({
     orderBy: { trip: { startTime: 'desc' } },
   });
 };
+
+// Fetch operator revenue for transport authority
+export const getOperatorsRevenueList = async ({
+  search = '',
+  from,
+  to,
+  skip = 0,
+  take = 10,
+}) => {
+  const where = {};
+
+  if (from && to) {
+    where.trip = {
+      startTime: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
+    };
+  }
+
+  if (search) {
+    where.OR = [
+      {
+        trip: {
+          bus: {
+            registrationNumber: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
+      {
+        trip: {
+          bus: {
+            operator: {
+              user: { name: { contains: search, mode: 'insensitive' } },
+            },
+          },
+        },
+      },
+      {
+        trip: {
+          bus: {
+            operator: {
+              user: { email: { contains: search, mode: 'insensitive' } },
+            },
+          },
+        },
+      },
+      {
+        trip: {
+          route: {
+            number: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
+      {
+        trip: {
+          route: {
+            name: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
+    ];
+  }
+
+  return await prisma.revenue.findMany({
+    where,
+    include: {
+      trip: {
+        include: {
+          route: true,
+          bus: {
+            include: {
+              operator: {
+                include: { user: true },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: { trip: { startTime: 'desc' } },
+    skip,
+    take,
+  });
+};
+
+export const countOperatorsRevenue = async ({ search = '', from, to }) => {
+  const where = {};
+
+  if (from && to) {
+    where.trip = {
+      startTime: {
+        gte: new Date(from),
+        lte: new Date(to),
+      },
+    };
+  }
+
+  if (search) {
+    where.OR = [
+      {
+        trip: {
+          bus: {
+            registrationNumber: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
+      {
+        trip: {
+          bus: {
+            operator: {
+              user: { name: { contains: search, mode: 'insensitive' } },
+            },
+          },
+        },
+      },
+      {
+        trip: {
+          bus: {
+            operator: {
+              user: { email: { contains: search, mode: 'insensitive' } },
+            },
+          },
+        },
+      },
+      {
+        trip: {
+          route: {
+            number: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
+      {
+        trip: {
+          route: {
+            name: { contains: search, mode: 'insensitive' },
+          },
+        },
+      },
+    ];
+  }
+
+  return await prisma.revenue.count({ where });
+};
