@@ -1,4 +1,7 @@
-import { getRevenueByTripId } from '../models/revenueModel.js';
+import {
+  getDailyRevenueForOperator,
+  getRevenueByTripId,
+} from '../models/revenueModel.js';
 
 // Get revenue for a specific trip
 export const getTripRevenue = async (req, res) => {
@@ -24,6 +27,54 @@ export const getTripRevenue = async (req, res) => {
     }
 
     return res.status(200).json({ success: true, revenue });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Get daily revenue for operator
+export const getDailyRevenue = async (req, res) => {
+  try {
+    const { date } = req.query;
+    const operatorId = req.userId;
+
+    if (!date) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Date is required' });
+    }
+
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const revenues = await getDailyRevenueForOperator({
+      operatorId,
+      startOfDay,
+      endOfDay,
+    });
+
+    let totalTickets = 0;
+    let totalRevenue = 0;
+    const totalTrips = revenues.length;
+
+    for (let i = 0; i < revenues.length; i++) {
+      totalTickets += revenues[i].ticketCount;
+      totalRevenue += revenues[i].totalAmount;
+    }
+
+    return res.status(200).json({
+      success: true,
+      totalTrips,
+      totalTickets,
+      totalRevenue,
+      revenues,
+    });
   } catch (error) {
     console.error(error);
     return res

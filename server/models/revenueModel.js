@@ -35,3 +35,28 @@ export const getRevenueByTripId = async ({ tripId, operatorId }) => {
     },
   });
 };
+
+// Fetch daily revenue for an operator
+export const getDailyRevenueForOperator = async ({
+  operatorId,
+  startOfDay,
+  endOfDay,
+}) => {
+  return await prisma.revenue.findMany({
+    where: {
+      trip: {
+        bus: {
+          operator: {
+            userId: operatorId,
+          },
+        },
+        startTime: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    },
+    include: { trip: { include: { route: true, bus: true } } },
+    orderBy: { trip: { startTime: 'desc' } },
+  });
+};
