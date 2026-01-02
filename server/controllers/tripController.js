@@ -1,4 +1,5 @@
 import {
+  createRevenueForTrip,
   endTripById,
   getActiveTripByBusId,
   getBusesForOperator,
@@ -89,6 +90,8 @@ export const endTrip = async (req, res) => {
     const trip = await endTripById({
       tripId: activeTrip.id,
     });
+
+    await createRevenueForTrip({ tripId: activeTrip });
 
     return res.status(200).json({ success: true, trip });
   } catch (error) {

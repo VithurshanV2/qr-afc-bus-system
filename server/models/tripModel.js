@@ -209,3 +209,33 @@ export const getBusesForOperator = async ({ operatorId }) => {
     },
   });
 };
+
+// Create revenue record for completed trip
+export const createRevenueForTrip = async ({ tripId }) => {
+  const tickets = await prisma.ticket.findMany({
+    where: {
+      tripId,
+      status: 'CONFIRMED',
+    },
+    select: {
+      totalFare: true,
+    },
+  });
+
+  const ticketCount = tickets.length;
+  const totalAmount = tickets.reduce(
+    (sum, ticket) => sum + (ticket.totalFare || 0),
+    0,
+  );
+
+  // Create or update revenue record
+  return await prisma.revenue.upsert({
+    where: { tripId },
+    create: {
+      tripId,
+      ticketCount,
+      totalAmount,
+      isComplete: true,
+    },
+  });
+};
