@@ -1,7 +1,14 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar, { SidebarItem } from '../components/Sidebar';
-import { Logs, MapPinPlus, Route, TicketCheck, UserPlus } from 'lucide-react';
+import {
+  ChartLine,
+  Logs,
+  MapPinPlus,
+  Route,
+  TicketCheck,
+  UserPlus,
+} from 'lucide-react';
 
 const AdminLayout = () => {
   return (
@@ -21,6 +28,11 @@ const AdminLayout = () => {
           to="/admin/route-assignment"
           text="Route Assignment"
           icon={<Route size={20} />}
+        />
+        <SidebarItem
+          to="/admin/revenue"
+          text="Revenue"
+          icon={<ChartLine size={20} />}
         />
         <SidebarItem
           to="/admin/trip-log"
