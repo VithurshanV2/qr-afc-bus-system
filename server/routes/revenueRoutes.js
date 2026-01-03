@@ -5,7 +5,6 @@ import {
   getDailyRevenue,
   getMonthlyRevenue,
   getTripRevenue,
-  searchOperatorsRevenue,
 } from '../controllers/revenueController.js';
 
 const revenueRouter = express.Router();
@@ -27,12 +26,6 @@ revenueRouter.get(
   userAuth,
   requireRole(['BUSOPERATOR']),
   getMonthlyRevenue,
-);
-revenueRouter.get(
-  '/operators',
-  userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
-  searchOperatorsRevenue,
 );
 
 export default revenueRouter;
