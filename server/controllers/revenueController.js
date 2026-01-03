@@ -1,5 +1,6 @@
 import {
   getDailyRevenueForOperator,
+  getMonthlyRevenueForAuthority,
   getMonthlyRevenueForOperator,
   getRevenueByTripId,
 } from '../models/revenueModel.js';
@@ -127,6 +128,91 @@ export const getMonthlyRevenue = async (req, res) => {
       totalTickets,
       totalRevenue,
       revenues,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Get monthly revenue of operators for transport authority
+export const getOperatorsMonthlyRevenue = async (req, res) => {
+  try {
+    let { year, month, search, page = 1, limit = 10 } = req.query;
+
+    search = search?.trim();
+
+    if (!year || !month) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Year and month are required' });
+    }
+
+    if (month < 1 || month > 12) {
+      return res.status(400).json({ success: false, message: 'Invalid month' });
+    }
+
+    const startOfMonth = new Date(year, month - 1, 1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date(year, month, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
+
+    const revenues = await getMonthlyRevenueForAuthority({
+      search,
+      startOfMonth,
+      endOfMonth,
+    });
+
+    // Group operators
+    const operatorRevenue = {};
+
+    for (let i = 0; i < revenues.length; i++) {
+      const operatorId = revenues[i].trip.bus.operator.userId;
+
+      if (!operatorRevenue[operatorId]) {
+        operatorRevenue[operatorId] = {
+          operator: revenues[i].trip.bus.operator,
+          totalRevenue: 0,
+          totalTickets: 0,
+          totalTrips: 0,
+        };
+      }
+
+      operatorRevenue[operatorId].totalRevenue += revenues[i].totalAmount;
+      operatorRevenue[operatorId].totalTickets += revenues[i].ticketCount;
+      operatorRevenue[operatorId].totalTrips += 1;
+    }
+
+    // Convert to array
+    let operators = Object.values(operatorRevenue);
+    operators.sort((a, b) => b.totalRevenue - a.totalRevenue);
+    const total = operators.length;
+
+    const skip = (Number(page) - 1) * Number(limit);
+    operators = operators.slice(skip, skip + Number(limit));
+
+    let totalTickets = 0;
+    let totalRevenue = 0;
+    let totalTrips = 0;
+
+    for (let i = 0; i < operators.length; i++) {
+      totalTickets += operators[i].totalTickets;
+      totalRevenue += operators[i].totalRevenue;
+      totalTrips += operators[i].totalTrips;
+    }
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalTickets,
+      totalRevenue,
+      totalTrips,
+      operators,
     });
   } catch (error) {
     console.error(error);

@@ -85,3 +85,48 @@ export const getMonthlyRevenueForOperator = async ({
     orderBy: { trip: { startTime: 'desc' } },
   });
 };
+
+// Fetch monthly operator revenue for transport authority
+export const getMonthlyRevenueForAuthority = async ({
+  search = '',
+  startOfMonth,
+  endOfMonth,
+}) => {
+  const where = {
+    trip: {
+      startTime: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+    },
+  };
+
+  if (search) {
+    where.trip.bus = {
+      operator: {
+        OR: [
+          { user: { name: { contains: search, mode: 'insensitive' } } },
+          { user: { email: { contains: search, mode: 'insensitive' } } },
+          { nic: { contains: search, mode: 'insensitive' } },
+        ],
+      },
+    };
+  }
+
+  return await prisma.revenue.findMany({
+    where,
+    include: {
+      trip: {
+        include: {
+          bus: {
+            include: {
+              operator: {
+                include: { user: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+};
