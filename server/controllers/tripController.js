@@ -91,7 +91,7 @@ export const endTrip = async (req, res) => {
       tripId: activeTrip.id,
     });
 
-    await createRevenueForTrip({ tripId: activeTrip });
+    await createRevenueForTrip({ tripId: activeTrip.id });
 
     return res.status(200).json({ success: true, trip });
   } catch (error) {

@@ -237,5 +237,10 @@ export const createRevenueForTrip = async ({ tripId }) => {
       totalAmount,
       isComplete: true,
     },
+    update: {
+      ticketCount,
+      totalAmount,
+      isComplete: true,
+    },
   });
 };
