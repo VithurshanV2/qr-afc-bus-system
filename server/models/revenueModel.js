@@ -130,3 +130,61 @@ export const getMonthlyRevenueForAuthority = async ({
     },
   });
 };
+
+// Fetch trips for a operator for a specific month
+export const getOperatorMonthlyTrips = async ({
+  operatorId,
+  startOfMonth,
+  endOfMonth,
+  skip = 0,
+  take = 50,
+}) => {
+  return await prisma.revenue.findMany({
+    where: {
+      trip: {
+        bus: {
+          operator: {
+            userId: operatorId,
+          },
+        },
+        startTime: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    },
+    include: {
+      trip: {
+        include: {
+          route: true,
+          bus: true,
+        },
+      },
+    },
+    orderBy: { trip: { startTime: 'desc' } },
+    skip,
+    take,
+  });
+};
+
+export const countOperatorMonthlyTrips = async ({
+  operatorId,
+  startOfMonth,
+  endOfMonth,
+}) => {
+  return await prisma.revenue.count({
+    where: {
+      trip: {
+        bus: {
+          operator: {
+            userId: operatorId,
+          },
+        },
+        startTime: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    },
+  });
+};

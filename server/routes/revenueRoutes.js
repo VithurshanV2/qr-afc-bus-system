@@ -4,6 +4,7 @@ import requireRole from '../middleware/requireRole.js';
 import {
   getDailyRevenue,
   getMonthlyRevenue,
+  getOperatorMonthlyTripsDetails,
   getOperatorsMonthlyRevenue,
   getTripRevenue,
 } from '../controllers/revenueController.js';
@@ -33,6 +34,12 @@ revenueRouter.get(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   getOperatorsMonthlyRevenue,
+);
+revenueRouter.get(
+  '/operators/:operatorId/trips',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  getOperatorMonthlyTripsDetails,
 );
 
 export default revenueRouter;

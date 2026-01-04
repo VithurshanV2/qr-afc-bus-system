@@ -1,7 +1,9 @@
 import {
+  countOperatorMonthlyTrips,
   getDailyRevenueForOperator,
   getMonthlyRevenueForAuthority,
   getMonthlyRevenueForOperator,
+  getOperatorMonthlyTrips,
   getRevenueByTripId,
 } from '../models/revenueModel.js';
 
@@ -213,6 +215,70 @@ export const getOperatorsMonthlyRevenue = async (req, res) => {
       totalRevenue,
       totalTrips,
       operators,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Fetch trips for a operator for a specific month
+export const getOperatorMonthlyTripsDetails = async (req, res) => {
+  try {
+    const { operatorId } = req.params;
+    const { year, month, page = 1, limit = 50 } = req.query;
+
+    if (!year || !month) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Year and month are required' });
+    }
+
+    if (month < 1 || month > 12) {
+      return res.status(400).json({ success: false, message: 'Invalid month' });
+    }
+
+    const startOfMonth = new Date(year, month - 1, 1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date(year, month, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
+
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
+    const revenues = await getOperatorMonthlyTrips({
+      operatorId: Number(operatorId),
+      startOfMonth,
+      endOfMonth,
+      skip,
+      take,
+    });
+
+    const total = await countOperatorMonthlyTrips({
+      operatorId: Number(operatorId),
+      startOfMonth,
+      endOfMonth,
+    });
+
+    let totalTickets = 0;
+    let totalRevenue = 0;
+
+    for (let i = 0; i < revenues.length; i++) {
+      totalTickets += revenues[i].ticketCount;
+      totalRevenue += revenues[i].totalAmount;
+    }
+
+    return res.status(200).json({
+      success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalTickets,
+      totalRevenue,
+      revenues,
     });
   } catch (error) {
     console.error(error);
