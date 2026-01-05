@@ -1,4 +1,6 @@
 import {
+  countDailyRevenueForOperator,
+  countMonthlyRevenueForOperator,
   countOperatorMonthlyTrips,
   getDailyRevenueForOperator,
   getMonthlyRevenueForAuthority,
@@ -42,7 +44,7 @@ export const getTripRevenue = async (req, res) => {
 // Get daily revenue for operator
 export const getDailyRevenue = async (req, res) => {
   try {
-    const { date } = req.query;
+    const { date, page = 1, limit = 10 } = req.query;
     const operatorId = req.userId;
 
     if (!date) {
@@ -57,7 +59,18 @@ export const getDailyRevenue = async (req, res) => {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     const revenues = await getDailyRevenueForOperator({
+      operatorId,
+      startOfDay,
+      endOfDay,
+      skip,
+      take,
+    });
+
+    const total = await countDailyRevenueForOperator({
       operatorId,
       startOfDay,
       endOfDay,
@@ -74,6 +87,9 @@ export const getDailyRevenue = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
       totalTrips,
       totalTickets,
       totalRevenue,
@@ -90,7 +106,7 @@ export const getDailyRevenue = async (req, res) => {
 // Get monthly revenue for operator
 export const getMonthlyRevenue = async (req, res) => {
   try {
-    const { year, month } = req.query;
+    const { year, month, page = 1, limit = 10 } = req.query;
     const operatorId = req.userId;
 
     if (!year || !month) {
@@ -109,7 +125,18 @@ export const getMonthlyRevenue = async (req, res) => {
     const endOfMonth = new Date(year, month, 0);
     endOfMonth.setHours(23, 59, 59, 999);
 
+    const skip = (Number(page) - 1) * Number(limit);
+    const take = Number(limit);
+
     const revenues = await getMonthlyRevenueForOperator({
+      operatorId,
+      startOfMonth,
+      endOfMonth,
+      skip,
+      take,
+    });
+
+    const total = await countMonthlyRevenueForOperator({
       operatorId,
       startOfMonth,
       endOfMonth,
@@ -126,6 +153,9 @@ export const getMonthlyRevenue = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      total,
+      page: Number(page),
+      limit: Number(limit),
       totalTrips,
       totalTickets,
       totalRevenue,
