@@ -2,16 +2,23 @@ import React from 'react';
 import { useState } from 'react';
 import { formatIssuedDate } from '../../utils/date';
 import { BounceLoader } from 'react-spinners';
+import axios from 'axios';
+import { useContext } from 'react';
+import { AppContext } from '../../context/AppContext';
+import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 const RevenueOperatorView = () => {
+  const { backendUrl } = useContext(AppContext);
+
   const [viewType, setViewType] = useState('daily');
-  const [trips, _setTrips] = useState([]);
-  const [loading, _setLoading] = useState(false);
-  const [totalRevenue, _setTotalRevenue] = useState(0);
-  const [_totalTrips, _setTotalTrips] = useState(0);
-  const [totalTickets, _setTotalTickets] = useState(0);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalTrips, setTotalTrips] = useState(0);
+  const [totalTickets, setTotalTickets] = useState(0);
   const [currentPage, _setCurrentPage] = useState(1);
-  const [total, _setTotal] = useState(0);
+  const [total, setTotal] = useState(0);
 
   // Month selector
   const currentDate = new Date();
@@ -52,6 +59,36 @@ const RevenueOperatorView = () => {
     }
     return direction;
   };
+
+  const fetchDailyRevenue = async () => {
+    try {
+      setLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.get(backendUrl + `/api/revenue/daily`, {
+        params: { date: selectedDate },
+      });
+
+      if (data.success) {
+        setTrips(data.revenues);
+        setTotal(data.totalTrips);
+        setTotalRevenue(data.totalRevenue);
+        setTotalTickets(data.totalTickets);
+        setTotalTrips(data.totalTrips);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (viewType === 'daily') {
+      fetchDailyRevenue();
+    }
+  }, [selectedDate, viewType]);
 
   return (
     <div>
@@ -143,7 +180,9 @@ const RevenueOperatorView = () => {
           </div>
           <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
             <div className="text-gray-600 font-medium mb-2">Total Trips</div>
-            <div className="text-gray-900 font-medium text-3xl">{total}</div>
+            <div className="text-gray-900 font-medium text-3xl">
+              {totalTrips}
+            </div>
           </div>
           <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
             <div className="text-gray-600 font-medium mb-2">Total Tickets</div>
