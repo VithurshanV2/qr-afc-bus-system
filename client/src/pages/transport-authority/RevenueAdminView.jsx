@@ -7,7 +7,7 @@ import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import { formatIssuedDate } from '../../utils/date';
 
-const Revenue = () => {
+const RevenueAdminView = () => {
   const { backendUrl } = useContext(AppContext);
 
   const [search, setSearch] = useState('');
@@ -555,4 +555,4 @@ const Revenue = () => {
   );
 };
 
-export default Revenue;
+export default RevenueAdminView;

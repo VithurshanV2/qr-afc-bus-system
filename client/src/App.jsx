@@ -21,7 +21,7 @@ import AdminLayout from './layouts/AdminLayout';
 import ReviewAccountRequest from './pages/transport-authority/ReviewAccountRequest';
 import RouteAssignment from './pages/transport-authority/RouteAssignment';
 import RouteManagement from './pages/transport-authority/RouteManagement';
-import RevenueTransportAuthority from './pages/transport-authority/Revenue';
+import RevenueAdminView from './pages/transport-authority/RevenueAdminView';
 import TripLog from './pages/transport-authority/TripLog';
 import TicketVerification from './pages/shared/TicketVerification';
 import AdminRoute from './components/AdminRoute';
@@ -30,7 +30,7 @@ import BusOperatorRoute from './components/BusOperatorRoute';
 import PublicRoute from './components/PublicRoute';
 import BusOperatorLayout from './layouts/BusOperatorLayout';
 import TripManagement from './pages/bus-operator/TripManagement';
-import RevenueBusOperator from './pages/bus-operator/Revenue';
+import RevenueOperatorView from './pages/bus-operator/RevenueOperatorView';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -104,7 +104,7 @@ const App = () => {
           }
         >
           <Route path="trip-management" element={<TripManagement />} />
-          <Route path="revenue" element={<RevenueBusOperator />} />
+          <Route path="revenue" element={<RevenueOperatorView />} />
           <Route path="ticket-verification" element={<TicketVerification />} />
         </Route>
 
@@ -125,7 +125,7 @@ const App = () => {
           <Route path="route-management" element={<RouteManagement />} />
           <Route path="route-assignment" element={<RouteAssignment />} />
           <Route path="ticket-verification" element={<TicketVerification />} />
-          <Route path="revenue" element={<RevenueTransportAuthority />} />
+          <Route path="revenue" element={<RevenueAdminView />} />
           <Route path="trip-log" element={<TripLog />} />
         </Route>
       </Routes>
