@@ -13,6 +13,7 @@ const RevenueOperatorView = () => {
 
   const [viewType, setViewType] = useState('daily');
   const [trips, setTrips] = useState([]);
+  const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalTrips, setTotalTrips] = useState(0);
@@ -84,11 +85,36 @@ const RevenueOperatorView = () => {
     }
   };
 
+  const fetchMonthlyRevenue = async () => {
+    try {
+      setLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.get(backendUrl + `/api/revenue/monthly`, {
+        params: { year: selectedYear, month: selectedMonth },
+      });
+
+      if (data.success) {
+        setBuses(data.buses);
+        setTotalRevenue(data.totalRevenue);
+        setTotalTickets(data.totalTickets);
+        setTotalTrips(data.totalTrips);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (viewType === 'daily') {
       fetchDailyRevenue();
+    } else if (viewType === 'monthly') {
+      fetchMonthlyRevenue();
     }
-  }, [selectedDate, viewType]);
+  }, [selectedDate, selectedMonth, selectedYear, viewType]);
 
   return (
     <div>
@@ -196,114 +222,183 @@ const RevenueOperatorView = () => {
         <div className="mx-10">
           <div className="flex justify-between mb-3">
             <h3 className="text-gray-900 font-semibold text-2xl">
-              Trip Details
+              {viewType === 'daily' ? 'Trip Details' : 'Bus Revenue Summary'}
             </h3>
           </div>
 
           <div className="border border-gray-200 rounded-xl overflow-x-auto">
-            <table className="min-w-full">
-              <thead className="bg-gray-100 text-gray-700">
-                <tr>
-                  <th className="px-4 py-3 text-left">Bus</th>
-                  <th className="px-4 py-3 text-left">Route</th>
-                  <th className="px-4 py-3 text-left">Direction</th>
-                  <th className="px-4 py-3 text-left">Trip Date</th>
-                  <th className="px-4 py-3 text-left">Tickets</th>
-                  <th className="px-4 py-3 text-left">Revenue</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {loading && (
+            {/* Daily trip details table */}
+            {viewType === 'daily' ? (
+              <table className="min-w-full">
+                <thead className="bg-gray-100 text-gray-700">
                   <tr>
-                    <td className="py-6 text-center" colSpan="6">
-                      <BounceLoader size={30} color="#FFB347" />
-                    </td>
+                    <th className="px-4 py-3 text-left">Bus</th>
+                    <th className="px-4 py-3 text-left">Route</th>
+                    <th className="px-4 py-3 text-left">Direction</th>
+                    <th className="px-4 py-3 text-left">Trip Date</th>
+                    <th className="px-4 py-3 text-left">Tickets</th>
+                    <th className="px-4 py-3 text-left">Revenue</th>
                   </tr>
-                )}
+                </thead>
 
-                {!loading && trips.length === 0 && (
-                  <tr>
-                    <td
-                      className="py-6 text-gray-700 text-lg text-center"
-                      colSpan="6"
-                    >
-                      No trips found
-                    </td>
-                  </tr>
-                )}
-
-                {!loading &&
-                  trips.map((trip) => (
-                    <tr key={trip.id} className="font-medium text-gray-900">
-                      {/* Bus */}
-                      <td className="px-4 py-3">
-                        <div>{trip.trip?.bus?.registrationNumber}</div>
-                        <div className="text-sm text-gray-700">
-                          {trip.trip?.bus?.requestedBusType || '-'}
-                        </div>
-                      </td>
-
-                      {/* Route */}
-                      <td className="px-4 py-3">
-                        <div>
-                          {trip.trip?.route?.name} ({trip.trip?.route?.number})
-                        </div>
-                        <div className="text-sm text-gray-700">
-                          {trip.trip?.route?.busType}
-                        </div>
-                      </td>
-
-                      {/* Direction */}
-                      <td className="px-4 py-3">
-                        <div>
-                          {getDirectionName(
-                            trip.trip?.route,
-                            trip.trip?.direction,
-                          )}
-                        </div>
-                      </td>
-
-                      {/* TripDate */}
-                      <td className="px-4 py-3">
-                        <div>{formatIssuedDate(trip.trip?.startTime)}</div>
-                      </td>
-
-                      {/* Tickets */}
-                      <td className="px-4 py-3">
-                        <div>{trip.ticketCount}</div>
-                      </td>
-
-                      {/* Revenue */}
-                      <td className="px-4 py-3">
-                        <div>{(trip.totalAmount / 100).toFixed(2)} LKR</div>
+                <tbody>
+                  {loading && (
+                    <tr>
+                      <td className="py-6 text-center" colSpan="6">
+                        <BounceLoader size={30} color="#FFB347" />
                       </td>
                     </tr>
-                  ))}
-              </tbody>
-            </table>
+                  )}
+
+                  {!loading && trips.length === 0 && (
+                    <tr>
+                      <td
+                        className="py-6 text-gray-700 text-lg text-center"
+                        colSpan="6"
+                      >
+                        No trips found
+                      </td>
+                    </tr>
+                  )}
+
+                  {!loading &&
+                    trips.map((trip) => (
+                      <tr key={trip.id} className="font-medium text-gray-900">
+                        {/* Bus */}
+                        <td className="px-4 py-3">
+                          <div>{trip.trip?.bus?.registrationNumber}</div>
+                          <div className="text-sm text-gray-700">
+                            {trip.trip?.bus?.requestedBusType || '-'}
+                          </div>
+                        </td>
+
+                        {/* Route */}
+                        <td className="px-4 py-3">
+                          <div>
+                            {trip.trip?.route?.name} ({trip.trip?.route?.number}
+                            )
+                          </div>
+                          <div className="text-sm text-gray-700">
+                            {trip.trip?.route?.busType}
+                          </div>
+                        </td>
+
+                        {/* Direction */}
+                        <td className="px-4 py-3">
+                          <div>
+                            {getDirectionName(
+                              trip.trip?.route,
+                              trip.trip?.direction,
+                            )}
+                          </div>
+                        </td>
+
+                        {/* TripDate */}
+                        <td className="px-4 py-3">
+                          <div>{formatIssuedDate(trip.trip?.startTime)}</div>
+                        </td>
+
+                        {/* Tickets */}
+                        <td className="px-4 py-3">
+                          <div>{trip.ticketCount}</div>
+                        </td>
+
+                        {/* Revenue */}
+                        <td className="px-4 py-3">
+                          <div>{(trip.totalAmount / 100).toFixed(2)} LKR</div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            ) : (
+              <table className="min-w-full">
+                <thead className="bg-gray-100 text-gray-700">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Bus</th>
+                    <th className="px-4 py-3 text-left">Trips</th>
+                    <th className="px-4 py-3 text-left">Tickets</th>
+                    <th className="px-4 py-3 text-left">Revenue</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading && (
+                    <tr>
+                      <td className="py-6 text-center" colSpan="4">
+                        <BounceLoader size={30} color="#FFB347" />
+                      </td>
+                    </tr>
+                  )}
+
+                  {!loading && buses.length === 0 && (
+                    <tr>
+                      <td
+                        className="py-6 text-gray-700 text-lg text-center"
+                        colSpan="4"
+                      >
+                        No buses found
+                      </td>
+                    </tr>
+                  )}
+
+                  {!loading &&
+                    buses.map((bus) => (
+                      <tr
+                        key={bus.bus.id}
+                        className="font-medium text-gray-900"
+                      >
+                        {/* Bus */}
+                        <td className="px-4 py-3">
+                          <div>{bus.bus?.registrationNumber}</div>
+                          <div className="text-sm text-gray-700">
+                            {bus.bus?.requestedBusType || '-'}
+                          </div>
+                        </td>
+
+                        {/* Trips */}
+                        <td className="px-4 py-3">
+                          <div>{bus.totalTrips}</div>
+                        </td>
+
+                        {/* Tickets */}
+                        <td className="px-4 py-3">
+                          <div>{bus.totalTickets}</div>
+                        </td>
+
+                        {/* Revenue */}
+                        <td className="px-4 py-3">
+                          <div>{(bus.totalRevenue / 100).toFixed(2)} LKR</div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-center items-center gap-4 mt-4 mb-6">
-            <button
-              disabled={currentPage === 1}
-              className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
+          {viewType === 'daily' && (
+            <div className="flex justify-center items-center gap-4 mt-4 mb-6">
+              <button
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
 
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
 
-            <button
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
+              <button
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
