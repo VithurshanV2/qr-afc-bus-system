@@ -92,8 +92,6 @@ export const getMonthlyRevenueForOperator = async ({
   operatorId,
   startOfMonth,
   endOfMonth,
-  skip = 0,
-  take = 10,
 }) => {
   return await prisma.revenue.findMany({
     where: {
@@ -110,31 +108,6 @@ export const getMonthlyRevenueForOperator = async ({
       },
     },
     include: { trip: { include: { route: true, bus: true } } },
-    orderBy: { trip: { startTime: 'desc' } },
-    skip,
-    take,
-  });
-};
-
-export const countMonthlyRevenueForOperator = async ({
-  operatorId,
-  startOfMonth,
-  endOfMonth,
-}) => {
-  return await prisma.revenue.count({
-    where: {
-      trip: {
-        bus: {
-          operator: {
-            userId: operatorId,
-          },
-        },
-        startTime: {
-          gte: startOfMonth,
-          lte: endOfMonth,
-        },
-      },
-    },
   });
 };
 

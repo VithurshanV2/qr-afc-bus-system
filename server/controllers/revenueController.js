@@ -1,6 +1,5 @@
 import {
   countDailyRevenueForOperator,
-  countMonthlyRevenueForOperator,
   countOperatorMonthlyTrips,
   getDailyRevenueForOperator,
   getMonthlyRevenueForAuthority,
@@ -106,7 +105,7 @@ export const getDailyRevenue = async (req, res) => {
 // Get monthly revenue for operator
 export const getMonthlyRevenue = async (req, res) => {
   try {
-    const { year, month, page = 1, limit = 10 } = req.query;
+    const { year, month } = req.query;
     const operatorId = req.userId;
 
     if (!year || !month) {
@@ -125,41 +124,52 @@ export const getMonthlyRevenue = async (req, res) => {
     const endOfMonth = new Date(year, month, 0);
     endOfMonth.setHours(23, 59, 59, 999);
 
-    const skip = (Number(page) - 1) * Number(limit);
-    const take = Number(limit);
-
     const revenues = await getMonthlyRevenueForOperator({
       operatorId,
       startOfMonth,
       endOfMonth,
-      skip,
-      take,
     });
 
-    const total = await countMonthlyRevenueForOperator({
-      operatorId,
-      startOfMonth,
-      endOfMonth,
-    });
+    // Group by buses
+    const busRevenue = {};
+
+    for (let i = 0; i < revenues.length; i++) {
+      const busId = revenues[i].trip.bus.id;
+
+      if (!busRevenue[busId]) {
+        busRevenue[busId] = {
+          bus: revenues[i].trip.bus,
+          totalRevenue: 0,
+          totalTickets: 0,
+          totalTrips: 0,
+        };
+      }
+
+      busRevenue[busId].totalRevenue += revenues[i].totalAmount;
+      busRevenue[busId].totalTickets += revenues[i].ticketCount;
+      busRevenue[busId].totalTrips += 1;
+    }
+
+    // Convert to array
+    let buses = Object.values(busRevenue);
+    buses.sort((a, b) => b.totalRevenue - a.totalRevenue);
 
     let totalTickets = 0;
     let totalRevenue = 0;
-    const totalTrips = revenues.length;
+    let totalTrips = 0;
 
-    for (let i = 0; i < revenues.length; i++) {
-      totalTickets += revenues[i].ticketCount;
-      totalRevenue += revenues[i].totalAmount;
+    for (let i = 0; i < buses.length; i++) {
+      totalTickets += buses[i].totalTickets;
+      totalRevenue += buses[i].totalRevenue;
+      totalTrips += buses[i].totalTrips;
     }
 
     return res.status(200).json({
       success: true,
-      total,
-      page: Number(page),
-      limit: Number(limit),
       totalTrips,
       totalTickets,
       totalRevenue,
-      revenues,
+      buses,
     });
   } catch (error) {
     console.error(error);
