@@ -47,6 +47,7 @@ model User {
   accountActivationTokens     AccountActivationToken[]
   requestBusOperatorRequests  BusOperatorRequest[]     @relation("RequestedByUser")
   reviewedBusOperatorRequests BusOperatorRequest[]     @relation("ReviewedByUser")
+  RouteFareUpdated            Route[]                  @relation("RouteFareUpdatedBy")
 }
 
 enum Role {
@@ -132,21 +133,24 @@ enum TripDirection {
 }
 
 model Route {
-  id          Int         @id @default(autoincrement())
-  number      String
-  name        String
-  busType     BusType
-  status      RouteStatus @default(DRAFT)
-  haltsA      Json?
-  haltsB      Json?
-  createdBy   User        @relation("RouteCreatedBy", fields: [createdById], references: [id])
-  createdById Int
-  updatedBy   User?       @relation("RouteUpdatedBy", fields: [updatedById], references: [id])
-  updatedById Int?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  Bus         Bus[]
-  Trip        Trip[]
+  id              Int         @id @default(autoincrement())
+  number          String
+  name            String
+  busType         BusType
+  status          RouteStatus @default(DRAFT)
+  haltsA          Json?
+  haltsB          Json?
+  createdBy       User        @relation("RouteCreatedBy", fields: [createdById], references: [id])
+  createdById     Int
+  updatedBy       User?       @relation("RouteUpdatedBy", fields: [updatedById], references: [id])
+  updatedById     Int?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  fareUpdatedBy   User?       @relation("RouteFareUpdatedBy", fields: [fareUpdatedById], references: [id])
+  fareUpdatedById Int?
+  fareUpdatedAt   DateTime?
+  Bus             Bus[]
+  Trip            Trip[]
 
   @@unique([number, busType])
 }

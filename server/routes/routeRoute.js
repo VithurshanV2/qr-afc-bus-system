@@ -8,6 +8,7 @@ import {
   fetchRouteHalts,
   inactivateRouteController,
   searchRoutes,
+  updateAllFares,
   updateRouteController,
 } from '../controllers/routeController.js';
 
@@ -54,6 +55,12 @@ routeRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY']),
   activateRouteController,
+);
+routeRouter.post(
+  '/update-all-fares',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY']),
+  updateAllFares,
 );
 
 export default routeRouter;

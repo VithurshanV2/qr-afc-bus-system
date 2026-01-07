@@ -4,11 +4,13 @@ import {
   findRouteByNumberBusType,
   getRouteById,
   getRouteHalts,
+  getRoutesForFareUpdate,
   getRoutesList,
   inactivateRoute,
   insertRoute,
   softDeleteRoute,
   updateRoute,
+  updateRouteFares,
 } from '../models/routeModel.js';
 import { requireFields } from '../utils/validateRequest.js';
 
@@ -366,6 +368,101 @@ export const activateRouteController = async (req, res) => {
       success: true,
       message: 'Route activated successfully',
       route: updatedRoute,
+    });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Update all fares (increment or decrement)
+export const updateAllFares = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { amount } = req.body;
+
+    if (!requireFields(res, { amount }, ['amount'])) {
+      return;
+    }
+
+    if (isNaN(amount)) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Amount must be a number' });
+    }
+
+    const routes = await getRoutesForFareUpdate();
+
+    for (let i = 0; i < routes.length; i++) {
+      const route = routes[i];
+
+      let updatedHaltsA = route.haltsA;
+      let updatedHaltsB = route.haltsB;
+
+      // Update fares for haltsA json
+      if (Array.isArray(route.haltsA)) {
+        updatedHaltsA = [];
+
+        for (let i = 0; i < route.haltsA.length; i++) {
+          const halt = route.haltsA[i];
+
+          if (halt.id === 0 || halt.fare == null) {
+            updatedHaltsA.push(halt);
+            continue;
+          }
+
+          let fare = halt.fare + amount;
+
+          if (fare < 0) {
+            fare = 0;
+          }
+
+          updatedHaltsA.push({
+            ...halt,
+            fare,
+          });
+        }
+      }
+
+      // Update fares for haltsB json
+      if (Array.isArray(route.haltsB)) {
+        updatedHaltsB = [];
+
+        for (let i = 0; i < route.haltsB.length; i++) {
+          const halt = route.haltsB[i];
+
+          if (halt.id === 0 || halt.fare == null) {
+            updatedHaltsB.push(halt);
+            continue;
+          }
+
+          let fare = halt.fare + amount;
+
+          if (fare < 0) {
+            fare = 0;
+          }
+
+          updatedHaltsB.push({
+            ...halt,
+            fare,
+          });
+        }
+      }
+
+      await updateRouteFares({
+        routeId: route.id,
+        haltsA: updatedHaltsA,
+        haltsB: updatedHaltsB,
+        userId,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Fare rates updated for ${routes.length} routes`,
+      affectedRoutes: routes.length,
     });
   } catch (error) {
     console.error(error);

@@ -162,3 +162,25 @@ export const assignRouteToBus = async (busId, routeId) => {
     data: { routeId },
   });
 };
+
+// Fetch all active and inactive routes for fare update
+export const getRoutesForFareUpdate = async () => {
+  return await prisma.route.findMany({
+    where: {
+      status: { in: ['ACTIVE', 'INACTIVE'] },
+    },
+  });
+};
+
+// Update route halts fare rates
+export const updateRouteFares = async ({ routeId, haltsA, haltsB, userId }) => {
+  return await prisma.route.update({
+    where: { id: routeId },
+    data: {
+      haltsA,
+      haltsB,
+      fareUpdatedById: userId,
+      fareUpdatedAt: new Date(),
+    },
+  });
+};
