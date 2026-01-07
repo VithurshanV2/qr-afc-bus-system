@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import QRCode from 'react-qr-code';
 import QrCodeDownload from '../../components/QrCodeDownload';
+import ConfirmModel from '../../components/ConfirmModal';
 
 const TripManagement = () => {
   const { backendUrl, setGlobalLoading, globalLoading } =
@@ -14,6 +15,8 @@ const TripManagement = () => {
 
   const [buses, setBuses] = useState([]);
   const [directions, setDirections] = useState({});
+  const [selectedBus, setSelectedBus] = useState(null);
+  const [modalType, setModalType] = useState(null);
 
   const fetchBuses = async () => {
     try {
@@ -39,7 +42,7 @@ const TripManagement = () => {
     fetchBuses();
   }, []);
 
-  const handleStartTrip = async (busId) => {
+  const startTrip = async (busId) => {
     try {
       setGlobalLoading(true);
 
@@ -63,7 +66,7 @@ const TripManagement = () => {
     }
   };
 
-  const handleEndTrip = async (busId) => {
+  const endTrip = async (busId) => {
     try {
       setGlobalLoading(true);
 
@@ -84,6 +87,18 @@ const TripManagement = () => {
     } finally {
       setGlobalLoading(false);
     }
+  };
+
+  const handleConfirmStartTrip = async () => {
+    await startTrip(selectedBus.id);
+    setSelectedBus(null);
+    setModalType(null);
+  };
+
+  const handleConfirmEndTrip = async () => {
+    await endTrip(selectedBus.id);
+    setSelectedBus(null);
+    setModalType(null);
   };
 
   return (
@@ -160,7 +175,10 @@ const TripManagement = () => {
                   <div>
                     {!activeTrip && (
                       <button
-                        onClick={() => handleStartTrip(bus.id)}
+                        onClick={() => {
+                          setSelectedBus(bus);
+                          setModalType('startTrip');
+                        }}
                         className="px-4 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white 
                     transition-all duration-200 transform active:scale-95 active:shadow-lg"
                       >
@@ -170,7 +188,10 @@ const TripManagement = () => {
 
                     {activeTrip && (
                       <button
-                        onClick={() => handleEndTrip(bus.id)}
+                        onClick={() => {
+                          setSelectedBus(bus);
+                          setModalType('endTrip');
+                        }}
                         className="px-4 py-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white
                     transition-all duration-200 transform active:scale-95 active:shadow-lg"
                       >
@@ -194,6 +215,34 @@ const TripManagement = () => {
           );
         })}
       </div>
+
+      {/* Start trip model */}
+      <ConfirmModel
+        isOpen={modalType === 'startTrip'}
+        title="Start Trip?"
+        message={`Are you sure you want to start the trip for bus ${selectedBus?.registrationNumber}?`}
+        confirmText="Start"
+        cancelText="Cancel"
+        onConfirm={handleConfirmStartTrip}
+        onCancel={() => {
+          setModalType(null);
+          setSelectedBus(null);
+        }}
+      />
+
+      {/* End trip model */}
+      <ConfirmModel
+        isOpen={modalType === 'endTrip'}
+        title="End Trip?"
+        message={`Are you sure you want to end the trip for bus ${selectedBus?.registrationNumber}?`}
+        confirmText="End"
+        cancelText="Cancel"
+        onConfirm={handleConfirmEndTrip}
+        onCancel={() => {
+          setModalType(null);
+          setSelectedBus(null);
+        }}
+      />
     </div>
   );
 };
