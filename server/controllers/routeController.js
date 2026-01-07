@@ -402,14 +402,14 @@ export const updateAllFares = async (req, res) => {
       let updatedHaltsB = route.haltsB;
 
       // Update fares for haltsA json
-      if (Array.isArray(route.haltsA)) {
-        updatedHaltsA = [];
+      if (route.haltsA && Array.isArray(route.haltsA.halts)) {
+        const updatedHalts = [];
 
-        for (let i = 0; i < route.haltsA.length; i++) {
-          const halt = route.haltsA[i];
+        for (let j = 0; j < route.haltsA.halts.length; j++) {
+          const halt = route.haltsA.halts[j];
 
           if (halt.id === 0 || halt.fare == null) {
-            updatedHaltsA.push(halt);
+            updatedHalts.push(halt);
             continue;
           }
 
@@ -419,22 +419,27 @@ export const updateAllFares = async (req, res) => {
             fare = 0;
           }
 
-          updatedHaltsA.push({
+          updatedHalts.push({
             ...halt,
             fare,
           });
         }
+
+        updatedHaltsA = {
+          ...route.haltsA,
+          halts: updatedHalts,
+        };
       }
 
       // Update fares for haltsB json
-      if (Array.isArray(route.haltsB)) {
-        updatedHaltsB = [];
+      if (route.haltsB && Array.isArray(route.haltsB.halts)) {
+        const updatedHalts = [];
 
-        for (let i = 0; i < route.haltsB.length; i++) {
-          const halt = route.haltsB[i];
+        for (let j = 0; j < route.haltsB.halts.length; j++) {
+          const halt = route.haltsB.halts[j];
 
           if (halt.id === 0 || halt.fare == null) {
-            updatedHaltsB.push(halt);
+            updatedHalts.push(halt);
             continue;
           }
 
@@ -444,11 +449,16 @@ export const updateAllFares = async (req, res) => {
             fare = 0;
           }
 
-          updatedHaltsB.push({
+          updatedHalts.push({
             ...halt,
             fare,
           });
         }
+
+        updatedHaltsB = {
+          ...route.haltsB,
+          halts: updatedHalts,
+        };
       }
 
       await updateRouteFares({
