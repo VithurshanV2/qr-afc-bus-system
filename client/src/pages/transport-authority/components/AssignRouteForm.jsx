@@ -65,13 +65,19 @@ const AssignRouteForm = ({ operator, onClose }) => {
       for (let i = 0; i < buses.length; i++) {
         const bus = buses[i];
 
+        // Skip if no route is selected
         if (!bus.routeId) {
+          continue;
+        }
+
+        // Skip if route hasn't changed
+        if (bus.routeId === originalBuses[i]) {
           continue;
         }
 
         let url = '';
 
-        if (bus.route) {
+        if (originalBuses[i] !== null) {
           url = backendUrl + '/api/operator-assignment/reassign-route';
         } else {
           url = backendUrl + '/api/operator-assignment/assign-route';
@@ -84,7 +90,6 @@ const AssignRouteForm = ({ operator, onClose }) => {
 
         if (data.success) {
           toast.success(data.message);
-          setRoutes(data.routes);
         } else {
           toast.error(data.message);
         }
