@@ -8,24 +8,28 @@ import {
   getOperatorsMonthlyRevenue,
   getTripRevenue,
 } from '../controllers/revenueController.js';
+import checkOperatorActive from '../middleware/checkOperatorActive.js';
 
 const revenueRouter = express.Router();
 
 revenueRouter.get(
   '/trip/:tripId',
   userAuth,
+  checkOperatorActive,
   requireRole(['BUSOPERATOR']),
   getTripRevenue,
 );
 revenueRouter.get(
   '/daily',
   userAuth,
+  checkOperatorActive,
   requireRole(['BUSOPERATOR']),
   getDailyRevenue,
 );
 revenueRouter.get(
   '/monthly',
   userAuth,
+  checkOperatorActive,
   requireRole(['BUSOPERATOR']),
   getMonthlyRevenue,
 );

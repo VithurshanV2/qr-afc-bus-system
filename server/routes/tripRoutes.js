@@ -6,14 +6,28 @@ import {
   getOperatorBuses,
   startTrip,
 } from '../controllers/tripController.js';
+import checkOperatorActive from '../middleware/checkOperatorActive.js';
 
 const tripRouter = express.Router();
 
-tripRouter.post('/start', userAuth, requireRole(['BUSOPERATOR']), startTrip);
-tripRouter.post('/end', userAuth, requireRole(['BUSOPERATOR']), endTrip);
+tripRouter.post(
+  '/start',
+  userAuth,
+  checkOperatorActive,
+  requireRole(['BUSOPERATOR']),
+  startTrip,
+);
+tripRouter.post(
+  '/end',
+  userAuth,
+  checkOperatorActive,
+  requireRole(['BUSOPERATOR']),
+  endTrip,
+);
 tripRouter.get(
   '/operator-buses',
   userAuth,
+  checkOperatorActive,
   requireRole(['BUSOPERATOR']),
   getOperatorBuses,
 );

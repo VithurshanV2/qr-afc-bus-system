@@ -151,6 +151,14 @@ export const login = async (req, res) => {
         .json({ success: false, message: 'Invalid email or password' });
     }
 
+    if (user.role === 'BUSOPERATOR' && !user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message:
+          'Your account has been deactivated. Please contact the transport authority for further clarification',
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
