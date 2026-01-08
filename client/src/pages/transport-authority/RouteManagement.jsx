@@ -23,6 +23,7 @@ const RouteManagement = () => {
   const [editingRoute, setEditingRoute] = useState(false);
   const [modalType, setModalType] = useState(null);
   const [modalRoute, setModalRoute] = useState(null);
+  const [fareAmount, setFareAmount] = useState('');
 
   const limit = 10; // routes per page
 
@@ -144,6 +145,41 @@ const RouteManagement = () => {
       setLoading(false);
       setModalType(null);
       setModalRoute(null);
+    }
+  };
+
+  // Update all fares
+  const handleUpdateAllFares = async () => {
+    try {
+      if (!fareAmount || isNaN(fareAmount)) {
+        toast.error('Please enter a valid amount');
+        setModalType(null);
+        return;
+      }
+
+      setLoading(true);
+
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.post(
+        backendUrl + '/api/route/update-all-fares',
+        { amount: Number(fareAmount) },
+      );
+
+      console.log(data);
+
+      if (data.success) {
+        toast.success(data.message);
+        setFareAmount('');
+        fetchRoutes(currentPage);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+      setModalType(null);
     }
   };
 
@@ -349,6 +385,37 @@ const RouteManagement = () => {
         </div>
       )}
 
+      {!createRoute && !selectedRoute && (
+        <div className="mt-6 border border-gray-200 rounded-xl p-4 mx-10">
+          <h4 className="text-gray-900 font-semibold mb-3 text-lg">
+            Update All Fare Rates
+          </h4>
+
+          <div className="flex gap-4">
+            <input
+              type="number"
+              value={fareAmount}
+              onChange={(e) => setFareAmount(e.target.value)}
+              placeholder="Enter amount in cents"
+              className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            />
+
+            <button
+              onClick={() => openModal('updateFares')}
+              className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
+                  transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
+            >
+              Update
+            </button>
+          </div>
+
+          <p className="text-sm text-gray-600 mt-2 mx-2">
+            Positive value to increment, negative value to decrement fare
+          </p>
+        </div>
+      )}
+
       {/* Confirm modal for cancel ticket */}
       <ConfirmModel
         isOpen={modalType === 'activate' || modalType === 'deactivate'}
@@ -372,6 +439,17 @@ const RouteManagement = () => {
         confirmText="Delete"
         cancelText="Cancel"
         onConfirm={() => handleDelete(modalRoute.id)}
+        onCancel={() => setModalType(null)}
+      />
+
+      {/* Fare update model */}
+      <ConfirmModel
+        isOpen={modalType === 'updateFares'}
+        title="Update All Fare Rates?"
+        message={`This action cannot be undone. Are you sure?`}
+        confirmText="Update"
+        cancelText="Cancel"
+        onConfirm={handleUpdateAllFares}
         onCancel={() => setModalType(null)}
       />
     </div>
