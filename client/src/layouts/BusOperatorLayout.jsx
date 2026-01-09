@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar, { SidebarItem } from '../components/Sidebar';
-import { Bus, ChartLine, TicketCheck } from 'lucide-react';
+import { Binoculars, Bus, ChartLine, TicketCheck } from 'lucide-react';
 
 const BusOperatorLayout = () => {
   return (
@@ -16,6 +16,11 @@ const BusOperatorLayout = () => {
           to="/bus-operator/revenue"
           text="Revenue"
           icon={<ChartLine size={20} />}
+        />
+        <SidebarItem
+          to="/bus-operator/exit-tracking"
+          text="Exit Tracking"
+          icon={<Binoculars size={20} />}
         />
         <SidebarItem
           to="/bus-operator/ticket-verification"
