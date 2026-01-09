@@ -1,9 +1,11 @@
 import {
+  countExitCountAtHalt,
   createRevenueForTrip,
   endTripById,
   getActiveTripByBusId,
   getBusesForOperator,
   getBusRouteOperator,
+  getTripById,
   startNewTrip,
 } from '../models/tripModel.js';
 
@@ -110,6 +112,97 @@ export const getOperatorBuses = async (req, res) => {
     const buses = await getBusesForOperator({ operatorId });
 
     return res.status(200).json({ success: true, buses });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Get next halt exit count
+export const getNextHaltExitCount = async (req, res) => {
+  try {
+    const { tripId } = req.params;
+    const { currentHaltId } = req.query;
+
+    if (!tripId || !currentHaltId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Trip and current halt data required',
+      });
+    }
+
+    const trip = await getTripById({ tripId: Number(tripId) });
+
+    if (!trip) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Trip not found' });
+    }
+
+    if (!trip.isActive) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Trip is not active' });
+    }
+
+    const haltsJson =
+      trip.direction === 'DIRECTIONA' ? trip.route.haltsA : trip.route.haltsB;
+
+    const haltsData = JSON.parse(haltsJson);
+    const halts = haltsData.halts;
+
+    // Find current position
+    let currentPosition = null;
+
+    for (let i = 0; i < halts.length; i++) {
+      if (halts[i].id === Number(currentHaltId)) {
+        currentPosition = i;
+        break;
+      }
+    }
+
+    if (currentPosition === null) {
+      return res
+        .status(400)
+        .json({ success: false, message: 'Halt not found in route' });
+    }
+
+    // Find next halt position
+    const nextPosition = currentPosition + 1;
+
+    // Last halt
+    if (nextPosition >= halts.length) {
+      const exitCount = await countExitCountAtHalt({
+        tripId: Number(tripId),
+        haltId: Number(currentHaltId),
+      });
+
+      return res.status(200).json({
+        success: true,
+        currentHalt: {
+          id: halts[currentPosition].id,
+          name: halts[currentPosition].englishName,
+        },
+        exitCount,
+        isLastHalt: true,
+      });
+    }
+
+    // show next halt and exit count
+    const nextHalt = halts[nextPosition];
+
+    const exitCount = await countExitCountAtHalt({
+      tripId: Number(tripId),
+      haltId: nextHalt.id,
+    });
+
+    return res.status(200).json({
+      success: true,
+      nextHalt: { id: nextHalt.id, name: nextHalt.englishName },
+      exitCount,
+    });
   } catch (error) {
     console.error(error);
     return res

@@ -244,3 +244,16 @@ export const createRevenueForTrip = async ({ tripId }) => {
     },
   });
 };
+
+export const countExitCountAtHalt = async ({ tripId, haltId }) => {
+  return await prisma.ticket.count({
+    where: {
+      tripId,
+      status: 'CONFIRMED',
+      destinationHalt: {
+        path: ['id'],
+        equals: haltId,
+      },
+    },
+  });
+};

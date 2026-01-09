@@ -3,6 +3,7 @@ import userAuth from '../middleware/userAuth.js';
 import requireRole from '../middleware/requireRole.js';
 import {
   endTrip,
+  getNextHaltExitCount,
   getOperatorBuses,
   startTrip,
 } from '../controllers/tripController.js';
@@ -30,6 +31,13 @@ tripRouter.get(
   checkOperatorActive,
   requireRole(['BUSOPERATOR']),
   getOperatorBuses,
+);
+tripRouter.get(
+  '/:tripId/next-halt-exit',
+  userAuth,
+  checkOperatorActive,
+  requireRole(['BUSOPERATOR']),
+  getNextHaltExitCount,
 );
 
 export default tripRouter;
