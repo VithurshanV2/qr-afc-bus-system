@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import { formatIssuedDate } from '../../utils/date';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const RevenueAdminView = () => {
   const { backendUrl } = useContext(AppContext);
@@ -166,32 +167,22 @@ const RevenueAdminView = () => {
   };
 
   return (
-    <div>
-      <div className="p-6">
-        <h2 className="text-3xl font-semibold text-gray-900 mb-4">
-          {selectedOperator
-            ? `${selectedOperator.operator.user.name} - Monthly Trips`
-            : 'Operator Revenue Tracking'}
-        </h2>
-      </div>
-
-      {/* Back button */}
-      {selectedOperator && (
-        <div className="mx-10 mb-6">
-          <button
-            onClick={handleBack}
-            disabled={loading}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
-          >
-            <ArrowLeft size={18} />
-            <span className="text-sm text-gray-800">Back</span>
-          </button>
-        </div>
-      )}
-
+    <AnimatePresence mode="wait">
       {/* Monthly revenue summary */}
       {!selectedOperator && (
-        <>
+        <motion.div
+          key="operator-list"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, x: -60 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="p-6">
+            <h2 className="text-3xl font-semibold text-gray-900 mb-4">
+              Operator Revenue Tracking
+            </h2>
+          </div>
+
           {/* Search and filters */}
           <div className="flex gap-4 mx-10 mb-6">
             <select
@@ -391,12 +382,36 @@ const RevenueAdminView = () => {
               </button>
             </div>
           </div>
-        </>
+        </motion.div>
       )}
 
       {/* Trip details view */}
       {selectedOperator && (
-        <>
+        <motion.div
+          key="trip-details"
+          initial={{ opacity: 0, x: 60 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -60 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="p-6">
+            <h2 className="text-3xl font-semibold text-gray-900 mb-4">
+              {selectedOperator.operator.user.name} - Monthly Trips
+            </h2>
+          </div>
+
+          {/* Back button */}
+          <div className="mx-10 mb-6">
+            <button
+              onClick={handleBack}
+              disabled={loading}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-200 hover:bg-gray-300 transition-all duration-200 active:scale-95"
+            >
+              <ArrowLeft size={18} />
+              <span className="text-sm text-gray-800">Back</span>
+            </button>
+          </div>
+
           {/* Summary cards for trip */}
           <div className="mx-10 mb-6 grid grid-cols-3 gap-4">
             <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -549,9 +564,9 @@ const RevenueAdminView = () => {
               </button>
             </div>
           </div>
-        </>
+        </motion.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 };
 
