@@ -222,6 +222,7 @@ export const getOperatorList = async ({
 export const countOperator = async ({ search = '', isActive }) => {
   return await prisma.user.count({
     where: {
+      role: 'BUSOPERATOR',
       AND: [
         isActive !== undefined ? { isActive } : {},
         {
