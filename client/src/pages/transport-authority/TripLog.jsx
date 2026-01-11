@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { BounceLoader } from 'react-spinners';
 import { formatIssuedDate } from '../../utils/date';
 import TicketCard from '../commuter/components/TicketCard';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TripLogs = () => {
   const { backendUrl, setGlobalLoading } = useContext(AppContext);
@@ -97,192 +98,214 @@ const TripLogs = () => {
         <h2 className="text-3xl font-semibold text-gray-900 mb-4">TripLogs</h2>
       </div>
 
-      {/* Render ticket */}
-      {selectedTicket && (
-        <div className="flex justify-center mb-4">
-          <div className="max-w-4xl border border-gray-200 p-4 rounded-xl shadow-lg">
-            <button
-              onClick={closeForm}
-              className="top-2 right-2 px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md mb-3
+      <AnimatePresence mode="wait">
+        {/* Render ticket */}
+        {selectedTicket && (
+          <motion.div
+            key="ticket"
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex justify-center mb-4">
+              <div className="max-w-4xl border border-gray-200 p-4 rounded-xl shadow-lg">
+                <button
+                  onClick={closeForm}
+                  className="top-2 right-2 px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 shadow-md mb-3
             hover:shadow-gray-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
-            >
-              Back
-            </button>
+                >
+                  Back
+                </button>
 
-            <TicketCard ticket={selectedTicket || null} onClose={closeForm} />
-          </div>
-        </div>
-      )}
+                <TicketCard
+                  ticket={selectedTicket || null}
+                  onClose={closeForm}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-      {/* Search tickets */}
-      {!selectedTicket && (
-        <div>
-          <div className="flex gap-4 mx-10 mb-6">
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              placeholder="Search by name, email, number, or bus registration number"
-              className="border border-gray-300 rounded-xl px-4 py-2 
+        {/* Search tickets */}
+        {!selectedTicket && (
+          <motion.div
+            key="ticket-list"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="flex gap-4 mx-10 mb-6">
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                placeholder="Search by name, email, number, or bus registration number"
+                className="border border-gray-300 rounded-xl px-4 py-2 
           focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              placeholder="Search by name, email, number, or bus registration number"
-              className="border border-gray-300 rounded-xl px-4 py-2 
+              />
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                placeholder="Search by name, email, number, or bus registration number"
+                className="border border-gray-300 rounded-xl px-4 py-2 
           focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by name, email, number, or bus registration number"
-              className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
+              />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by name, email, number, or bus registration number"
+                className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
           focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
+              />
 
-            <div className="flex gap-2 flex-1/4">
-              <button
-                onClick={() => fetchTickets(1)}
-                className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
+              <div className="flex gap-2 flex-1/4">
+                <button
+                  onClick={() => fetchTickets(1)}
+                  className="w-full bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
               transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-              >
-                Search
-              </button>
-              <button
-                onClick={clearFilters}
-                className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-full
+                >
+                  Search
+                </button>
+                <button
+                  onClick={clearFilters}
+                  className="w-full bg-gray-200 text-gray-800 px-4 py-2 rounded-full
               transition-all duration-200 transform hover:bg-gray-300 active:scale-95 active:shadow-lg"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-
-          {/* Ticket list */}
-          <div className="mx-10">
-            <div className="flex justify-between">
-              <h3 className="text-gray-900 font-semibold mb-3 text-2xl">
-                Ticket List
-              </h3>
+                >
+                  Clear
+                </button>
+              </div>
             </div>
 
-            <div className="border border-gray-200 rounded-xl overflow-x-auto">
-              <table className="min-w-full">
-                <thead className="bg-gray-100 text-gray-700">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Commuter</th>
-                    <th className="px-4 py-3 text-left">Bus</th>
-                    <th className="px-4 py-3 text-left">Ticket Details</th>
-                    <th className="px-4 py-3 text-left">Issued Date</th>
-                    <th className="px-4 py-3 text-left">Actions</th>
-                  </tr>
-                </thead>
+            {/* Ticket list */}
+            <div className="mx-10">
+              <div className="flex justify-between">
+                <h3 className="text-gray-900 font-semibold mb-3 text-2xl">
+                  Ticket List
+                </h3>
+              </div>
 
-                <tbody>
-                  {loading && (
+              <div className="border border-gray-200 rounded-xl overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-gray-100 text-gray-700">
                     <tr>
-                      <td className="py-6 text-center" colSpan="5">
-                        <BounceLoader size={30} color="#FFB347" />
-                      </td>
+                      <th className="px-4 py-3 text-left">Commuter</th>
+                      <th className="px-4 py-3 text-left">Bus</th>
+                      <th className="px-4 py-3 text-left">Ticket Details</th>
+                      <th className="px-4 py-3 text-left">Issued Date</th>
+                      <th className="px-4 py-3 text-left">Actions</th>
                     </tr>
-                  )}
+                  </thead>
 
-                  {!loading && tickets.length === 0 && (
-                    <tr>
-                      <td
-                        className="py-6 text-gray-700 text-lg text-center"
-                        colSpan="5"
-                      >
-                        No tickets found
-                      </td>
-                    </tr>
-                  )}
-
-                  {!loading &&
-                    tickets.map((ticket) => (
-                      <tr key={ticket.id} className="font-medium text-gray-900">
-                        {/* Commuter */}
-                        <td className="px-4 py-3">
-                          <div>{ticket.commuter?.name}</div>
-                          <div className="text-sm text-gray-700">
-                            {ticket.commuter?.email}
-                          </div>
-                          <div className="text-sm text-gray-700">
-                            {ticket.commuter?.number}
-                          </div>
-                        </td>
-
-                        {/* Bus */}
-                        <td className="px-4 py-3">
-                          <div>{ticket.trip?.bus?.registrationNumber}</div>
-                          <div className="text-sm text-gray-700">
-                            {ticket.trip?.bus?.requestedBusType || '-'}
-                          </div>
-                        </td>
-
-                        {/* Ticket */}
-                        <td className="px-4 py-3">
-                          <div>
-                            {ticket.boardingHalt?.englishName} -{' '}
-                            {ticket.destinationHalt?.englishName || '-'}
-                          </div>
-                          <div className="text-sm text-gray-700">
-                            Adults: {ticket.adultCount} | Children:{' '}
-                            {ticket.childCount}
-                          </div>
-                          <div className="text-sm text-gray-700">
-                            Total Fare: {(ticket.totalFare / 100).toFixed(2)}{' '}
-                            LKR
-                          </div>
-                        </td>
-
-                        {/* Issued date */}
-                        <td className="px-4 py-3">
-                          <div>{formatIssuedDate(ticket.issuedAt)}</div>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-4 py-3 flex gap-2">
-                          <button
-                            onClick={() => viewTicket(ticket.id)}
-                            className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
-                          >
-                            View Ticket
-                          </button>
+                  <tbody>
+                    {loading && (
+                      <tr>
+                        <td className="py-6 text-center" colSpan="5">
+                          <BounceLoader size={30} color="#FFB347" />
                         </td>
                       </tr>
-                    ))}
-                </tbody>
-              </table>
+                    )}
+
+                    {!loading && tickets.length === 0 && (
+                      <tr>
+                        <td
+                          className="py-6 text-gray-700 text-lg text-center"
+                          colSpan="5"
+                        >
+                          No tickets found
+                        </td>
+                      </tr>
+                    )}
+
+                    {!loading &&
+                      tickets.map((ticket) => (
+                        <tr
+                          key={ticket.id}
+                          className="font-medium text-gray-900"
+                        >
+                          {/* Commuter */}
+                          <td className="px-4 py-3">
+                            <div>{ticket.commuter?.name}</div>
+                            <div className="text-sm text-gray-700">
+                              {ticket.commuter?.email}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              {ticket.commuter?.number}
+                            </div>
+                          </td>
+
+                          {/* Bus */}
+                          <td className="px-4 py-3">
+                            <div>{ticket.trip?.bus?.registrationNumber}</div>
+                            <div className="text-sm text-gray-700">
+                              {ticket.trip?.bus?.requestedBusType || '-'}
+                            </div>
+                          </td>
+
+                          {/* Ticket */}
+                          <td className="px-4 py-3">
+                            <div>
+                              {ticket.boardingHalt?.englishName} -{' '}
+                              {ticket.destinationHalt?.englishName || '-'}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              Adults: {ticket.adultCount} | Children:{' '}
+                              {ticket.childCount}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              Total Fare: {(ticket.totalFare / 100).toFixed(2)}{' '}
+                              LKR
+                            </div>
+                          </td>
+
+                          {/* Issued date */}
+                          <td className="px-4 py-3">
+                            <div>{formatIssuedDate(ticket.issuedAt)}</div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="px-4 py-3 flex gap-2">
+                            <button
+                              onClick={() => viewTicket(ticket.id)}
+                              className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                            >
+                              View Ticket
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              <div className="flex justify-center items-center gap-4 mt-4 mb-6">
+                <button
+                  onClick={() => fetchTickets(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  onClick={() => fetchTickets(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
             </div>
-
-            {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 mt-4 mb-6">
-              <button
-                onClick={() => fetchTickets(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-
-              <button
-                onClick={() => fetchTickets(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
