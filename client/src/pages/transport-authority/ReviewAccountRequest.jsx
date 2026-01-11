@@ -78,7 +78,6 @@ const ReviewAccountRequest = () => {
 
   return (
     <div>
-      {' '}
       <div className="p-6">
         <h2 className="text-3xl font-semibold text-gray-900 mb-4">
           Account Requests

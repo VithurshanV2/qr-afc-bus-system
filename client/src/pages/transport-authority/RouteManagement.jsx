@@ -9,6 +9,7 @@ import { BounceLoader } from 'react-spinners';
 import { formatIssuedDate } from '../../utils/date';
 import RouteForm from './components/RouteForm';
 import ConfirmModel from '../../components/ConfirmModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const RouteManagement = () => {
   const { backendUrl } = useContext(AppContext);
@@ -187,271 +188,290 @@ const RouteManagement = () => {
     <div>
       <div className="p-6">
         <h2 className="text-3xl font-semibold text-gray-900 mb-4">
-          RouteManagement
+          Route Management
         </h2>
       </div>
 
-      {/* Render route form */}
-      {(createRoute || selectedRoute) && (
-        <div>
-          <RouteForm
-            route={selectedRoute || null}
-            onClose={closeForm}
-            viewMode={!editingRoute}
-          />
-        </div>
-      )}
-
-      {/* Search routes */}
-      {!createRoute && !selectedRoute && (
-        <div>
-          <div className="flex gap-4 mx-10 mb-6">
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search routes by route number or name"
-              className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
-          focus:outline-none focus:ring-2 focus:ring-yellow-400"
+      <AnimatePresence mode="wait">
+        {/* Render route form */}
+        {(createRoute || selectedRoute) && (
+          <motion.div
+            key="route-form"
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.4 }}
+          >
+            <RouteForm
+              route={selectedRoute || null}
+              onClose={closeForm}
+              viewMode={!editingRoute}
             />
+          </motion.div>
+        )}
 
-            <button
-              onClick={() => fetchRoutes(1)}
-              className="w-full flex-1/4 bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
+        {/* Search routes */}
+        {!createRoute && !selectedRoute && (
+          <motion.div
+            key="route-list"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div>
+              <div className="flex gap-4 mx-10 mb-6">
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search routes by route number or name"
+                  className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
+          focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                />
+
+                <button
+                  onClick={() => fetchRoutes(1)}
+                  className="w-full flex-1/4 bg-yellow-200 text-yellow-800 px-4 py-2 rounded-full
           transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-            >
-              Search
-            </button>
-          </div>
+                >
+                  Search
+                </button>
+              </div>
 
-          {/* Route list */}
-          <div className="mx-10">
-            <div className="flex justify-between">
-              <h3 className="text-gray-900 font-semibold mb-3 text-2xl">
-                Route List
-              </h3>
+              {/* Route list */}
+              <div className="mx-10">
+                <div className="flex justify-between">
+                  <h3 className="text-gray-900 font-semibold mb-3 text-2xl">
+                    Route List
+                  </h3>
 
-              <button
-                onClick={() => {
-                  setCreateRoute(true);
-                  setEditingRoute(true);
-                }}
-                className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
+                  <button
+                    onClick={() => {
+                      setCreateRoute(true);
+                      setEditingRoute(true);
+                    }}
+                    className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
             transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-              >
-                Add Route
-              </button>
-            </div>
+                  >
+                    Add Route
+                  </button>
+                </div>
 
-            <div className="border border-gray-200 rounded-xl overflow-x-auto">
-              <table className="min-w-full">
-                <thead className="bg-gray-100 text-gray-700">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Route</th>
-                    <th className="px-4 py-3 text-left">Bus Type</th>
-                    <th className="px-4 py-3 text-left">Last Updated</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Actions</th>
-                  </tr>
-                </thead>
+                <div className="border border-gray-200 rounded-xl overflow-x-auto">
+                  <table className="min-w-full">
+                    <thead className="bg-gray-100 text-gray-700">
+                      <tr>
+                        <th className="px-4 py-3 text-left">Route</th>
+                        <th className="px-4 py-3 text-left">Bus Type</th>
+                        <th className="px-4 py-3 text-left">Last Updated</th>
+                        <th className="px-4 py-3 text-left">Status</th>
+                        <th className="px-4 py-3 text-left">Actions</th>
+                      </tr>
+                    </thead>
 
-                <tbody>
-                  {loading && (
-                    <tr>
-                      <td className="py-6 text-center" colSpan="5">
-                        <BounceLoader size={30} color="#FFB347" />
-                      </td>
-                    </tr>
-                  )}
+                    <tbody>
+                      {loading && (
+                        <tr>
+                          <td className="py-6 text-center" colSpan="5">
+                            <BounceLoader size={30} color="#FFB347" />
+                          </td>
+                        </tr>
+                      )}
 
-                  {!loading && routes.length === 0 && (
-                    <tr>
-                      <td
-                        className="py-6 text-gray-700 text-lg text-center"
-                        colSpan="5"
-                      >
-                        No routes found
-                      </td>
-                    </tr>
-                  )}
-
-                  {!loading &&
-                    routes.map((route) => (
-                      <tr key={route.id} className="font-medium text-gray-900">
-                        <td className="px-4 py-3">
-                          {route.name} ({route.number})
-                        </td>
-
-                        <td className="px-4 py-3">{route.busType}</td>
-
-                        <td className="px-4 py-3">
-                          <div>{formatIssuedDate(route.updatedAt)}</div>
-                          <div className="text-sm text-gray-600">
-                            {route.updatedBy.name} ({route.updatedBy.email})
-                          </div>
-                        </td>
-
-                        <td className="px-4 py-3">
-                          <span
-                            className={`${
-                              route.status === 'ACTIVE'
-                                ? 'text-green-600'
-                                : route.status === 'INACTIVE'
-                                  ? 'text-red-600'
-                                  : 'text-gray-900'
-                            }`}
+                      {!loading && routes.length === 0 && (
+                        <tr>
+                          <td
+                            className="py-6 text-gray-700 text-lg text-center"
+                            colSpan="5"
                           >
-                            {route.status}
-                          </span>
-                        </td>
+                            No routes found
+                          </td>
+                        </tr>
+                      )}
 
-                        <td className="px-4 py-3 flex gap-2">
-                          <button
-                            onClick={() => {
-                              setSelectedRoute(route);
-                              setEditingRoute(false);
-                            }}
-                            className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
+                      {!loading &&
+                        routes.map((route) => (
+                          <tr
+                            key={route.id}
+                            className="font-medium text-gray-900"
                           >
-                            View
-                          </button>
+                            <td className="px-4 py-3">
+                              {route.name} ({route.number})
+                            </td>
 
-                          {(route.status === 'DRAFT' ||
-                            route.status === 'INACTIVE') && (
-                            <>
+                            <td className="px-4 py-3">{route.busType}</td>
+
+                            <td className="px-4 py-3">
+                              <div>{formatIssuedDate(route.updatedAt)}</div>
+                              <div className="text-sm text-gray-600">
+                                {route.updatedBy.name} ({route.updatedBy.email})
+                              </div>
+                            </td>
+
+                            <td className="px-4 py-3">
+                              <span
+                                className={`${
+                                  route.status === 'ACTIVE'
+                                    ? 'text-green-600'
+                                    : route.status === 'INACTIVE'
+                                      ? 'text-red-600'
+                                      : 'text-gray-900'
+                                }`}
+                              >
+                                {route.status}
+                              </span>
+                            </td>
+
+                            <td className="px-4 py-3 flex gap-2">
                               <button
                                 onClick={() => {
                                   setSelectedRoute(route);
-                                  setEditingRoute(true);
+                                  setEditingRoute(false);
                                 }}
-                                className="px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                                className="px-3 py-1 rounded-full bg-yellow-100 hover:bg-yellow-200"
                               >
-                                Edit
+                                View
                               </button>
 
-                              <button
-                                onClick={() => openModal('activate', route)}
-                                className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
-                              >
-                                Activate
-                              </button>
+                              {(route.status === 'DRAFT' ||
+                                route.status === 'INACTIVE') && (
+                                <>
+                                  <button
+                                    onClick={() => {
+                                      setSelectedRoute(route);
+                                      setEditingRoute(true);
+                                    }}
+                                    className="px-3 py-1 rounded-full bg-gray-200 hover:bg-gray-300"
+                                  >
+                                    Edit
+                                  </button>
 
-                              <button
-                                onClick={() => openModal('delete', route)}
-                                className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
+                                  <button
+                                    onClick={() => openModal('activate', route)}
+                                    className="px-3 py-1 rounded-full bg-green-500 hover:bg-green-600 text-white"
+                                  >
+                                    Activate
+                                  </button>
 
-                          {route.status === 'ACTIVE' && (
-                            <button
-                              onClick={() => openModal('deactivate', route)}
-                              className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
-                            >
-                              Deactivate
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+                                  <button
+                                    onClick={() => openModal('delete', route)}
+                                    className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                                  >
+                                    Delete
+                                  </button>
+                                </>
+                              )}
+
+                              {route.status === 'ACTIVE' && (
+                                <button
+                                  onClick={() => openModal('deactivate', route)}
+                                  className="px-3 py-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                                >
+                                  Deactivate
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center items-center gap-4 mt-4 mb-6">
+                  <button
+                    onClick={() => fetchRoutes(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </button>
+
+                  <span>
+                    Page {currentPage} of {totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => fetchRoutes(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 mt-4 mb-6">
-              <button
-                onClick={() => fetchRoutes(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
+            <div className="mt-6 border border-gray-200 rounded-xl p-4 mx-10">
+              <h4 className="text-gray-900 font-semibold mb-3 text-lg">
+                Update All Fare Rates
+              </h4>
 
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
+              <div className="flex gap-4">
+                <input
+                  type="number"
+                  value={fareAmount}
+                  onChange={(e) => setFareAmount(e.target.value)}
+                  placeholder="Enter amount in cents"
+                  className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
+                focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                />
 
-              <button
-                onClick={() => fetchRoutes(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
+                <button
+                  onClick={() => openModal('updateFares')}
+                  className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
+                  transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
+                >
+                  Update
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-600 mt-2 mx-2">
+                Positive value to increment, negative value to decrement fare
+              </p>
             </div>
-          </div>
-        </div>
-      )}
 
-      {!createRoute && !selectedRoute && (
-        <div className="mt-6 border border-gray-200 rounded-xl p-4 mx-10">
-          <h4 className="text-gray-900 font-semibold mb-3 text-lg">
-            Update All Fare Rates
-          </h4>
-
-          <div className="flex gap-4">
-            <input
-              type="number"
-              value={fareAmount}
-              onChange={(e) => setFareAmount(e.target.value)}
-              placeholder="Enter amount in cents"
-              className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
-              focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            {/* Confirm modal for cancel ticket */}
+            <ConfirmModel
+              isOpen={modalType === 'activate' || modalType === 'deactivate'}
+              title={
+                modalType === 'activate'
+                  ? 'Activate Route?'
+                  : 'Deactivate Route?'
+              }
+              message={`Are you sure you want to ${
+                modalType === 'activate' ? 'activate' : 'deactivate'
+              } route ${modalRoute?.number}?`}
+              confirmText="Yes"
+              cancelText="Cancel"
+              onConfirm={handleConfirm}
+              onCancel={() => setModalType(null)}
             />
 
-            <button
-              onClick={() => openModal('updateFares')}
-              className=" bg-yellow-200 text-yellow-800 px-5 py-2 mb-3 rounded-full
-                  transition-all duration-200 transform hover:bg-yellow-300 active:scale-95 active:shadow-lg"
-            >
-              Update
-            </button>
-          </div>
+            {/* Confirm modal for deleting ticket */}
+            <ConfirmModel
+              isOpen={modalType === 'delete'}
+              title="Delete Route?"
+              message={`This action cannot be undone. Are you sure you want to delete route ${modalRoute?.number}?`}
+              confirmText="Delete"
+              cancelText="Cancel"
+              onConfirm={() => handleDelete(modalRoute.id)}
+              onCancel={() => setModalType(null)}
+            />
 
-          <p className="text-sm text-gray-600 mt-2 mx-2">
-            Positive value to increment, negative value to decrement fare
-          </p>
-        </div>
-      )}
-
-      {/* Confirm modal for cancel ticket */}
-      <ConfirmModel
-        isOpen={modalType === 'activate' || modalType === 'deactivate'}
-        title={
-          modalType === 'activate' ? 'Activate Route?' : 'Deactivate Route?'
-        }
-        message={`Are you sure you want to ${
-          modalType === 'activate' ? 'activate' : 'deactivate'
-        } route ${modalRoute?.number}?`}
-        confirmText="Yes"
-        cancelText="Cancel"
-        onConfirm={handleConfirm}
-        onCancel={() => setModalType(null)}
-      />
-
-      {/* Confirm modal for deleting ticket */}
-      <ConfirmModel
-        isOpen={modalType === 'delete'}
-        title="Delete Route?"
-        message={`This action cannot be undone. Are you sure you want to delete route ${modalRoute?.number}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
-        onConfirm={() => handleDelete(modalRoute.id)}
-        onCancel={() => setModalType(null)}
-      />
-
-      {/* Fare update model */}
-      <ConfirmModel
-        isOpen={modalType === 'updateFares'}
-        title="Update All Fare Rates?"
-        message={`This action cannot be undone. Are you sure?`}
-        confirmText="Update"
-        cancelText="Cancel"
-        onConfirm={handleUpdateAllFares}
-        onCancel={() => setModalType(null)}
-      />
+            {/* Fare update model */}
+            <ConfirmModel
+              isOpen={modalType === 'updateFares'}
+              title="Update All Fare Rates?"
+              message={`This action cannot be undone. Are you sure?`}
+              confirmText="Update"
+              cancelText="Cancel"
+              onConfirm={handleUpdateAllFares}
+              onCancel={() => setModalType(null)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
