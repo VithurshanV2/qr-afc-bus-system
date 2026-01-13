@@ -1,4 +1,4 @@
-import { getUserById } from '../models/userModel.js';
+import { countConfirmedTickets, getUserById } from '../models/userModel.js';
 
 export const getUserData = async (req, res) => {
   try {
@@ -19,6 +19,27 @@ export const getUserData = async (req, res) => {
         isAccountVerified: user.isAccountVerified,
       },
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+export const getUserProfileStats = async (req, res) => {
+  try {
+    const id = req.userId;
+
+    const user = await getUserById(id);
+
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' });
+    }
+
+    const totalTrips = await countConfirmedTickets(id);
+
+    return res.status(200).json({ success: true, user, totalTrips });
   } catch (error) {
     console.error(error);
     return res

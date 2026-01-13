@@ -67,6 +67,7 @@ export const getUserById = async (id) => {
       resetOtpExpireAt: true,
       isAccountVerified: true,
       isFirstLogin: true,
+      createdAt: true,
     },
   });
 };
@@ -251,6 +252,16 @@ export const getLinkedOperatorAccount = async (userId) => {
     where: { userId },
     select: {
       user: { select: { id: true, name: true, email: true, isActive: true } },
+    },
+  });
+};
+
+// Count total tickets purchased by commuter
+export const countConfirmedTickets = async (userId) => {
+  return await prisma.ticket.count({
+    where: {
+      commuterId: userId,
+      status: 'CONFIRMED',
     },
   });
 };
