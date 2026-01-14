@@ -58,6 +58,7 @@ export const getUserById = async (id) => {
       id: true,
       name: true,
       email: true,
+      number: true,
       password: true,
       role: true,
       isActive: true,
