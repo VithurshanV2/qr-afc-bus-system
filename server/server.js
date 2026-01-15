@@ -16,6 +16,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import tripRouter from './routes/tripRoutes.js';
 import revenueRouter from './routes/revenueRoutes.js';
+import adminRouter from './routes/adminRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -47,6 +48,7 @@ app.use('/api/route', routeRouter);
 app.use('/api/operator-assignment', operatorAssignmentRouter);
 app.use('/api/trip', tripRouter);
 app.use('/api/revenue', revenueRouter);
+app.use('/api/admin', adminRouter);
 
 // Uploaded files
 const _filename = fileURLToPath(import.meta.url);

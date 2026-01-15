@@ -7,6 +7,7 @@ import operatorAccountApproved from './templates/operatorAccountApproved.js';
 import operatorAccountReject from './templates/operatorAccountReject.js';
 import operatorAccountActivated from './templates/operatorAccountActivated.js';
 import operatorAccountDeactivated from './templates/operatorAccountDeactivated.js';
+import adminActivation from './templates/adminActivation.js';
 
 const logoUrl = process.env.EMAIL_LOGO_URL;
 
@@ -169,6 +170,28 @@ export async function sendOperatorAccountDeactivation({ to, name }) {
     Your bus operator account has been deactivated temporarily.
 
     For any inquiries or clarifications, please contact the National Transport Commission (NTC).
+
+    Safe travels,
+    The SmartFare Team`,
+    html,
+  });
+}
+
+export async function sendAdminActivation({ to, name, activationLink }) {
+  const html = adminActivation({ name, logoUrl, activationLink });
+
+  return transporter.sendMail({
+    from: process.env.SENDER_EMAIL,
+    to,
+    subject: 'SmartFare - Admin Account Created',
+    text: `Hello, ${name},
+
+    A Transport Authority admin account has been created for you on SmartFare.
+
+    Please activate your account and set your password using the link below:
+    ${activationLink}
+
+    This activation link is valid for 24 hours.
 
     Safe travels,
     The SmartFare Team`,
