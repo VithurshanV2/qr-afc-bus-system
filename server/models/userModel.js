@@ -169,16 +169,16 @@ export const updateIsFirstLogin = async (id, isFirstLogin) => {
   });
 };
 
-// Fetch bus operator by activation token
-export const getOperatorByActivationToken = async (token) => {
+// Fetch user by activation token
+export const getUserByActivationToken = async (token) => {
   return await prisma.accountActivationToken.findUnique({
     where: { token },
     include: { user: true },
   });
 };
 
-// Activate bus operator account and set password
-export const setOperatorPassword = async (userId, hashedPassword) => {
+// Activate account and set password
+export const setUserPassword = async (userId, hashedPassword) => {
   return await prisma.user.update({
     where: { id: userId },
     data: { password: hashedPassword, isAccountVerified: true },

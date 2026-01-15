@@ -3,9 +3,9 @@ import jwt from 'jsonwebtoken';
 import {
   createUser,
   deleteActivationTokens,
-  getOperatorByActivationToken,
+  getUserByActivationToken,
   getUserByEmail,
-  setOperatorPassword,
+  setUserPassword,
   updateIsFirstLogin,
 } from '../models/userModel.js';
 import { sendVerifyOtp } from './otpController.js';
@@ -275,8 +275,8 @@ export const loginTransportAuthority = async (req, res) => {
   }
 };
 
-// activate bus operator account
-export const activateOperatorAccount = async (req, res) => {
+// Activate account for bus operators and admins
+export const activateAccount = async (req, res) => {
   try {
     const { token, password } = req.body;
 
@@ -294,7 +294,7 @@ export const activateOperatorAccount = async (req, res) => {
       });
     }
 
-    const tokenRecord = await getOperatorByActivationToken(token);
+    const tokenRecord = await getUserByActivationToken(token);
 
     if (!tokenRecord) {
       return res.status(400).json({ success: false, message: 'Invalid token' });
@@ -306,7 +306,7 @@ export const activateOperatorAccount = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await setOperatorPassword(tokenRecord.userId, hashedPassword);
+    await setUserPassword(tokenRecord.userId, hashedPassword);
     await deleteActivationTokens(tokenRecord.userId);
 
     return res

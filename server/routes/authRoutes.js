@@ -1,6 +1,6 @@
 import express from 'express';
 import {
-  activateOperatorAccount,
+  activateAccount,
   isAuthenticated,
   loginCommuter,
   loginOperator,
@@ -53,7 +53,7 @@ authRouter.post('/reset-password', resetPassword);
 
 authRouter.get('/is-auth', userAuth, isAuthenticated);
 
-// Account activation bus operator
-authRouter.post('/activate-operator', authLimiter, activateOperatorAccount);
+// Account activation for bus operators and admin
+authRouter.post('/activate-account', authLimiter, activateAccount);
 
 export default authRouter;
