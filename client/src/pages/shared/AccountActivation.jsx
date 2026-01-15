@@ -28,7 +28,7 @@ const AccountActivation = () => {
       setGlobalLoading(true);
 
       const { data } = await axios.post(
-        backendUrl + '/api/auth/activate-operator',
+        backendUrl + '/api/auth/activate-account',
         {
           token,
           password,
@@ -37,7 +37,12 @@ const AccountActivation = () => {
 
       if (data.success) {
         toast.success('Account activated successfully');
-        navigate('/login-bus-operator');
+
+        if (data.user?.role === 'BUSOPERATOR') {
+          navigate('/login-bus-operator');
+        } else if (data.user?.role === 'TRANSPORTAUTHORITY') {
+          navigate('/login-admin');
+        }
       } else {
         toast.error(data.message);
       }

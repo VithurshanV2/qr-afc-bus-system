@@ -14,7 +14,7 @@ import Profile from './pages/commuter/Profile';
 import CommuterLayout from './layouts/CommuterLayout';
 import BottomNav from './components/BottomNav';
 import BusOperatorForm from './pages/bus-operator/BusOperatorForm';
-import AccountActivation from './pages/bus-operator/AccountActivation';
+import AccountActivation from './pages/shared/AccountActivation';
 import LoginBusOperator from './pages/auth/LoginBusOperator';
 import LoginAdmin from './pages/auth/LoginAdmin';
 import AdminLayout from './layouts/AdminLayout';
@@ -92,10 +92,11 @@ const App = () => {
           <Route path="profile" element={<Profile />} />
         </Route>
 
+        <Route path="activate-account" element={<AccountActivation />} />
+
         {/* Bus operator routes */}
         <Route path="bus-operator-request" element={<BusOperatorForm />} />
         <Route path="login-bus-operator" element={<LoginBusOperator />} />
-        <Route path="activate-account" element={<AccountActivation />} />
         <Route
           path="/bus-operator"
           element={

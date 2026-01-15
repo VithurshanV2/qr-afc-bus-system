@@ -309,9 +309,11 @@ export const activateAccount = async (req, res) => {
     await setUserPassword(tokenRecord.userId, hashedPassword);
     await deleteActivationTokens(tokenRecord.userId);
 
-    return res
-      .status(200)
-      .json({ success: true, message: 'Account activated successfully' });
+    return res.status(200).json({
+      success: true,
+      message: 'Account activated successfully',
+      user: { role: tokenRecord.user.role },
+    });
   } catch (error) {
     console.error(error);
     return res
