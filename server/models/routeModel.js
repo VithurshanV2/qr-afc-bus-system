@@ -29,6 +29,7 @@ export const insertRoute = async ({
   haltsA,
   haltsB,
   createdById,
+  updatedById,
 }) => {
   return await prisma.route.create({
     data: {
@@ -38,6 +39,7 @@ export const insertRoute = async ({
       haltsA,
       haltsB,
       createdById,
+      updatedById,
       status: 'DRAFT',
     },
   });

@@ -46,6 +46,7 @@ export const createRoute = async (req, res) => {
       haltsA: haltsA || [],
       haltsB: haltsB || [],
       createdById: userId,
+      updatedById: userId,
     });
 
     return res
