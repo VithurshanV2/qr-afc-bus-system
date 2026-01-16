@@ -221,7 +221,7 @@ const RevenueAdminView = () => {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by operator, bus, or route"
+              placeholder="Search by operator name, email or nic"
               className="w-full flex-3/4 border border-gray-300 rounded-xl px-4 py-2 
           focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
