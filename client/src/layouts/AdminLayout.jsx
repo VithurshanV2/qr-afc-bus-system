@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar, { SidebarItem } from '../components/Sidebar';
 import {
@@ -8,9 +8,13 @@ import {
   Route,
   TicketCheck,
   UserPlus,
+  UserRoundPlus,
 } from 'lucide-react';
+import { AppContext } from '../context/AppContext';
 
 const AdminLayout = () => {
+  const { userData } = useContext(AppContext);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar>
@@ -44,6 +48,13 @@ const AdminLayout = () => {
           text="Ticket Verification"
           icon={<TicketCheck size={20} />}
         />
+        {userData?.role === 'SUPERADMIN' && (
+          <SidebarItem
+            to="/admin/create-account"
+            text="Admin Account"
+            icon={<UserRoundPlus size={20} />}
+          />
+        )}
       </Sidebar>
 
       <main className="flex-1 overflow-y-auto">

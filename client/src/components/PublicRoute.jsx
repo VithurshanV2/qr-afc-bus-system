@@ -5,6 +5,8 @@ import { Navigate } from 'react-router-dom';
 
 const getPathByRole = (role) => {
   switch (role) {
+    case 'SUPERADMIN':
+      return '/admin/review-account-request';
     case 'TRANSPORTAUTHORITY':
       return '/admin/review-account-request';
     case 'BUSOPERATOR':

@@ -32,6 +32,7 @@ import BusOperatorLayout from './layouts/BusOperatorLayout';
 import TripManagement from './pages/bus-operator/TripManagement';
 import RevenueOperatorView from './pages/bus-operator/RevenueOperatorView';
 import ExitTracking from './pages/bus-operator/ExitTracking';
+import AdminAccount from './pages/transport-authority/AdminAccount';
 
 const App = () => {
   const { globalLoading, userData } = useContext(AppContext);
@@ -130,6 +131,7 @@ const App = () => {
           <Route path="ticket-verification" element={<TicketVerification />} />
           <Route path="revenue" element={<RevenueAdminView />} />
           <Route path="trip-log" element={<TripLog />} />
+          <Route path="create-account" element={<AdminAccount />} />
         </Route>
       </Routes>
 

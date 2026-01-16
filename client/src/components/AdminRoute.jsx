@@ -9,7 +9,11 @@ const AdminRoute = ({ children }) => {
     return null;
   }
 
-  if (!isLoggedIn || !userData || userData.role !== 'TRANSPORTAUTHORITY') {
+  if (
+    !isLoggedIn ||
+    !userData ||
+    (userData.role !== 'TRANSPORTAUTHORITY' && userData.role !== 'SUPERADMIN')
+  ) {
     return <Navigate to="/login-admin" replace />;
   }
 
