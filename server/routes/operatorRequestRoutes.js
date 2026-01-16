@@ -23,25 +23,25 @@ operatorRequestRouter.post(
 operatorRequestRouter.get(
   '/list',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   searchOperatorRequests,
 );
 operatorRequestRouter.post(
   '/approve',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   approveOperatorRequest,
 );
 operatorRequestRouter.post(
   '/reject',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   rejectOperatorRequest,
 );
 operatorRequestRouter.post(
   '/resend-activation',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   resendActivationLink,
 );
 

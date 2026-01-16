@@ -39,19 +39,19 @@ ticketRouter.get('/past', userAuth, fetchPastTickets);
 ticketRouter.post(
   '/verify-ticket',
   userAuth,
-  requireRole(['BUSOPERATOR', 'TRANSPORTAUTHORITY']),
+  requireRole(['BUSOPERATOR', 'TRANSPORTAUTHORITY', 'SUPERADMIN']),
   verifyTicket,
 );
 ticketRouter.get(
   '/trip-logs',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   searchTickets,
 );
 ticketRouter.get(
   '/ticket/:ticketId',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   viewTicket,
 );
 

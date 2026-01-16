@@ -36,13 +36,13 @@ revenueRouter.get(
 revenueRouter.get(
   '/operators/monthly',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   getOperatorsMonthlyRevenue,
 );
 revenueRouter.get(
   '/operators/:operatorId/trips',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   getOperatorMonthlyTripsDetails,
 );
 

@@ -265,7 +265,23 @@ export const loginOperator = async (req, res) => {
 // Login for Transport Authority (admin)
 export const loginTransportAuthority = async (req, res) => {
   try {
-    req.body.role = 'TRANSPORTAUTHORITY';
+    const { email } = req.body;
+
+    if (email) {
+      const user = await getUserByEmail(req.body.email);
+
+      if (
+        user &&
+        user.role !== 'TRANSPORTAUTHORITY' &&
+        user.role !== 'SUPERADMIN'
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: 'Invalid email or password',
+        });
+      }
+    }
+
     await login(req, res);
   } catch (error) {
     console.error(error);

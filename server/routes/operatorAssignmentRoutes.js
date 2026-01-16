@@ -15,37 +15,37 @@ const operatorAssignmentRouter = express.Router();
 operatorAssignmentRouter.get(
   '/list',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   searchOperator,
 );
 operatorAssignmentRouter.post(
   '/activate/:operatorId',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   activateOperatorAccount,
 );
 operatorAssignmentRouter.post(
   '/deactivate/:operatorId',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   deactivateOperatorAccount,
 );
 operatorAssignmentRouter.get(
   '/assignable-routes',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   fetchRoutesDropdown,
 );
 operatorAssignmentRouter.post(
   '/assign-route',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   assignRoute,
 );
 operatorAssignmentRouter.post(
   '/reassign-route',
   userAuth,
-  requireRole(['TRANSPORTAUTHORITY']),
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   reassignRoute,
 );
 
