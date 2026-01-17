@@ -123,6 +123,7 @@ const TripManagement = () => {
         <div className="mx-10 flex flex-col gap-6">
           {buses.map((bus) => {
             const activeTrip = bus.Trip?.[0];
+            const hasRoute = !!bus.route;
 
             return (
               <div
@@ -136,28 +137,36 @@ const TripManagement = () => {
                 <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                   <div className="flex flex-col md:flex-row flex-1 items-start md:items-center gap-6">
                     <div>
-                      <div className="font-medium text-gray-900">
-                        {bus.route?.name} ({bus.route?.number})
-                      </div>
-                      <div className="text-sm text-gray-700">
-                        {bus.route?.busType}
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="font-medium">Status:</span>{' '}
-                      {activeTrip ? (
-                        <span className="text-green-600 font-semibold">
-                          ACTIVE
-                        </span>
+                      {hasRoute ? (
+                        <>
+                          <div className="font-medium text-gray-900">
+                            {bus.route?.name} ({bus.route?.number})
+                          </div>
+                          <div className="text-sm text-gray-700">
+                            {bus.route?.busType}
+                          </div>
+                        </>
                       ) : (
-                        <span className="text-red-600 font-semibold">
-                          INACTIVE
-                        </span>
+                        <div className="text-gray-700">Route not assigned</div>
                       )}
                     </div>
 
-                    {!activeTrip && (
+                    {hasRoute && (
+                      <div>
+                        <span className="font-medium">Status:</span>{' '}
+                        {activeTrip ? (
+                          <span className="text-green-600 font-semibold">
+                            ACTIVE
+                          </span>
+                        ) : (
+                          <span className="text-red-600 font-semibold">
+                            INACTIVE
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {hasRoute && !activeTrip && (
                       <select
                         value={directions[bus.id] || ''}
                         onChange={(e) =>
@@ -179,33 +188,35 @@ const TripManagement = () => {
                     )}
 
                     {/* Actions */}
-                    <div>
-                      {!activeTrip && (
-                        <button
-                          onClick={() => {
-                            setSelectedBus(bus);
-                            setModalType('startTrip');
-                          }}
-                          className="px-4 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white 
+                    {hasRoute && (
+                      <div>
+                        {!activeTrip && (
+                          <button
+                            onClick={() => {
+                              setSelectedBus(bus);
+                              setModalType('startTrip');
+                            }}
+                            className="px-4 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white 
                     transition-all duration-200 transform active:scale-95 active:shadow-lg"
-                        >
-                          Start Trip
-                        </button>
-                      )}
+                          >
+                            Start Trip
+                          </button>
+                        )}
 
-                      {activeTrip && (
-                        <button
-                          onClick={() => {
-                            setSelectedBus(bus);
-                            setModalType('endTrip');
-                          }}
-                          className="px-4 py-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white
+                        {activeTrip && (
+                          <button
+                            onClick={() => {
+                              setSelectedBus(bus);
+                              setModalType('endTrip');
+                            }}
+                            className="px-4 py-1.5 rounded-full bg-red-500 hover:bg-red-600 text-white
                     transition-all duration-200 transform active:scale-95 active:shadow-lg"
-                        >
-                          End Trip
-                        </button>
-                      )}
-                    </div>
+                          >
+                            End Trip
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="hidden lg:block w-px bg-gray-300 self-stretch" />
