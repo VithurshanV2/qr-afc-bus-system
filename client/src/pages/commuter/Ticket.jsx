@@ -204,7 +204,7 @@ const Ticket = () => {
                       </div>
 
                       {/* Total fare */}
-                      <div className="text-yellow-600 font-bold text-lg">
+                      <div className="text-yellow-600 font-bold text-l whitespace-nowrap">
                         {(tx.totalFare / 100).toFixed(2)} LKR
                       </div>
                     </button>
