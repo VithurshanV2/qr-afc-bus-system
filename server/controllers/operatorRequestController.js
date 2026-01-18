@@ -20,6 +20,7 @@ import {
   rejectRequest,
 } from '../models/operatorRequestModel.js';
 import { v4 as uuidv4 } from 'uuid';
+import { getUserByEmail } from '../models/userModel.js';
 
 // Email validation
 const isEmailValid = (email) => {
@@ -194,6 +195,16 @@ export const approveOperatorRequest = async (req, res) => {
       remarks,
       reviewerId: userId,
     });
+
+    const existingUser = await getUserByEmail(request.email);
+
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message:
+          'User account already exists for this email. Request may have been already approved',
+      });
+    }
 
     // create user account
     const newUser = await createUser({
