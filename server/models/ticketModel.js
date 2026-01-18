@@ -1,5 +1,5 @@
 import { PrismaClient } from '../generated/prisma/index.js';
-import crypto from 'crypto';
+import crypto, { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -29,7 +29,7 @@ export const createTicketAtBoarding = async ({
       boardingHalt,
       expiresAt,
       status: 'PENDING',
-      qrCode: 'temp',
+      qrCode: randomUUID(),
     },
   });
 
