@@ -20,7 +20,7 @@ const PublicRoute = ({ children }) => {
   const { userData } = useContext(AppContext);
 
   if (userData) {
-    if (!userData.isAccountVerified) {
+    if (userData.role === 'COMMUTER' && !userData.isAccountVerified) {
       return children;
     }
 
