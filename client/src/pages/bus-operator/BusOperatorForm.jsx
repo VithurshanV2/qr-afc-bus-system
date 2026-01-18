@@ -420,10 +420,10 @@ const BusOperatorForm = () => {
                       <option value="" disabled>
                         Select Bus Type
                       </option>
-                      <option value="normal">Normal</option>
-                      <option value="semi-luxury">Semi-Luxury</option>
-                      <option value="luxury">Luxury</option>
-                      <option value="super-luxury">Super-Luxury</option>
+                      <option value="NORMAL">Normal</option>
+                      <option value="SEMILUXURY">Semi-Luxury</option>
+                      <option value="LUXURY">Luxury</option>
+                      <option value="SUPERLUXURY">Super-Luxury</option>
                     </select>
                     {errors.buses[i]?.busType && (
                       <p className="text-red-600 text-sm ml-5">
