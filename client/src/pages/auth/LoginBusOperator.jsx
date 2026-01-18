@@ -20,6 +20,7 @@ const LoginBusOperator = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -59,7 +60,10 @@ const LoginBusOperator = () => {
         <img
           src={assets.loginImg}
           alt="login"
-          className="w-full h-full object-cover"
+          onLoad={() => setImageLoaded(true)}
+          className={`w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         />
       </div>
 
