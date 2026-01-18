@@ -73,9 +73,9 @@ const Login = () => {
           await getUserData();
 
           if (!data.user.isAccountVerified) {
-            navigate('/email-verify?redirectTo=/');
+            navigate('/email-verify?redirectTo=/commuter/scan');
           } else {
-            navigate('/');
+            navigate('/commuter/scan');
           }
         } else {
           toast.error(data.message);

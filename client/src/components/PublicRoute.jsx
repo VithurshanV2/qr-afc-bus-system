@@ -20,6 +20,10 @@ const PublicRoute = ({ children }) => {
   const { userData } = useContext(AppContext);
 
   if (userData) {
+    if (!userData.isAccountVerified) {
+      return children;
+    }
+
     const path = getPathByRole(userData.role);
 
     if (window.location.pathname !== path) {
