@@ -86,11 +86,7 @@ const ExitTracking = () => {
         );
 
         if (data.success) {
-          if (data.nextHalt) {
-            counts[data.nextHalt.id] = data.exitCount;
-          } else if (data.isLastHalt) {
-            counts[halt.id] = data.exitCount;
-          }
+          counts[halt.id] = data.exitCount;
         }
       }
 
@@ -112,7 +108,13 @@ const ExitTracking = () => {
     if (halts.length > 0) {
       fetchExitCountsForAllHalts();
     }
-  }, [halts]);
+
+    const interval = window.setInterval(() => {
+      fetchExitCountsForAllHalts();
+    }, 2000);
+
+    return () => window.clearInterval(interval);
+  }, [halts, selectedBusId]);
 
   const handlePreviousHalt = () => {
     if (currentHaltIndex > 0) {

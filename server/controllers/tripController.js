@@ -133,7 +133,7 @@ export const getNextHaltExitCount = async (req, res) => {
       });
     }
 
-    const trip = await getTripById({ tripId: Number(tripId) });
+    const trip = await getTripById(Number(tripId));
 
     if (!trip) {
       return res
@@ -147,60 +147,31 @@ export const getNextHaltExitCount = async (req, res) => {
         .json({ success: false, message: 'Trip is not active' });
     }
 
-    const haltsJson =
+    const haltsData =
       trip.direction === 'DIRECTIONA' ? trip.route.haltsA : trip.route.haltsB;
 
-    const haltsData = JSON.parse(haltsJson);
     const halts = haltsData.halts;
 
-    // Find current position
-    let currentPosition = null;
+    // Find current halt
+    const currentHalt = halts.find((halt) => halt.id === Number(currentHaltId));
 
-    for (let i = 0; i < halts.length; i++) {
-      if (halts[i].id === Number(currentHaltId)) {
-        currentPosition = i;
-        break;
-      }
-    }
-
-    if (currentPosition === null) {
+    if (!currentHalt) {
       return res
         .status(400)
         .json({ success: false, message: 'Halt not found in route' });
     }
 
-    // Find next halt position
-    const nextPosition = currentPosition + 1;
-
-    // Last halt
-    if (nextPosition >= halts.length) {
-      const exitCount = await countExitCountAtHalt({
-        tripId: Number(tripId),
-        haltId: Number(currentHaltId),
-      });
-
-      return res.status(200).json({
-        success: true,
-        currentHalt: {
-          id: halts[currentPosition].id,
-          name: halts[currentPosition].englishName,
-        },
-        exitCount,
-        isLastHalt: true,
-      });
-    }
-
-    // show next halt and exit count
-    const nextHalt = halts[nextPosition];
-
     const exitCount = await countExitCountAtHalt({
       tripId: Number(tripId),
-      haltId: nextHalt.id,
+      haltId: Number(currentHaltId),
     });
 
     return res.status(200).json({
       success: true,
-      nextHalt: { id: nextHalt.id, name: nextHalt.englishName },
+      halt: {
+        id: currentHalt.id,
+        name: currentHalt.englishName,
+      },
       exitCount,
     });
   } catch (error) {
