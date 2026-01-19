@@ -242,9 +242,19 @@ const RouteAssignment = () => {
                           <td className="px-4 py-3">
                             {operator.BusOperator?.Bus?.length > 0 ? (
                               operator.BusOperator.Bus.map((bus) => (
-                                <div key={bus.id}>
-                                  - {bus.registrationNumber}
-                                  {bus.routeId && <span> (assigned)</span>}
+                                <div key={bus.id} className="mb-1">
+                                  <div className="font-medium">
+                                    {bus.registrationNumber}
+                                  </div>
+                                  {bus.route ? (
+                                    <div className="text-sm text-gray-600">
+                                      {bus.route?.name} ({bus.route?.number})
+                                    </div>
+                                  ) : (
+                                    <div className="text-sm text-red-600">
+                                      Not assigned
+                                    </div>
+                                  )}
                                 </div>
                               ))
                             ) : (

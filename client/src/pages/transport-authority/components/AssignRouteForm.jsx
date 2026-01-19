@@ -51,7 +51,9 @@ const AssignRouteForm = ({ operator, onClose }) => {
   const handleRouteChange = (busId, routeId) => {
     setBuses((prev) =>
       prev.map((bus) =>
-        bus.id === busId ? { ...bus, routeId: Number(routeId) } : bus,
+        bus.id === busId
+          ? { ...bus, routeId: routeId === '' ? null : Number(routeId) }
+          : bus,
       ),
     );
   };
@@ -65,11 +67,6 @@ const AssignRouteForm = ({ operator, onClose }) => {
       for (let i = 0; i < buses.length; i++) {
         const bus = buses[i];
 
-        // Skip if no route is selected
-        if (!bus.routeId) {
-          continue;
-        }
-
         // Skip if route hasn't changed
         if (bus.routeId === originalBuses[i]) {
           continue;
@@ -80,6 +77,9 @@ const AssignRouteForm = ({ operator, onClose }) => {
         if (originalBuses[i] !== null) {
           url = backendUrl + '/api/operator-assignment/reassign-route';
         } else {
+          if (!bus.routeId || bus.routeId === '') {
+            continue;
+          }
           url = backendUrl + '/api/operator-assignment/assign-route';
         }
 
@@ -94,6 +94,9 @@ const AssignRouteForm = ({ operator, onClose }) => {
           toast.error(data.message);
         }
       }
+
+      await fetchRouteList();
+      onClose();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Something went wrong');
     } finally {
@@ -159,7 +162,7 @@ const AssignRouteForm = ({ operator, onClose }) => {
                     value={bus.routeId || ''}
                     onChange={(e) => handleRouteChange(bus.id, e.target.value)}
                   >
-                    <option value="">Select Route</option>
+                    <option value="">Not Assigned</option>
                     {routes.map((route) => (
                       <option key={route.id} value={route.id}>
                         {route.name} ({route.number}) - {route.busType}
@@ -203,7 +206,6 @@ const AssignRouteForm = ({ operator, onClose }) => {
         onConfirm={() => {
           handleSaveAssignment();
           setModalType(null);
-          onClose();
         }}
         onCancel={() => setModalType(null)}
       />

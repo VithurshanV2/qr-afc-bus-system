@@ -198,9 +198,13 @@ export const reassignRoute = async (req, res) => {
 
     await assignRouteToBus(busId, routeId);
 
+    const message = routeId
+      ? 'Route reassigned successfully'
+      : `Route unassigned from Bus ${bus.registrationNumber}`;
+
     return res.status(200).json({
       success: true,
-      message: `Route reassigned successfully`,
+      message,
     });
   } catch (error) {
     console.error(error);
