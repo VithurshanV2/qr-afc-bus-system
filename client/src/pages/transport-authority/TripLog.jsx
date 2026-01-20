@@ -9,6 +9,7 @@ import { BounceLoader } from 'react-spinners';
 import { formatIssuedDate } from '../../utils/date';
 import TicketCard from '../commuter/components/TicketCard';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatCurrency } from '../../utils/currency';
 
 const TripLogs = () => {
   const { backendUrl, setGlobalLoading } = useContext(AppContext);
@@ -255,8 +256,7 @@ const TripLogs = () => {
                               {ticket.childCount}
                             </div>
                             <div className="text-sm text-gray-700">
-                              Total Fare: {(ticket.totalFare / 100).toFixed(2)}{' '}
-                              LKR
+                              Total Fare: {formatCurrency(ticket.totalFare)}
                             </div>
                           </td>
 

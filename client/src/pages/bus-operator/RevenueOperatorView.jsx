@@ -8,6 +8,7 @@ import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { formatCurrency } from '../../utils/currency';
 
 const RevenueOperatorView = () => {
   const { backendUrl } = useContext(AppContext);
@@ -209,7 +210,7 @@ const RevenueOperatorView = () => {
                 Total Revenue
               </div>
               <div className="text-gray-900 font-medium text-3xl">
-                {(totalRevenue / 100).toFixed(2)} LKR
+                {formatCurrency(totalRevenue)}
               </div>
             </div>
             <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -315,7 +316,7 @@ const RevenueOperatorView = () => {
 
                           {/* Revenue */}
                           <td className="px-4 py-3">
-                            <div>{(trip.totalAmount / 100).toFixed(2)} LKR</div>
+                            <div>{formatCurrency(trip.totalAmount)}</div>
                           </td>
                         </tr>
                       ))}
@@ -378,7 +379,7 @@ const RevenueOperatorView = () => {
 
                           {/* Revenue */}
                           <td className="px-4 py-3">
-                            <div>{(bus.totalRevenue / 100).toFixed(2)} LKR</div>
+                            <div>{formatCurrency(bus.totalRevenue)}</div>
                           </td>
                         </tr>
                       ))}

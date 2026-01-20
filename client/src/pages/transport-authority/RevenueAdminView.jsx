@@ -7,6 +7,7 @@ import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
 import { formatIssuedDate } from '../../utils/date';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatCurrency } from '../../utils/currency';
 
 const RevenueAdminView = () => {
   const { backendUrl } = useContext(AppContext);
@@ -251,7 +252,7 @@ const RevenueAdminView = () => {
                 Total Revenue
               </div>
               <div className="text-gray-900 font-medium text-3xl">
-                {(totalRevenue / 100).toFixed(2)} LKR
+                {formatCurrency(totalRevenue)}
               </div>
             </div>
             <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -339,9 +340,7 @@ const RevenueAdminView = () => {
 
                         {/* Revenue */}
                         <td className="px-4 py-3">
-                          <div>
-                            {(operator.totalRevenue / 100).toFixed(2)} LKR
-                          </div>
+                          <div>{formatCurrency(operator.totalRevenue)}</div>
                         </td>
 
                         {/* Actions */}
@@ -419,7 +418,7 @@ const RevenueAdminView = () => {
                 Total Revenue
               </div>
               <div className="text-gray-900 font-medium text-3xl">
-                {(tripsTotalRevenue / 100).toFixed(2)} LKR
+                {formatCurrency(tripsTotalRevenue)}
               </div>
             </div>
             <div className="border border-gray-200 rounded-xl p-6 shadow-sm">
@@ -523,7 +522,7 @@ const RevenueAdminView = () => {
 
                         {/* Revenue */}
                         <td className="px-4 py-3">
-                          <div>{(trip.totalAmount / 100).toFixed(2)} LKR</div>
+                          <div>{formatCurrency(trip.totalAmount)}</div>
                         </td>
                       </tr>
                     ))}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatIssuedDate } from '../../../utils/date';
 import QRCode from 'react-qr-code';
+import { formatCurrency } from '../../../utils/currency';
 
 const TicketCard = ({ ticket }) => {
   if (!ticket) {
@@ -77,7 +78,7 @@ const TicketCard = ({ ticket }) => {
           <div className="flex justify-between">
             <span className="text-gray-600">Base Fare</span>
             <span className="text-gray-900 font-medium">
-              {(baseFare / 100).toFixed(2)} LKR
+              {formatCurrency(baseFare)}
             </span>
           </div>
 
@@ -101,7 +102,7 @@ const TicketCard = ({ ticket }) => {
           Total Fare
         </p>
         <p className="text-4xl font-medium text-gray-900 leading-[1.1] mt-[-2px]">
-          {(totalFare / 100).toFixed(2)} LKR
+          {formatCurrency(totalFare)}
         </p>
       </div>
     </div>
