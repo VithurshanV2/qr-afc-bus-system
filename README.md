@@ -28,6 +28,8 @@ cd qr-afc-bus-system
 2. Install dependencies
 ```bash
 npm install
+npm install --prefix server
+npm install --prefix client
 ```
 
 3. Configure environment variables
@@ -79,11 +81,12 @@ VITE_BACKEND_URL="http://localhost:4000"
 ```
 
 4. Database setup
+Important: This project currently uses Prisma 6. If you encounter Prisma 7 errors, ensure Prisma 6 is installed:
 ```bash
 cd server
+npm install prisma@6 @prisma/client@6 --save-exact
 npx prisma migrate dev
 npx prisma generate
-cd ..
 ```
 
 ## Usage
@@ -111,3 +114,6 @@ Note: Copy the webhook signing secret from Terminal 2 and update STRIPE_WEBHOOK_
 1. Ensure Stripe webhook forwarding is running
 2. Use Stripe test card: 4242 4242 4242 4242
 3. Any future expiry date and any 3-digit CVC
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
