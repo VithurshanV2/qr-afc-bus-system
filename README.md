@@ -99,7 +99,7 @@ npm run dev
 
 Terminal 2 - Stripe webhook forwarding:
 ```bash
-stripe listen --forward-to localhost:4000/webhook
+stripe listen --forward-to localhost:4000/api/wallet/stripe-webhook
 ```
 
 Note: Copy the webhook signing secret from Terminal 2 and update STRIPE_WEBHOOK_SECRET in server/.env
