@@ -4,6 +4,7 @@ import { AppContext } from '../../../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import ConfirmModal from '../../../components/ConfirmModal';
+import MapPicker from './MapPicker';
 
 const createEmptyHalt = (id) => ({
   id: id,
@@ -534,6 +535,8 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
           </button>
         )}
       </div>
+
+      <MapPicker />
 
       {/* Confirm modal for cancel ticket */}
       <ConfirmModal
