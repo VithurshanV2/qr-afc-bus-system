@@ -246,7 +246,7 @@ export const createRevenueForTrip = async ({ tripId }) => {
 };
 
 export const countExitCountAtHalt = async ({ tripId, haltId }) => {
-  return await prisma.ticket.count({
+  return await prisma.ticket.findMany({
     where: {
       tripId,
       status: 'CONFIRMED',
@@ -255,5 +255,6 @@ export const countExitCountAtHalt = async ({ tripId, haltId }) => {
         equals: haltId,
       },
     },
+    select: { adultCount: true, childCount: true },
   });
 };

@@ -161,10 +161,17 @@ export const getNextHaltExitCount = async (req, res) => {
         .json({ success: false, message: 'Halt not found in route' });
     }
 
-    const exitCount = await countExitCountAtHalt({
+    const tickets = await countExitCountAtHalt({
       tripId: Number(tripId),
       haltId: Number(currentHaltId),
     });
+
+    // Add accompanying passengers in ticket to exit count
+    const exitCount = tickets.reduce(
+      (sum, ticket) =>
+        sum + (ticket.adultCount || 0) + (ticket.childCount || 0),
+      0,
+    );
 
     return res.status(200).json({
       success: true,
