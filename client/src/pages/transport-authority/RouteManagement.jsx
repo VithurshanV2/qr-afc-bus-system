@@ -25,6 +25,7 @@ const RouteManagement = () => {
   const [modalType, setModalType] = useState(null);
   const [modalRoute, setModalRoute] = useState(null);
   const [fareAmount, setFareAmount] = useState('');
+  const [lastFareUpdate, setLastFareUpdate] = useState(null);
 
   const limit = 10; // routes per page
 
@@ -53,6 +54,7 @@ const RouteManagement = () => {
 
   useEffect(() => {
     fetchRoutes();
+    fetchLastFareUpdate();
   }, [search]);
 
   const closeForm = () => {
@@ -172,6 +174,7 @@ const RouteManagement = () => {
       if (data.success) {
         toast.success(data.message);
         setFareAmount('');
+        setLastFareUpdate(data.lastUpdate);
         fetchRoutes(currentPage);
       } else {
         toast.error(data.message);
@@ -181,6 +184,22 @@ const RouteManagement = () => {
     } finally {
       setLoading(false);
       setModalType(null);
+    }
+  };
+
+  const fetchLastFareUpdate = async () => {
+    try {
+      axios.defaults.withCredentials = true;
+
+      const { data } = await axios.get(
+        backendUrl + '/api/route/last-fare-update',
+      );
+
+      if (data.success) {
+        setLastFareUpdate(data.lastUpdate);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -403,7 +422,7 @@ const RouteManagement = () => {
               </div>
             </div>
 
-            <div className="mt-6 border border-gray-200 rounded-xl p-4 mx-10">
+            <div className="mt-6 border border-gray-200 rounded-xl p-4 mx-10 mb-10">
               <h4 className="text-gray-900 font-semibold mb-3 text-lg">
                 Update All Fare Rates
               </h4>
@@ -430,6 +449,28 @@ const RouteManagement = () => {
               <p className="text-sm text-gray-600 mt-2 mx-2">
                 Positive value to increment, negative value to decrement fare
               </p>
+
+              {lastFareUpdate && (
+                <div className="mt-5 flex gap-5 mx-2">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Last fare update by:
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-semibold">
+                      {lastFareUpdate.fareUpdatedBy?.name}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {lastFareUpdate.fareUpdatedBy?.email}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {formatIssuedDate(lastFareUpdate?.fareUpdatedAt)}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Confirm modal for cancel ticket */}

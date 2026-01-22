@@ -6,6 +6,7 @@ import {
   createRoute,
   deleteRoute,
   fetchRouteHalts,
+  getLastFareUpdateController,
   inactivateRouteController,
   searchRoutes,
   updateAllFares,
@@ -61,6 +62,12 @@ routeRouter.post(
   userAuth,
   requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
   updateAllFares,
+);
+routeRouter.get(
+  '/last-fare-update',
+  userAuth,
+  requireRole(['TRANSPORTAUTHORITY', 'SUPERADMIN']),
+  getLastFareUpdateController,
 );
 
 export default routeRouter;

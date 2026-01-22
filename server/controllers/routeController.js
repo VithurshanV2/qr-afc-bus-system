@@ -2,6 +2,7 @@ import {
   activateRoute,
   countRoutes,
   findRouteByNumberBusType,
+  getLastFareUpdate,
   getRouteById,
   getRouteHalts,
   getRoutesForFareUpdate,
@@ -470,11 +471,30 @@ export const updateAllFares = async (req, res) => {
       });
     }
 
+    const lastUpdate = await getLastFareUpdate();
+
     return res.status(200).json({
       success: true,
       message: `Fare rates updated for ${routes.length} routes`,
       affectedRoutes: routes.length,
+      lastUpdate: lastUpdate || null,
     });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Get last fare update
+export const getLastFareUpdateController = async (req, res) => {
+  try {
+    const lastUpdate = await getLastFareUpdate();
+
+    return res
+      .status(200)
+      .json({ success: true, lastUpdate: lastUpdate || null });
   } catch (error) {
     console.error(error);
     return res

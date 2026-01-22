@@ -186,3 +186,16 @@ export const updateRouteFares = async ({ routeId, haltsA, haltsB, userId }) => {
     },
   });
 };
+
+// Get last fare update information
+export const getLastFareUpdate = async () => {
+  return await prisma.route.findFirst({
+    where: { fareUpdatedAt: { not: null } },
+    select: {
+      fareUpdatedAt: true,
+      fareUpdatedBy: {
+        select: { name: true, email: true },
+      },
+    },
+  });
+};
