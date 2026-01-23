@@ -1,32 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-geosearch/dist/geosearch.css';
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 import {
   MapContainer,
   TileLayer,
   Marker,
   Popup,
   useMapEvents,
+  useMap,
 } from 'react-leaflet';
 
 const ClickMap = ({ onLocationSelect }) => {
-  const [position, setPosition] = useState(null);
-
   useMapEvents({
     click: (e) => {
       console.log('You clicked at:', e.latlng);
-      setPosition(e.latlng);
 
       if (onLocationSelect) {
         onLocationSelect(e.latlng.lat, e.latlng.lng);
       }
     },
   });
+  return null;
+};
 
+const SingleMarker = ({ position }) => {
   return position === null ? null : (
     <Marker position={position}>
-      <Popup>You clicked here!</Popup>
+      <Popup>Selected location</Popup>
     </Marker>
   );
+};
+
+const SearchControl = ({ onSearchResult }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const SearchControl = new GeoSearchControl({
+      provider: new OpenStreetMapProvider({
+        params: {
+          countrycodes: 'lk',
+        },
+      }),
+      style: 'bar',
+      autoClose: true,
+      keepResult: true,
+      showMarker: false,
+      notFoundMessage: 'Sorry, that address could not be found.',
+    });
+
+    map.addControl(SearchControl);
+
+    map.on('geosearch/showlocation', (result) => {
+      if (onSearchResult) {
+        onSearchResult(result.location.y, result.location.x);
+      }
+    });
+
+    return () => {
+      map.off('geosearch/showlocation');
+      map.removeControl(SearchControl);
+    };
+  }, [map, onSearchResult]);
+
+  return null;
 };
 
 const MapPicker = ({ onSelectLocation, onClose }) => {
@@ -56,8 +93,14 @@ const MapPicker = ({ onSelectLocation, onClose }) => {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <SearchControl
+              onSearchResult={(lat, lng) => setTempCoords({ lat, lng })}
+            />
             <ClickMap
               onLocationSelect={(lat, lng) => setTempCoords({ lat, lng })}
+            />
+            <SingleMarker
+              position={tempCoords ? [tempCoords.lat, tempCoords.lng] : null}
             />
           </MapContainer>
         </div>
