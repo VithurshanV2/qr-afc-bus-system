@@ -18,6 +18,8 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
   const { backendUrl, globalLoading, setGlobalLoading } =
     useContext(AppContext);
 
+  const [showMapPicker, setShowMapPicker] = useState(false);
+  const [selectedHaltIndex, setSelectedHaltIndex] = useState(null);
   const [modalType, setModalType] = useState(null);
   const [number, setNumber] = useState(route?.number || '');
   const [name, setName] = useState(route?.name || '');
@@ -124,6 +126,28 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
     updatedHalts.push(newHalt);
 
     setCurrentHalts(updatedHalts);
+  };
+
+  const handleMapLocationSelect = (lat, lng) => {
+    if (selectedHaltIndex !== null) {
+      const halts = getCurrentHalts();
+      const updatedHalts = [];
+
+      for (let i = 0; i < halts.length; i++) {
+        if (i === selectedHaltIndex) {
+          updatedHalts.push({
+            ...halts[i],
+            latitude: lat,
+            longitude: lng,
+          });
+        } else {
+          updatedHalts.push(halts[i]);
+        }
+      }
+      setCurrentHalts(updatedHalts);
+      setShowMapPicker(false);
+      toast.success('Location selected successfully');
+    }
   };
 
   const buildPayload = () => {
@@ -434,7 +458,7 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
           {getCurrentHalts().map((halt, id) => (
             <div
               key={`${activeDirection}-${halt.id}`}
-              className="grid grid-cols-1 md:grid-cols-5 gap-3 items-center"
+              className="grid grid-cols-1 md:grid-cols-6 gap-3 items-center"
             >
               <input
                 value={halt.englishName}
@@ -478,6 +502,20 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
                 className="border border-gray-300 rounded-xl px-4 py-2 
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
+
+              {!viewMode && (
+                <button
+                  onClick={() => {
+                    setSelectedHaltIndex(id);
+                    setShowMapPicker(true);
+                  }}
+                  type="button"
+                  className="px-4 py-2 rounded-full bg-blue-400  text-white shadow-md 
+                hover:shadow-blue-800 hover:brightness-110 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+                >
+                  Coordinates
+                </button>
+              )}
 
               {getCurrentHalts().length > 2 && !viewMode && (
                 <button
@@ -536,7 +574,12 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
         )}
       </div>
 
-      <MapPicker />
+      {showMapPicker && (
+        <MapPicker
+          onSelectLocation={handleMapLocationSelect}
+          onClose={() => setShowMapPicker(false)}
+        />
+      )}
 
       {/* Confirm modal for cancel ticket */}
       <ConfirmModal
