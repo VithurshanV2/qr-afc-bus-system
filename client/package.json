@@ -19,6 +19,7 @@
     "jsbarcode": "^3.12.1",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.2.2",
+    "leaflet-routing-machine": "^3.2.12",
     "lucide-react": "^0.522.0",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",

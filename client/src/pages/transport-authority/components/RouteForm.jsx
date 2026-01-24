@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import ConfirmModal from '../../../components/ConfirmModal';
 import MapPicker from './MapPicker';
+import RouteMapViewer from './RouteMapViewer';
 
 const createEmptyHalt = (id) => ({
   id: id,
@@ -19,6 +20,7 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
     useContext(AppContext);
 
   const [showMapPicker, setShowMapPicker] = useState(false);
+  const [showRouteMap, setShowRouteMap] = useState(false);
   const [selectedHaltIndex, setSelectedHaltIndex] = useState(null);
   const [modalType, setModalType] = useState(null);
   const [number, setNumber] = useState(route?.number || '');
@@ -434,21 +436,33 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
         </div>
 
         <div className="mb-4">
-          <input
-            value={activeDirection === 'A' ? directionAName : directionBName}
-            onChange={(e) =>
-              activeDirection === 'A'
-                ? setDirectionAName(e.target.value)
-                : setDirectionBName(e.target.value)
-            }
-            readOnly={viewMode}
-            placeholder="Direction Name (Origin - Destination)"
-            className="border border-gray-300 rounded-xl px-4 py-2 w-2/3
+          <div className="flex gap-4 items-center">
+            <input
+              value={activeDirection === 'A' ? directionAName : directionBName}
+              onChange={(e) =>
+                activeDirection === 'A'
+                  ? setDirectionAName(e.target.value)
+                  : setDirectionBName(e.target.value)
+              }
+              readOnly={viewMode}
+              placeholder="Direction Name (Origin - Destination)"
+              className="border border-gray-300 rounded-xl px-4 py-2 w-2/3
             focus:outline-none focus:ring-2 focus:ring-yellow-400"
-          />
-          {errors.directionName && (
-            <p className="text-red-600 text-sm ml-5">{errors.directionName}</p>
-          )}
+            />
+            {errors.directionName && (
+              <p className="text-red-600 text-sm ml-5">
+                {errors.directionName}
+              </p>
+            )}
+
+            <button
+              onClick={() => setShowRouteMap(true)}
+              className="px-6 py-2 rounded-full bg-yellow-200 hover:bg-yellow-300 shadow-md 
+            hover:shadow-yellow-800 hover:scale-105 active:scale-100 transition-all duration-300 transform"
+            >
+              View Route Map
+            </button>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -578,6 +592,15 @@ export const RouteForm = ({ route = null, onClose, viewMode = false }) => {
         <MapPicker
           onSelectLocation={handleMapLocationSelect}
           onClose={() => setShowMapPicker(false)}
+        />
+      )}
+
+      {showRouteMap && (
+        <RouteMapViewer
+          haltsA={haltsA}
+          haltsB={haltsB}
+          activeDirection={activeDirection}
+          onClose={() => setShowRouteMap(false)}
         />
       )}
 
