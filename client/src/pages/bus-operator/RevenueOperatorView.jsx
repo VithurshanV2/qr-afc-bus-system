@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { formatIssuedDate } from '../../utils/date';
+import { formatIssuedDateNoTime, formatTime } from '../../utils/date';
 import { BounceLoader } from 'react-spinners';
 import axios from 'axios';
 import { useContext } from 'react';
@@ -246,7 +246,7 @@ const RevenueOperatorView = () => {
                       <th className="px-4 py-3 text-left">Bus</th>
                       <th className="px-4 py-3 text-left">Route</th>
                       <th className="px-4 py-3 text-left">Direction</th>
-                      <th className="px-4 py-3 text-left">Trip Date</th>
+                      <th className="px-4 py-3 text-left">Trip Date & Time</th>
                       <th className="px-4 py-3 text-left">Tickets</th>
                       <th className="px-4 py-3 text-left">Revenue</th>
                     </tr>
@@ -306,7 +306,13 @@ const RevenueOperatorView = () => {
 
                           {/* TripDate */}
                           <td className="px-4 py-3">
-                            <div>{formatIssuedDate(trip.trip?.startTime)}</div>
+                            <div>
+                              {formatIssuedDateNoTime(trip.trip?.startTime)}
+                            </div>
+                            <div className="text-sm text-gray-700">
+                              {formatTime(trip.trip?.startTime)} -{' '}
+                              {formatTime(trip.trip?.endTime)}
+                            </div>
                           </td>
 
                           {/* Tickets */}

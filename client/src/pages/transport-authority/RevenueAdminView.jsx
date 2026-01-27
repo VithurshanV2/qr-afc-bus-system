@@ -5,7 +5,7 @@ import { AppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
-import { formatIssuedDate } from '../../utils/date';
+import { formatIssuedDateNoTime, formatTime } from '../../utils/date';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency } from '../../utils/currency';
 
@@ -452,7 +452,7 @@ const RevenueAdminView = () => {
                     <th className="px-4 py-3 text-left">Bus</th>
                     <th className="px-4 py-3 text-left">Route</th>
                     <th className="px-4 py-3 text-left">Direction</th>
-                    <th className="px-4 py-3 text-left">Trip Date</th>
+                    <th className="px-4 py-3 text-left">Trip Date & Time</th>
                     <th className="px-4 py-3 text-left">Tickets</th>
                     <th className="px-4 py-3 text-left">Revenue</th>
                   </tr>
@@ -512,7 +512,13 @@ const RevenueAdminView = () => {
 
                         {/* TripDate */}
                         <td className="px-4 py-3">
-                          <div>{formatIssuedDate(trip.trip?.startTime)}</div>
+                          <div>
+                            {formatIssuedDateNoTime(trip.trip?.startTime)}
+                          </div>
+                          <div className="text-sm text-gray-700">
+                            {formatTime(trip.trip?.startTime)} -{' '}
+                            {formatTime(trip.trip?.endTime)}
+                          </div>
                         </td>
 
                         {/* Tickets */}
