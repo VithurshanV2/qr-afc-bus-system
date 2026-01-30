@@ -106,7 +106,7 @@ Note: Copy the webhook signing secret from Terminal 2 and update STRIPE_WEBHOOK_
 
 ### Accessing the system
 - Commuter Portal: http://localhost:5173
-- Bus Operator Portal: http://localhost:5173/operator
+- Bus Operator Portal: http://localhost:5173/login-bus-operator
 - Admin Portal: http://localhost:5173/admin
 - API Server: http://localhost:4000
 
